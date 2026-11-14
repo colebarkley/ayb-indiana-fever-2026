@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AYB Indiana Fever | "Downtown" Playbook</title>
+<title>AYB Indiana Fever | "Downtown" Interactive Playbook</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,6 +14,7 @@
     --gold2:  #FFD966;
     --bg:     #0a0a1a;
     --panel:  #0d1a2e;
+    --green:  #00e676;
     --radius: 12px;
   }
 
@@ -27,6 +28,7 @@
     align-items: center;
     padding: 0 0 40px;
     overflow-x: hidden;
+    user-select: none;
   }
 
   /* ── HEADER ──────────────────────────────────── */
@@ -39,54 +41,78 @@
     position: relative;
     overflow: hidden;
   }
-  #header::before {
-    content:'';
-    position:absolute; inset:0;
-    background: repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(255,199,44,.04) 40px,rgba(255,199,44,.04) 41px);
-    pointer-events:none;
-  }
   #header h1 {
     font-family: 'Orbitron', sans-serif;
     font-size: clamp(1.1rem, 4vw, 1.9rem);
     color: var(--gold);
-    text-shadow: 0 0 18px rgba(255,199,44,.7), 0 0 40px rgba(255,199,44,.3);
     letter-spacing: 3px;
-    animation: shimmer 3s linear infinite;
     background: linear-gradient(90deg, #FFD966 0%, #fff 40%, #FFC72C 60%, #FFD966 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    animation: shimmer 3s linear infinite;
   }
   @keyframes shimmer { to { background-position: 200% center; } }
   #header p {
-    font-family: 'Rajdhani', sans-serif;
     font-size: clamp(0.75rem, 2.5vw, 1rem);
-    color: rgba(255,255,255,.65);
+    color: rgba(255,255,255,.7);
     letter-spacing: 2px;
     margin-top: 2px;
   }
 
-  /* ── PLAY NAME ───────────────────────────────── */
+  /* ── TOP CONTROLS & PLAY NAME ────────────────── */
+  #top-bar {
+    width: 100%;
+    max-width: 780px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 16px 0;
+  }
   #play-name {
-    margin-top: 16px;
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(1.4rem, 5vw, 2.6rem);
+    font-size: clamp(1.2rem, 4vw, 2rem);
     color: #fff;
-    text-shadow: 0 0 24px rgba(255,199,44,.5);
-    letter-spacing: 6px;
+    letter-spacing: 4px;
   }
   #play-name span { color: var(--gold); }
+
+  /* Mode Toggle Pill */
+  #mode-toggle {
+    display: flex;
+    background: var(--panel);
+    border: 1.5px solid var(--gold);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .mode-btn {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 8px 14px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.65);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .mode-btn.active {
+    background: var(--gold);
+    color: var(--navy);
+  }
 
   /* ── PHASE BAR ───────────────────────────────── */
   #phase-bar-wrap {
     width: 100%;
-    max-width: 640px;
+    max-width: 780px;
     margin: 10px auto 0;
     padding: 0 16px;
   }
   #phase-label {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--gold);
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -104,17 +130,17 @@
     height: 100%;
     background: linear-gradient(90deg, var(--navy), var(--gold));
     border-radius: 4px;
-    transition: width .5s ease;
+    transition: width .4s ease;
     box-shadow: 0 0 8px var(--gold);
   }
 
   /* ── CANVAS WRAPPER ──────────────────────────── */
   #canvas-wrap {
     position: relative;
-    margin: 14px auto 0;
+    margin: 12px auto 0;
     width: 100%;
-    max-width: 640px;
-    padding: 0 10px;
+    max-width: 780px;
+    padding: 0 12px;
   }
   canvas#court {
     display: block;
@@ -122,21 +148,23 @@
     border-radius: var(--radius);
     border: 2px solid var(--gold);
     box-shadow: 0 0 24px rgba(255,199,44,.25), 0 0 60px rgba(0,45,98,.6);
+    touch-action: none;
+    cursor: default;
   }
 
   /* ── ACTION LABEL ────────────────────────────── */
   #action-box {
     width: 100%;
-    max-width: 640px;
+    max-width: 780px;
     margin: 10px auto 0;
-    padding: 0 10px;
+    padding: 0 12px;
   }
   #action-label {
     background: var(--panel);
     border: 1px solid rgba(255,199,44,.35);
     border-radius: var(--radius);
     padding: 10px 16px;
-    font-size: clamp(0.9rem, 2.8vw, 1.1rem);
+    font-size: clamp(0.95rem, 2.8vw, 1.15rem);
     font-weight: 700;
     color: #fff;
     text-align: center;
@@ -145,18 +173,16 @@
     align-items: center;
     justify-content: center;
     line-height: 1.4;
-    transition: opacity .3s;
   }
   #tip-label {
     background: rgba(0,45,98,.5);
     border-left: 3px solid var(--gold);
     border-radius: 0 var(--radius) var(--radius) 0;
     padding: 7px 14px;
-    font-size: clamp(0.75rem, 2.2vw, 0.9rem);
+    font-size: clamp(0.8rem, 2.2vw, 0.95rem);
     color: var(--gold2);
     margin-top: 6px;
     font-style: italic;
-    min-height: 32px;
   }
 
   /* ── BUTTONS ─────────────────────────────────── */
@@ -166,14 +192,14 @@
     gap: 10px;
     justify-content: center;
     width: 100%;
-    max-width: 640px;
-    margin: 12px auto 0;
-    padding: 0 10px;
+    max-width: 780px;
+    margin: 14px auto 0;
+    padding: 0 12px;
   }
 
   .btn {
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(0.7rem, 2.4vw, 0.95rem);
+    font-size: clamp(0.72rem, 2.4vw, 0.92rem);
     font-weight: 700;
     letter-spacing: 1px;
     padding: 12px 22px;
@@ -183,10 +209,10 @@
     transition: transform .15s, box-shadow .15s, opacity .15s;
     white-space: nowrap;
     flex: 1 1 auto;
-    min-width: 140px;
-    max-width: 240px;
+    min-width: 150px;
+    max-width: 260px;
   }
-  .btn:hover:not(:disabled) { transform: scale(1.06); }
+  .btn:hover:not(:disabled) { transform: scale(1.04); }
   .btn:active:not(:disabled) { transform: scale(0.97); }
   .btn:disabled { opacity: .4; cursor: default; }
 
@@ -195,45 +221,35 @@
     color: var(--navy);
     box-shadow: 0 0 16px rgba(255,199,44,.5);
   }
-  .btn-next:hover:not(:disabled) { box-shadow: 0 0 28px rgba(255,199,44,.8); }
-
   .btn-reset {
     background: transparent;
     color: rgba(255,100,100,1);
     border: 2px solid rgba(255,100,100,.6);
-    box-shadow: 0 0 10px rgba(255,80,80,.2);
     max-width: 200px;
   }
-  .btn-reset:hover:not(:disabled) { box-shadow: 0 0 20px rgba(255,80,80,.5); }
-
   .btn-pass {
     background: linear-gradient(135deg, var(--navy), #0040a0);
     color: var(--gold);
     border: 2px solid var(--gold);
-    box-shadow: 0 0 18px rgba(255,199,44,.4);
     animation: pulse-btn 1.4s ease-in-out infinite;
-    max-width: 260px;
-    font-size: clamp(0.65rem, 2.2vw, 0.88rem);
+    max-width: 270px;
   }
   @keyframes pulse-btn {
-    0%,100% { box-shadow: 0 0 18px rgba(255,199,44,.4); }
-    50%      { box-shadow: 0 0 32px rgba(255,199,44,.85); }
+    0%,100% { box-shadow: 0 0 16px rgba(255,199,44,.4); }
+    50%      { box-shadow: 0 0 30px rgba(255,199,44,.9); }
   }
-  .btn-pass:hover:not(:disabled) { animation: none; box-shadow: 0 0 36px rgba(255,199,44,1); }
-
   .btn-again {
     background: linear-gradient(135deg,#28a745,#52d470);
     color: #fff;
     box-shadow: 0 0 18px rgba(40,167,69,.5);
   }
-  .btn-again:hover:not(:disabled) { box-shadow: 0 0 32px rgba(40,167,69,.9); }
 
   /* ── LEGEND ──────────────────────────────────── */
   #legend {
     width: 100%;
-    max-width: 640px;
+    max-width: 780px;
     margin: 14px auto 0;
-    padding: 0 10px;
+    padding: 0 12px;
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
@@ -247,7 +263,7 @@
     border: 1px solid rgba(255,199,44,.2);
     border-radius: 999px;
     padding: 5px 12px;
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     font-weight: 700;
   }
   .legend-dot {
@@ -256,16 +272,16 @@
     background: var(--navy);
     border: 2px solid var(--gold);
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     font-weight: 900;
     color: var(--gold);
     flex-shrink: 0;
   }
 
-  /* ── HOW-TO-PLAY MODAL ───────────────────────── */
+  /* ── MODAL ───────────────────────────────────── */
   #modal-overlay {
     position: fixed; inset: 0;
-    background: rgba(0,0,0,.8);
+    background: rgba(0,0,0,.82);
     z-index: 999;
     display: flex; align-items: center; justify-content: center;
     padding: 20px;
@@ -274,7 +290,7 @@
     background: var(--panel);
     border: 2px solid var(--gold);
     border-radius: 16px;
-    max-width: 420px;
+    max-width: 460px;
     width: 100%;
     padding: 28px 24px 22px;
     text-align: center;
@@ -287,16 +303,16 @@
     margin-bottom: 14px;
   }
   #modal p {
-    font-size: 0.95rem;
-    color: rgba(255,255,255,.85);
-    line-height: 1.6;
-    margin-bottom: 10px;
+    font-size: 0.98rem;
+    color: rgba(255,255,255,.88);
+    line-height: 1.5;
+    margin-bottom: 12px;
   }
   #modal ul {
     text-align: left;
-    color: rgba(255,255,255,.8);
-    font-size: 0.9rem;
-    line-height: 1.8;
+    color: rgba(255,255,255,.85);
+    font-size: 0.92rem;
+    line-height: 1.7;
     padding-left: 20px;
     margin-bottom: 18px;
   }
@@ -306,50 +322,43 @@
     color: var(--navy);
     border: none;
     border-radius: 999px;
-    padding: 11px 32px;
+    padding: 12px 34px;
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
     box-shadow: 0 0 16px rgba(255,199,44,.5);
-    transition: transform .15s;
   }
-  #modal-close:hover { transform: scale(1.06); }
 
-  /* ── CELEBRATION OVERLAY ─────────────────────── */
-  #celebrate-overlay {
-    position: absolute; inset: 0;
-    pointer-events: none;
-    z-index: 10;
-    display: none;
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
   #celebrate-text {
     position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%,-60%);
+    top: 48%; left: 50%;
+    transform: translate(-50%,-50%);
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(1.3rem, 4.5vw, 2.2rem);
+    font-size: clamp(1.5rem, 4.5vw, 2.5rem);
     color: var(--gold);
-    text-shadow: 0 0 20px rgba(255,199,44,.9);
+    text-shadow: 0 0 24px rgba(0,0,0,.95), 0 0 20px rgba(255,199,44,.9);
     text-align: center;
     white-space: nowrap;
     display: none;
+    pointer-events: none;
   }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div id="header">
   <h1>⚡ AYB INDIANA FEVER ⚡</h1>
-  <p>5TH / 6TH GRADE · INTERACTIVE PLAYBOOK</p>
+  <p>5TH / 6TH GRADE · INTERACTIVE SPACING PLAYBOOK</p>
 </div>
 
-<!-- PLAY NAME -->
-<div id="play-name">PLAY: <span>"DOWNTOWN"</span></div>
+<div id="top-bar">
+  <div id="play-name">PLAY: <span>"DOWNTOWN"</span></div>
+  <div id="mode-toggle">
+    <button class="mode-btn active" id="btn-mode-drag">🖐️ COACH MODE (DRAG)</button>
+    <button class="mode-btn" id="btn-mode-auto">▶️ WATCH MODE</button>
+  </div>
+</div>
 
-<!-- PHASE BAR -->
 <div id="phase-bar-wrap">
   <div id="phase-label">
     <span id="phase-name-txt">INTRO</span>
@@ -358,187 +367,187 @@
   <div id="phase-track"><div id="phase-fill" style="width:0%"></div></div>
 </div>
 
-<!-- CANVAS -->
 <div id="canvas-wrap">
-  <canvas id="court" width="620" height="520"></canvas>
-  <div id="celebrate-overlay">
-    <canvas id="confetti-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
-  </div>
+  <canvas id="court" width="760" height="620"></canvas>
   <div id="celebrate-text">🔥 FEVER UP! +2 🔥</div>
 </div>
 
-<!-- ACTION LABEL -->
 <div id="action-box">
-  <div id="action-label">Welcome to Downtown! Press NEXT to start the play.</div>
-  <div id="tip-label">💡 Tip: Pay attention to player spacing — this is a 5-out offense!</div>
+  <div id="action-label">Welcome to Downtown! Press LET'S RUN IT to start.</div>
+  <div id="tip-label">💡 Tip: In Coach Mode, drag each player to their glowing target circle on the floor!</div>
 </div>
 
-<!-- BUTTONS -->
 <div id="btn-row">
   <button class="btn btn-next" id="btn-next">▶ LET'S RUN IT!</button>
   <button class="btn btn-reset" id="btn-reset">⚠️ RESET PLAY</button>
 </div>
 
-<!-- LEGEND -->
 <div id="legend">
-  <div class="legend-item"><div class="legend-dot">1</div> Chloe (PG — Top of Key)</div>
+  <div class="legend-item"><div class="legend-dot">1</div> Chloe (PG — Top)</div>
   <div class="legend-item"><div class="legend-dot">2</div> Maya (Left Block → Wing)</div>
   <div class="legend-item"><div class="legend-dot">3</div> Zoe (Right Block → Wing)</div>
-  <div class="legend-item"><div class="legend-dot">4</div> Ava (Left Elbow — Screener)</div>
-  <div class="legend-item"><div class="legend-dot">5</div> Lexi (Right Elbow — Screener)</div>
+  <div class="legend-item"><div class="legend-dot">4</div> Ava (Left Elbow)</div>
+  <div class="legend-item"><div class="legend-dot">5</div> Lexi (Right Elbow)</div>
 </div>
 
-<!-- MODAL -->
 <div id="modal-overlay">
   <div id="modal">
-    <h2>🏀 HOW TO PLAY</h2>
-    <p>Welcome to the <strong>AYB Fever Playbook</strong>! You're the coach. Run the "Downtown" motion offense step by step.</p>
+    <h2>🏀 COACH'S PLAYBOOK</h2>
+    <p>Teach your team proper <strong>5-Out Spacing</strong> with interactive floor spots!</p>
     <ul>
-      <li>Press <strong>NEXT</strong> to advance each phase of the play</li>
-      <li>At the <strong>DECISION POINT</strong>, choose which wing to pass to</li>
-      <li>Hit <strong>RESET PLAY</strong> if the play breaks down</li>
-      <li>Watch all players move simultaneously on the canvas!</li>
+      <li><strong>Coach Mode (Default):</strong> Drag each glowing player into their green target circle on the court to complete the step.</li>
+      <li><strong>Watch Mode:</strong> Sit back and watch the play run automatically.</li>
+      <li><strong>Decision Point:</strong> Choose which wing Chloe passes to, then run the away-side screen and cut!</li>
     </ul>
-    <p>🏆 Score a bucket and celebrate with your team!</p>
-    <button id="modal-close">LET'S GO! 🔥</button>
+    <button id="modal-close">HIT THE COURT! 🔥</button>
   </div>
 </div>
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  CONSTANTS & HELPERS
+//  CONSTANTS & COURT GEOMETRY (Expanded 760x620)
 // ═══════════════════════════════════════════════════════════
 const NAVY   = '#002D62';
 const GOLD   = '#FFC72C';
 const GOLD2  = '#FFD966';
 const ORANGE = '#FF6B00';
-const COURT_WOOD  = '#DEB887';
-const COURT_LINE  = '#8B6914';
-const COURT_DARK  = '#c8a060';
+const GREEN  = '#00e676';
+const COURT_WOOD = '#E2C08D';
 
-// Easing
 const easeInOut = t => t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
 const easeOut   = t => 1 - (1-t)*(1-t);
+const lerp      = (a,b,t) => a + (b-a)*t;
 
-// Lerp
-const lerp = (a,b,t) => a + (b-a)*t;
-
-// ═══════════════════════════════════════════════════════════
-//  CANVAS SETUP
-// ═══════════════════════════════════════════════════════════
 const canvas = document.getElementById('court');
 const ctx    = canvas.getContext('2d');
-
-const W = 620, H = 520;
+const W = 760, H = 620;
 canvas.width  = W;
 canvas.height = H;
 
-// ── Court geometry (percentages → px helpers) ──
-const cx  = p => p * W;  // x percent → px
-const cy  = p => p * H;  // y percent → px
-const cr  = p => p * Math.min(W,H); // radius
+const cx = p => p * W;
+const cy = p => p * H;
 
-// Court constants — must match drawCourt() geometry exactly
-// Basket at TOP of canvas, half-court line at BOTTOM
-const PAINT_W   = cx(0.38);              // paint width  (~38% of canvas)
-const PAINT_X   = (W - PAINT_W) / 2;    // left edge of paint
-const PAINT_Y   = 14;                    // top of paint (baseline)
-const PAINT_BOT = cy(0.52);             // free throw line y (bottom of paint)
-const PAINT_H   = PAINT_BOT - PAINT_Y;  // paint height
-const FT_Y      = PAINT_BOT;            // free throw line
-const FT_R      = PAINT_W / 2;          // free throw circle radius
-const HOOP_X    = W / 2;
-const HOOP_Y    = PAINT_Y + cy(0.055);  // hoop center y
-const BLOCK_Y   = PAINT_Y + PAINT_H * 0.38;  // block hash mark y
-const ARC_R     = cx(0.455);            // 3-point arc radius
-// Corner 3 cutoff y
-const CORNER3_BOT = PAINT_Y + cy(0.42);
-const C3_ANGLE  = Math.asin((CORNER3_BOT - HOOP_Y) / ARC_R);
-const C3X_L     = HOOP_X - ARC_R * Math.cos(C3_ANGLE); // left corner x
-const C3X_R     = HOOP_X + ARC_R * Math.cos(C3_ANGLE); // right corner x
-// Wing spot on 3-pt arc (~45° from baseline)
-const WING_ANGLE = Math.PI * 0.72;
-const WING_X_L  = HOOP_X + ARC_R * Math.cos(WING_ANGLE);  // left wing x
-const WING_Y    = HOOP_Y + ARC_R * Math.sin(WING_ANGLE);  // wing y
-const WING_X_R  = HOOP_X - ARC_R * Math.cos(WING_ANGLE);  // right wing x
-// Top of key (just past the free throw circle on the arc)
-const TOK_Y     = FT_Y + FT_R + cy(0.04);  // top of key y
-const TOK_X     = W / 2;
+// Proportioned Half-Court Geometry (More room on wings & corners)
+const PAD         = 16;
+const PAINT_W     = cx(0.28);             // Realistic lane width
+const PAINT_X     = (W - PAINT_W) / 2;
+const PAINT_Y     = PAD;
+const PAINT_BOT   = cy(0.46);
+const PAINT_H     = PAINT_BOT - PAINT_Y;
+const FT_Y        = PAINT_BOT;
+const FT_R        = PAINT_W / 2;
+const HOOP_X      = W / 2;
+const HOOP_Y      = PAINT_Y + cy(0.06);
+const BLOCK_Y     = PAINT_Y + PAINT_H * 0.42;
+
+// Wide 3-point arc for authentic spacing
+const ARC_R       = cx(0.44);
+const CORNER3_BOT = PAINT_Y + cy(0.32);
+const C3_ANGLE    = Math.asin((CORNER3_BOT - HOOP_Y) / ARC_R);
+const C3X_L       = HOOP_X - ARC_R * Math.cos(C3_ANGLE);
+const C3X_R       = HOOP_X + ARC_R * Math.cos(C3_ANGLE);
+
+// Wing spots pushed wide outside the 3pt line
+const WING_ANGLE  = Math.PI * 0.76;
+const WING_X_L    = HOOP_X + (ARC_R + 18) * Math.cos(WING_ANGLE);
+const WING_Y      = HOOP_Y + (ARC_R + 18) * Math.sin(WING_ANGLE);
+const WING_X_R    = HOOP_X - (ARC_R + 18) * Math.cos(WING_ANGLE);
+
+// Top of key pushed out above the 3-pt arc
+const TOK_X       = W / 2;
+const TOK_Y       = HOOP_Y + ARC_R + 26;
 
 // ═══════════════════════════════════════════════════════════
-//  PLAYER POSITIONS (percent of W, H)
+//  SPACED OUT PLAYER COORDINATES (Fractions of W, H)
 // ═══════════════════════════════════════════════════════════
-// Basket is at TOP of canvas. Half-court line at BOTTOM.
-// All positions expressed as fractions of W and H.
-//
-// pTop/H       ← baseline (basket end)
-// BLOCK_Y/H    ← block spot (on lane line, ~38% down paint)
-// FT_Y/H       ← free throw line / elbow
-// TOK_Y/H      ← top of the key (just outside free throw circle)
-// WING_Y/H     ← wing (on 3-pt arc, ~45° angle)
-// CORNER3_BOT/H← corner 3-pt spot
-// (H-14)/H     ← half-court line
-
 const HOME = {
-  p1: { x: TOK_X/W,    y: TOK_Y/H          },  // PG  — top of key
-  p2: { x: PAINT_X/W - 0.045, y: BLOCK_Y/H },  // #2  — left low block
-  p3: { x: (PAINT_X+PAINT_W)/W + 0.045, y: BLOCK_Y/H }, // #3 — right low block
-  p4: { x: PAINT_X/W - 0.040, y: FT_Y/H    },  // #4  — left elbow
-  p5: { x: (PAINT_X+PAINT_W)/W + 0.040, y: FT_Y/H },    // #5 — right elbow
+  p1: { x: TOK_X/W,                         y: TOK_Y/H   }, // PG Top of Key
+  p2: { x: (PAINT_X - 26)/W,                y: BLOCK_Y/H }, // #2 Left Block
+  p3: { x: (PAINT_X + PAINT_W + 26)/W,      y: BLOCK_Y/H }, // #3 Right Block
+  p4: { x: (PAINT_X - 24)/W,                y: FT_Y/H    }, // #4 Left Elbow
+  p5: { x: (PAINT_X + PAINT_W + 24)/W,      y: FT_Y/H    }, // #5 Right Elbow
 };
 
-// Key intermediate + end positions
 const POS = {
-  // Phase 2: #4 & #5 screen DOWN toward blocks
-  p4_screen: { x: PAINT_X/W - 0.045, y: (BLOCK_Y/H) + 0.08 },
-  p5_screen: { x: (PAINT_X+PAINT_W)/W + 0.045, y: (BLOCK_Y/H) + 0.08 },
+  // Phase 2: #4 & #5 set down-screens just below #2 & #3
+  p4_screen: { x: (PAINT_X - 28)/W,           y: (BLOCK_Y + 34)/H },
+  p5_screen: { x: (PAINT_X + PAINT_W + 28)/W, y: (BLOCK_Y + 34)/H },
 
-  // Phase 3: #2 & #3 pop to wings; #4 & #5 roll to block spot
-  p2_wing:   { x: WING_X_L/W,  y: WING_Y/H  },
-  p3_wing:   { x: WING_X_R/W,  y: WING_Y/H  },
-  p4_block:  { x: PAINT_X/W - 0.045, y: BLOCK_Y/H },
-  p5_block:  { x: (PAINT_X+PAINT_W)/W + 0.045, y: BLOCK_Y/H },
+  // Phase 3: #2 & #3 pop wide to 3pt wings; #4 & #5 open up to blocks
+  p2_wing:   { x: WING_X_L/W,                 y: WING_Y/H },
+  p3_wing:   { x: WING_X_R/W,                 y: WING_Y/H },
+  p4_block:  { x: (PAINT_X - 24)/W,           y: BLOCK_Y/H },
+  p5_block:  { x: (PAINT_X + PAINT_W + 24)/W, y: BLOCK_Y/H },
 
-  // Branch A: PG passes LEFT to #2 (left wing, Maya)
-  // PG screens for #3 (right wing Zoe, non-ball side)
-  // #4 (left block, ball-side) screens AWAY for #5 (right block)
-  p1_a2_screen: { x: WING_X_R/W - 0.06, y: WING_Y/H - 0.08 }, // PG sets screen near right wing
-  p4_a2_screen: { x: (PAINT_X+PAINT_W)/W + 0.045, y: BLOCK_Y/H + 0.06 }, // #4 crosses to screen #5
-  p3_a2_cut:    { x: (WING_X_R/W) - 0.08, y: (TOK_Y/H) + 0.04 }, // #3 cuts off PG screen
-  p5_a2_cut:    { x: PAINT_X/W - 0.045, y: FT_Y/H },             // #5 cuts off #4's screen to left elbow
+  // Branch A: Pass LEFT to #2 (Maya). PG screens away for #3 (Zoe); #4 screens across for #5
+  p1_a2_screen: { x: (WING_X_R - 46)/W,       y: (WING_Y - 36)/H },
+  p4_a2_screen: { x: (PAINT_X + PAINT_W - 8)/W, y: (BLOCK_Y + 12)/H },
+  p3_a2_cut:    { x: (TOK_X + 65)/W,          y: (TOK_Y - 10)/H },
+  p5_a2_cut:    { x: (PAINT_X - 24)/W,        y: (FT_Y + 10)/H },
 
-  // Branch B: PG passes RIGHT to #3 (right wing, Zoe) — mirror
-  p1_b2_screen: { x: WING_X_L/W + 0.06, y: WING_Y/H - 0.08 },
-  p5_b2_screen: { x: PAINT_X/W - 0.045, y: BLOCK_Y/H + 0.06 },
-  p2_b2_cut:    { x: (WING_X_L/W) + 0.08, y: (TOK_Y/H) + 0.04 },
-  p4_b2_cut:    { x: (PAINT_X+PAINT_W)/W + 0.045, y: FT_Y/H },
+  // Branch B: Pass RIGHT to #3 (Zoe). PG screens away for #2 (Maya); #5 screens across for #4
+  p1_b2_screen: { x: (WING_X_L + 46)/W,       y: (WING_Y - 36)/H },
+  p5_b2_screen: { x: (PAINT_X + 8)/W,         y: (BLOCK_Y + 12)/H },
+  p2_b2_cut:    { x: (TOK_X - 65)/W,          y: (TOK_Y - 10)/H },
+  p4_b2_cut:    { x: (PAINT_X + PAINT_W + 24)/W, y: (FT_Y + 10)/H },
 };
 
 // ═══════════════════════════════════════════════════════════
-//  PLAYER CLASS
+//  GAME & INTERACTION STATE
+// ═══════════════════════════════════════════════════════════
+const PHASE = {
+  INTRO: 0, CALL: 1, SCREENS: 2, POP: 3, DECISION: 4,
+  A_PASS: 5, A_AWAY: 6, A_SHOT: 7,
+  B_PASS: 8, B_AWAY: 9, B_SHOT: 10,
+  RESET_ANIM: 11, CELEBRATE: 12
+};
+
+let coachMode = true; // true = drag players to spots, false = auto animate
+let phase = PHASE.INTRO;
+let branch = null;
+let animating = false;
+
+let targets = []; // { playerKey, x, y, r, label, locked }
+let draggingPlayer = null;
+let dragOffset = { x: 0, y: 0 };
+
+let players = {};
+let ball;
+let confettiParticles = [];
+let showCallText = false;
+let callTextStr = '';
+let callTextTimer = 0;
+let callTextAlpha = 0;
+let flashAlpha = 0;
+let flashTimer = 0;
+let shotProgress = -1;
+let shotStart = { x: 0, y: 0 };
+let onShotDone = null;
+
+// ═══════════════════════════════════════════════════════════
+//  PLAYER & BALL CLASSES
 // ═══════════════════════════════════════════════════════════
 class Player {
   constructor(id, name, px, py) {
-    this.id    = id;
-    this.name  = name;
-    this.x     = cx(px);
-    this.y     = cy(py);
-    this.tx    = this.x;
-    this.ty    = this.y;
-    this.sx    = this.x;  // start of current move
-    this.sy    = this.y;
-    this.t     = 1;       // animation progress (1 = done)
-    this.dur   = 800;
+    this.id = id;
+    this.name = name;
+    this.x = cx(px);
+    this.y = cy(py);
+    this.tx = this.x;
+    this.ty = this.y;
+    this.sx = this.x;
+    this.sy = this.y;
+    this.t = 1;
+    this.dur = 800;
     this.elapsed = 0;
     this.hasBall = false;
-    this.visible = true;
-    this.trail   = [];
-    this.r       = 18;
+    this.trail = [];
+    this.r = 21;
   }
-  moveTo(px, py, dur=800) {
+  moveTo(px, py, dur = 800) {
     this.sx = this.x; this.sy = this.y;
     this.tx = cx(px); this.ty = cy(py);
-    this.t  = 0; this.elapsed = 0; this.dur = dur;
+    this.t = 0; this.elapsed = 0; this.dur = dur;
     this.trail = [];
   }
   snapTo(px, py) {
@@ -552,64 +561,79 @@ class Player {
     this.elapsed += dt;
     this.t = Math.min(1, this.elapsed / this.dur);
     const e = easeInOut(this.t);
-    if (this.t < 0.98) this.trail.push({x:this.x, y:this.y});
+    if (this.t < 0.98) this.trail.push({ x: this.x, y: this.y });
     if (this.trail.length > 5) this.trail.shift();
     this.x = lerp(this.sx, this.tx, e);
     this.y = lerp(this.sy, this.ty, e);
   }
-  draw(ctx) {
-    if (!this.visible) return;
-    // trail
-    this.trail.forEach((p,i) => {
-      const a = (i+1)/this.trail.length * 0.3;
+  draw(ctx, isDraggable, isLocked) {
+    // Trail
+    this.trail.forEach((p, i) => {
+      const a = (i + 1) / this.trail.length * 0.25;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, this.r * 0.7, 0, Math.PI*2);
+      ctx.arc(p.x, p.y, this.r * 0.75, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(0,45,98,${a})`;
       ctx.fill();
     });
-    // shadow
+
+    // Draggable highlight halo
+    if (isDraggable && !isLocked) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r + 7, 0, Math.PI * 2);
+      ctx.strokeStyle = GREEN;
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([5, 4]);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Shadow
     ctx.beginPath();
-    ctx.ellipse(this.x, this.y+this.r*0.8, this.r*0.9, this.r*0.3, 0, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.ellipse(this.x, this.y + this.r * 0.85, this.r * 0.9, this.r * 0.3, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,0,0,0.28)';
     ctx.fill();
-    // body
+
+    // Jersey Circle
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
-    ctx.fillStyle = NAVY;
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = isLocked ? '#004d26' : NAVY;
     ctx.fill();
-    ctx.lineWidth = 2.5;
-    ctx.strokeStyle = this.hasBall ? ORANGE : GOLD;
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = this.hasBall ? ORANGE : (isLocked ? GREEN : GOLD);
     ctx.stroke();
-    // number
-    ctx.fillStyle = this.hasBall ? ORANGE : GOLD;
-    ctx.font = `bold ${this.r * 0.95}px Orbitron,sans-serif`;
+
+    // Number
+    ctx.fillStyle = this.hasBall ? ORANGE : (isLocked ? GREEN : GOLD);
+    ctx.font = `bold 17px Orbitron, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(this.id, this.x, this.y);
+    ctx.fillText(this.id, this.x, this.y - 1);
+
+    // Name tag pill underneath
+    ctx.font = `bold 11px Rajdhani, sans-serif`;
+    const nw = ctx.measureText(this.name).width + 10;
+    ctx.fillStyle = 'rgba(10,10,26,0.82)';
+    ctx.beginPath();
+    ctx.roundRect(this.x - nw / 2, this.y + this.r + 3, nw, 15, 4);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.fillText(this.name, this.x, this.y + this.r + 10.5);
   }
 }
 
-// ═══════════════════════════════════════════════════════════
-//  BALL CLASS
-// ═══════════════════════════════════════════════════════════
 class Ball {
   constructor(px, py) {
-    this.x  = cx(px); this.y  = cy(py);
+    this.x = cx(px); this.y = cy(py);
     this.tx = this.x; this.ty = this.y;
     this.sx = this.x; this.sy = this.y;
-    this.t  = 1; this.elapsed = 0; this.dur = 600;
-    this.arcH = 0;      // arc height for passes
-    this.r    = 10;
+    this.t = 1; this.elapsed = 0; this.dur = 500;
+    this.arcH = 0;
+    this.r = 10;
     this.visible = true;
     this.bouncePhase = 0;
   }
-  moveTo(px, py, dur=600, arcH=0) {
-    this.sx = this.x; this.sy = this.y;
-    this.tx = cx(px); this.ty = cy(py);
-    this.t = 0; this.elapsed = 0; this.dur = dur;
-    this.arcH = arcH;
-  }
-  moveToXY(x, y, dur=600, arcH=0) {
+  moveToXY(x, y, dur = 500, arcH = 25) {
     this.sx = this.x; this.sy = this.y;
     this.tx = x; this.ty = y;
     this.t = 0; this.elapsed = 0; this.dur = dur;
@@ -627,7 +651,7 @@ class Ball {
   }
   get moving() { return this.t < 1; }
   update(dt) {
-    this.bouncePhase += dt * 0.004;
+    this.bouncePhase += dt * 0.005;
     if (this.t >= 1) return;
     this.elapsed += dt;
     this.t = Math.min(1, this.elapsed / this.dur);
@@ -637,85 +661,42 @@ class Ball {
   }
   draw(ctx) {
     if (!this.visible) return;
-    const bounce = Math.sin(this.bouncePhase) * 2;
+    const bounce = Math.sin(this.bouncePhase) * 2.5;
     const bx = this.x, by = this.y + (this.t >= 1 ? bounce : 0);
-    // shadow
+
     ctx.beginPath();
-    ctx.ellipse(bx, by + this.r + 2, this.r * 0.8, this.r * 0.25, 0, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.fill();
-    // ball
-    ctx.beginPath();
-    ctx.arc(bx, by, this.r, 0, Math.PI*2);
+    ctx.arc(bx, by, this.r, 0, Math.PI * 2);
     ctx.fillStyle = ORANGE;
     ctx.fill();
     ctx.strokeStyle = '#000';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.3;
     ctx.stroke();
-    // seams
-    ctx.strokeStyle = 'rgba(0,0,0,0.6)';
-    ctx.lineWidth = 1.2;
+
+    // Seams
     ctx.beginPath();
-    ctx.arc(bx, by, this.r, 0.3, Math.PI-0.3);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(bx, by, this.r, Math.PI+0.3, 2*Math.PI-0.3);
-    ctx.stroke();
-    ctx.beginPath();
+    ctx.moveTo(bx - this.r, by);
+    ctx.lineTo(bx + this.r, by);
     ctx.moveTo(bx, by - this.r);
-    ctx.bezierCurveTo(bx + this.r*0.6, by - this.r*0.3, bx + this.r*0.6, by + this.r*0.3, bx, by + this.r);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(bx, by - this.r);
-    ctx.bezierCurveTo(bx - this.r*0.6, by - this.r*0.3, bx - this.r*0.6, by + this.r*0.3, bx, by + this.r);
+    ctx.lineTo(bx, by + this.r);
     ctx.stroke();
   }
 }
 
-// ═══════════════════════════════════════════════════════════
-//  GAME STATE
-// ═══════════════════════════════════════════════════════════
-const PHASE = {
-  INTRO: 0, CALL: 1, SCREENS: 2, POP: 3, DECISION: 4,
-  A_PASS: 5, A_AWAY: 6, A_SHOT: 7,
-  B_PASS: 8, B_AWAY: 9, B_SHOT: 10,
-  RESET_ANIM: 11, CELEBRATE: 12
-};
-
-let phase = PHASE.INTRO;
-let branch = null;  // 'A' or 'B'
-let animating = false;
-let confettiParticles = [];
-let callTextAlpha = 0;
-let callTextDir   = 1;
-let callTextTimer = 0;
-let showCallText  = false;
-let arrows = [];   // {sx,sy,ex,ey,color,dash}
-let screenBoxes = []; // {x,y,w,h}
-let flashAlpha = 0;
-let shotArcProgress = -1; // -1 = not shooting
-let shotBallX = 0, shotBallY = 0;
-
-// Players & ball
-let players = {};
-let ball;
-
 function initGame() {
   players = {
-    p1: new Player('1','Chloe', HOME.p1.x, HOME.p1.y),
-    p2: new Player('2','Maya',  HOME.p2.x, HOME.p2.y),
-    p3: new Player('3','Zoe',   HOME.p3.x, HOME.p3.y),
-    p4: new Player('4','Ava',   HOME.p4.x, HOME.p4.y),
-    p5: new Player('5','Lexi',  HOME.p5.x, HOME.p5.y),
+    p1: new Player('1', 'Chloe', HOME.p1.x, HOME.p1.y),
+    p2: new Player('2', 'Maya',  HOME.p2.x, HOME.p2.y),
+    p3: new Player('3', 'Zoe',   HOME.p3.x, HOME.p3.y),
+    p4: new Player('4', 'Ava',   HOME.p4.x, HOME.p4.y),
+    p5: new Player('5', 'Lexi',  HOME.p5.x, HOME.p5.y),
   };
   players.p1.hasBall = true;
-  ball = new Ball(HOME.p1.x, HOME.p1.y - 0.04);
-  arrows = [];
-  screenBoxes = [];
+  ball = new Ball(HOME.p1.x, HOME.p1.y - 0.05);
+  targets = [];
+  draggingPlayer = null;
   showCallText = false;
-  callTextAlpha = 0;
   flashAlpha = 0;
-  shotArcProgress = -1;
+  shotProgress = -1;
   confettiParticles = [];
   animating = false;
   branch = null;
@@ -724,520 +705,424 @@ function initGame() {
 initGame();
 
 // ═══════════════════════════════════════════════════════════
-//  DRAW COURT
+//  DRAW EXPANDED COURT
 // ═══════════════════════════════════════════════════════════
 function drawCourt() {
-  // ── Wood floor ──
   ctx.fillStyle = COURT_WOOD;
   ctx.fillRect(0, 0, W, H);
 
-  // Wood grain (subtle horizontal lines)
-  ctx.strokeStyle = 'rgba(139,105,20,0.15)';
+  // Subtle wood planks
+  ctx.strokeStyle = 'rgba(139,105,20,0.12)';
   ctx.lineWidth = 1;
-  for (let i = 0; i < H; i += 10) {
+  for (let i = 0; i < H; i += 14) {
     ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(W, i); ctx.stroke();
   }
 
-  // ── All court lines in dark brown/black (like diagram) ──
-  const CL = '#1a1a1a';   // court line color
+  const CL = '#1e1e1e';
   ctx.strokeStyle = CL;
   ctx.lineWidth = 2.5;
 
   // Outer boundary
-  ctx.strokeRect(12, 12, W - 24, H - 24);
+  ctx.strokeRect(PAD, PAD, W - PAD * 2, H - PAD * 2);
 
-  // ── Paint / Key (Indiana Fever red) ──
-  // Wider paint: ~40% of court width, reaching from baseline to free-throw line
-  const pW  = cx(0.38);               // paint width
-  const pX  = (W - pW) / 2;           // left edge
-  const pTop = 14;                     // top of paint (baseline at top)
-  const pBot = cy(0.52);              // bottom of paint = free throw line
-  ctx.fillStyle = 'rgba(185, 28, 28, 0.60)';
-  ctx.fillRect(pX, pTop, pW, pBot - pTop);
-  ctx.strokeStyle = CL;
-  ctx.lineWidth = 2.5;
-  ctx.strokeRect(pX, pTop, pW, pBot - pTop);
+  // Paint (Indiana Fever Red)
+  ctx.fillStyle = 'rgba(185, 28, 28, 0.55)';
+  ctx.fillRect(PAINT_X, PAINT_Y, PAINT_W, PAINT_H);
+  ctx.strokeRect(PAINT_X, PAINT_Y, PAINT_W, PAINT_H);
 
-  // ── Free-throw line (at pBot) ──
+  // Free-throw circle
   ctx.beginPath();
-  ctx.moveTo(pX, pBot);
-  ctx.lineTo(pX + pW, pBot);
-  ctx.strokeStyle = CL;
-  ctx.lineWidth = 2.5;
+  ctx.arc(W / 2, FT_Y, FT_R, Math.PI, 0);
   ctx.stroke();
-
-  // ── Free-throw circle ──
-  const ftR = pW / 2;
-  const ftCX = W / 2;
-  const ftCY = pBot;
-  // Upper half (solid, inside paint)
   ctx.beginPath();
-  ctx.arc(ftCX, ftCY, ftR, Math.PI, 0);
-  ctx.strokeStyle = CL;
-  ctx.lineWidth = 2.5;
-  ctx.stroke();
-  // Lower half (dashed, outside paint)
-  ctx.beginPath();
-  ctx.arc(ftCX, ftCY, ftR, 0, Math.PI);
+  ctx.arc(W / 2, FT_Y, FT_R, 0, Math.PI);
   ctx.setLineDash([7, 7]);
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // ── Block hash marks on the lane lines ──
-  // Blocks are ~16% down from baseline on each lane line
-  const blockY = pTop + (pBot - pTop) * 0.38;
+  // Block hash marks
   const hashLen = 10;
-  // Left block hash
   ctx.beginPath();
-  ctx.moveTo(pX - hashLen, blockY);
-  ctx.lineTo(pX, blockY);
-  ctx.strokeStyle = CL; ctx.lineWidth = 2.5;
-  ctx.stroke();
-  // Right block hash
-  ctx.beginPath();
-  ctx.moveTo(pX + pW, blockY);
-  ctx.lineTo(pX + pW + hashLen, blockY);
+  ctx.moveTo(PAINT_X - hashLen, BLOCK_Y); ctx.lineTo(PAINT_X, BLOCK_Y);
+  ctx.moveTo(PAINT_X + PAINT_W, BLOCK_Y); ctx.lineTo(PAINT_X + PAINT_W + hashLen, BLOCK_Y);
   ctx.stroke();
 
-  // ── Backboard ──
-  const boardW = cx(0.14);
-  ctx.fillStyle = '#333';
-  ctx.fillRect(W/2 - boardW/2, pTop - 1, boardW, 5);
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(W/2 - boardW/2 + 2, pTop, boardW - 4, 3);
-
-  // ── Hoop ──
-  const hoopX = W / 2;
-  const hoopY = pTop + cy(0.055);
-  const hoopR = cx(0.030);
+  // Backboard & Hoop
+  const boardW = cx(0.11);
+  ctx.fillStyle = '#222';
+  ctx.fillRect(W / 2 - boardW / 2, PAINT_Y + 4, boardW, 5);
   ctx.beginPath();
-  ctx.arc(hoopX, hoopY, hoopR, 0, Math.PI * 2);
+  ctx.arc(HOOP_X, HOOP_Y, 15, 0, Math.PI * 2);
   ctx.strokeStyle = '#cc2200';
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 3.5;
   ctx.stroke();
 
-  // ── Restricted area arc (small arc under hoop) ──
+  // Restricted arc
   ctx.beginPath();
-  ctx.arc(hoopX, hoopY, cx(0.065), 0, Math.PI);
+  ctx.arc(HOOP_X, HOOP_Y, 36, 0, Math.PI);
   ctx.strokeStyle = CL;
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  // ── 3-point arc ──
-  // Corner 3 lines run straight down from near sideline
-  const corner3Y_top = pTop + cy(0.016);     // near baseline
-  const corner3Y_bot = pTop + cy(0.42);      // where arc starts curving
-  const arcR = cx(0.455);                    // 3-pt radius
-  // Left corner line
-  const c3X_L = hoopX - arcR * Math.cos(Math.asin((corner3Y_bot - hoopY) / arcR));
-  const c3X_R = hoopX + arcR * Math.cos(Math.asin((corner3Y_bot - hoopY) / arcR));
+  // 3-Point Line
   ctx.strokeStyle = CL;
   ctx.lineWidth = 2.5;
   ctx.beginPath();
-  ctx.moveTo(c3X_L, corner3Y_top);
-  ctx.lineTo(c3X_L, corner3Y_bot);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(c3X_R, corner3Y_top);
-  ctx.lineTo(c3X_R, corner3Y_bot);
-  ctx.stroke();
-  // Arc between corners
-  const arcStartAngle = Math.asin((corner3Y_bot - hoopY) / arcR);
-  ctx.beginPath();
-  ctx.arc(hoopX, hoopY, arcR, Math.PI/2 + arcStartAngle, Math.PI/2 - arcStartAngle + Math.PI);
+  ctx.moveTo(C3X_L, PAINT_Y); ctx.lineTo(C3X_L, CORNER3_BOT);
+  ctx.moveTo(C3X_R, PAINT_Y); ctx.lineTo(C3X_R, CORNER3_BOT);
   ctx.stroke();
 
-  // ── Half-court line (bottom of canvas) ──
   ctx.beginPath();
-  ctx.moveTo(12, H - 14);
-  ctx.lineTo(W - 12, H - 14);
-  ctx.strokeStyle = CL;
-  ctx.lineWidth = 2.5;
+  ctx.arc(HOOP_X, HOOP_Y, ARC_R, Math.PI / 2 + C3_ANGLE, Math.PI / 2 - C3_ANGLE + Math.PI);
   ctx.stroke();
 
-  // ── Center circle arc at half-court ──
+  // Half-court center circle
   ctx.beginPath();
-  ctx.arc(W/2, H - 14, cx(0.07), Math.PI, 0);
+  ctx.arc(W / 2, H - PAD, cx(0.08), Math.PI, 0);
   ctx.stroke();
 
-  // ── POSITION LABELS (the key teaching tool!) ──
-  // These small labeled dots show kids exactly where each spot is
-  drawCourtLabel('BLOCK', pX - 4, blockY, 'right');
-  drawCourtLabel('BLOCK', pX + pW + 4, blockY, 'left');
-  drawCourtLabel('ELBOW', pX - 4, pBot, 'right');
-  drawCourtLabel('ELBOW', pX + pW + 4, pBot, 'left');
-  drawCourtLabel('FREE\nTHROW', W/2, pBot + ftR * 0.5, 'center');
-  drawCourtLabel('TOP of\nthe KEY', W/2, pBot + ftR + cy(0.07), 'center');
-  // Wings (on 3-pt arc, ~45° angle)
-  const wingAngle = Math.PI * 0.72; // about 130° from right
-  const wingX_L = hoopX + arcR * Math.cos(wingAngle);
-  const wingY_L = hoopY + arcR * Math.sin(wingAngle);
-  drawCourtLabel('WING', wingX_L - 6, wingY_L, 'right');
-  drawCourtLabel('WING', W - wingX_L + 6, wingY_L, 'left');
-  // Corners
-  drawCourtLabel('CORNER', c3X_L - 4, corner3Y_top + cy(0.04), 'right');
-  drawCourtLabel('CORNER', c3X_R + 4, corner3Y_top + cy(0.04), 'left');
-
-  // ── Store computed geometry for player/ball positioning use ──
-  drawCourt._geo = { pX, pTop, pBot, pW, hoopX, hoopY, ftCX, ftCY, ftR,
-                     blockY, arcR, c3X_L, c3X_R, corner3Y_bot };
+  // Court Spot Labels
+  drawCourtLabel('BLOCK', PAINT_X - 8, BLOCK_Y - 18, 'right');
+  drawCourtLabel('BLOCK', PAINT_X + PAINT_W + 8, BLOCK_Y - 18, 'left');
+  drawCourtLabel('ELBOW', PAINT_X - 8, FT_Y - 18, 'right');
+  drawCourtLabel('ELBOW', PAINT_X + PAINT_W + 8, FT_Y - 18, 'left');
+  drawCourtLabel('TOP OF KEY', TOK_X, TOK_Y + 34, 'center');
+  drawCourtLabel('LEFT WING', WING_X_L - 10, WING_Y - 26, 'right');
+  drawCourtLabel('RIGHT WING', WING_X_R + 10, WING_Y - 26, 'left');
+  drawCourtLabel('CORNER', C3X_L - 8, PAINT_Y + 35, 'right');
+  drawCourtLabel('CORNER', C3X_R + 8, PAINT_Y + 35, 'left');
 }
 
-// Draw a small dot + label at a court spot
 function drawCourtLabel(text, x, y, align) {
   ctx.save();
-  ctx.font = `bold 9px Rajdhani,sans-serif`;
-  ctx.textAlign = align === 'center' ? 'center' : align === 'right' ? 'right' : 'left';
+  ctx.font = `bold 10px Rajdhani, sans-serif`;
+  ctx.textAlign = align;
   ctx.textBaseline = 'middle';
-  // Semi-transparent pill background
-  const lines = text.split('\n');
-  const lh = 11;
-  const totalH = lines.length * lh;
-  const maxW = Math.max(...lines.map(l => ctx.measureText(l).width)) + 10;
-  const bx = align === 'center' ? x - maxW/2 : align === 'right' ? x - maxW - 2 : x + 2;
-  const by = y - totalH/2 - 2;
-  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  const w = ctx.measureText(text).width + 10;
+  const bx = align === 'center' ? x - w / 2 : align === 'right' ? x - w : x;
+  ctx.fillStyle = 'rgba(255,255,255,0.72)';
   ctx.beginPath();
-  ctx.roundRect(bx, by, maxW, totalH + 4, 3);
+  ctx.roundRect(bx, y - 8, w, 16, 4);
   ctx.fill();
-  ctx.strokeStyle = 'rgba(0,0,0,0.3)';
-  ctx.lineWidth = 0.8;
-  ctx.stroke();
-  // Text
-  ctx.fillStyle = '#000';
-  lines.forEach((line, i) => {
-    const ly = y - totalH/2 + lh*i + lh/2;
-    ctx.fillText(line, x, ly);
-  });
+  ctx.fillStyle = '#111';
+  ctx.fillText(text, align === 'center' ? x : align === 'right' ? x - 5 : x + 5, y);
   ctx.restore();
 }
 
 // ═══════════════════════════════════════════════════════════
-//  DRAW ARROWS & SCREENS
+//  DRAW TARGET ZONES & ARROWS (Coach Mode & Annotations)
 // ═══════════════════════════════════════════════════════════
-function drawArrow(x1, y1, x2, y2, color, dash=false, alpha=1) {
+let pulseAnim = 0;
+function drawTargetsAndGuides() {
+  pulseAnim += 0.05;
+  const pulse = Math.sin(pulseAnim) * 4;
+
+  // Draw active drag targets
+  targets.forEach(t => {
+    const p = players[t.playerKey];
+    ctx.save();
+
+    // Guide line from player to target
+    if (!t.locked) {
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(t.x, t.y);
+      ctx.strokeStyle = 'rgba(0, 230, 118, 0.55)';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([6, 6]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Target Ring
+    ctx.beginPath();
+    ctx.arc(t.x, t.y, t.locked ? 24 : 26 + pulse, 0, Math.PI * 2);
+    ctx.fillStyle = t.locked ? 'rgba(0, 230, 118, 0.25)' : 'rgba(0, 230, 118, 0.14)';
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = t.locked ? GREEN : '#00c853';
+    ctx.stroke();
+
+    // Target Label
+    ctx.font = 'bold 11px Orbitron, sans-serif';
+    ctx.fillStyle = '#003314';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(t.locked ? '✓' : `#${p.id}`, t.x, t.y);
+
+    if (t.label && !t.locked) {
+      const lw = ctx.measureText(t.label).width + 10;
+      ctx.fillStyle = GREEN;
+      ctx.beginPath();
+      ctx.roundRect(t.x - lw / 2, t.y - 42, lw, 16, 4);
+      ctx.fill();
+      ctx.fillStyle = '#00220d';
+      ctx.font = 'bold 10px Rajdhani, sans-serif';
+      ctx.fillText(t.label, t.x, t.y - 34);
+    }
+
+    ctx.restore();
+  });
+
+  // Decision Phase pulsing pass arrows
+  if (phase === PHASE.DECISION) {
+    const a = 0.5 + 0.5 * Math.sin(pulseAnim);
+    drawArrow(players.p1.x, players.p1.y, players.p2.x, players.p2.y, GOLD, true, a);
+    drawArrow(players.p1.x, players.p1.y, players.p3.x, players.p3.y, GOLD, true, 1.3 - a);
+  }
+}
+
+function drawArrow(x1, y1, x2, y2, color, dash = false, alpha = 1) {
   ctx.save();
   ctx.globalAlpha = alpha;
-  if (dash) ctx.setLineDash([8,6]);
+  if (dash) ctx.setLineDash([8, 6]);
   ctx.strokeStyle = color;
-  ctx.lineWidth = 2.5;
+  ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(x1,y1);
-  ctx.lineTo(x2,y2);
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
   ctx.stroke();
   ctx.setLineDash([]);
-  // arrowhead
-  const angle = Math.atan2(y2-y1, x2-x1);
+  const angle = Math.atan2(y2 - y1, x2 - x1);
   ctx.fillStyle = color;
   ctx.beginPath();
   ctx.moveTo(x2, y2);
-  ctx.lineTo(x2 - 12*Math.cos(angle-0.4), y2 - 12*Math.sin(angle-0.4));
-  ctx.lineTo(x2 - 12*Math.cos(angle+0.4), y2 - 12*Math.sin(angle+0.4));
+  ctx.lineTo(x2 - 14 * Math.cos(angle - 0.4), y2 - 14 * Math.sin(angle - 0.4));
+  ctx.lineTo(x2 - 14 * Math.cos(angle + 0.4), y2 - 14 * Math.sin(angle + 0.4));
   ctx.closePath();
   ctx.fill();
   ctx.restore();
 }
 
-function drawScreenBox(x, y) {
-  ctx.save();
-  ctx.strokeStyle = GOLD;
-  ctx.lineWidth = 4;
-  const s = 16;
-  ctx.strokeRect(x-s, y-s, s*2, s*2);
-  ctx.fillStyle = 'rgba(255,199,44,0.15)';
-  ctx.fillRect(x-s, y-s, s*2, s*2);
-  ctx.restore();
+// ═══════════════════════════════════════════════════════════
+//  POINTER / DRAG & DROP HANDLING
+// ═══════════════════════════════════════════════════════════
+function getCanvasCoords(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return {
+    x: (clientX - rect.left) * scaleX,
+    y: (clientY - rect.top) * scaleY
+  };
+}
+
+function onPointerDown(e) {
+  if (!coachMode || targets.length === 0) return;
+  const pt = getCanvasCoords(e);
+
+  // Check if user clicked a player with an unlocked target
+  for (const t of targets) {
+    if (t.locked) continue;
+    const p = players[t.playerKey];
+    const dist = Math.hypot(pt.x - p.x, pt.y - p.y);
+    if (dist <= p.r + 14) {
+      draggingPlayer = t;
+      dragOffset.x = p.x - pt.x;
+      dragOffset.y = p.y - pt.y;
+      canvas.style.cursor = 'grabbing';
+      e.preventDefault();
+      break;
+    }
+  }
+}
+
+function onPointerMove(e) {
+  const pt = getCanvasCoords(e);
+
+  if (draggingPlayer) {
+    e.preventDefault();
+    const p = players[draggingPlayer.playerKey];
+    p.x = Math.max(25, Math.min(W - 25, pt.x + dragOffset.x));
+    p.y = Math.max(25, Math.min(H - 25, pt.y + dragOffset.y));
+
+    // Check snap proximity to target
+    const distToTarget = Math.hypot(p.x - draggingPlayer.x, p.y - draggingPlayer.y);
+    if (distToTarget < 28) {
+      p.x = draggingPlayer.x;
+      p.y = draggingPlayer.y;
+      draggingPlayer.locked = true;
+      draggingPlayer = null;
+      canvas.style.cursor = 'default';
+      checkAllTargetsLocked();
+    }
+    return;
+  }
+
+  // Hover cursor feedback
+  if (coachMode && targets.length > 0) {
+    const hovering = targets.some(t => !t.locked && Math.hypot(pt.x - players[t.playerKey].x, pt.y - players[t.playerKey].y) <= 32);
+    canvas.style.cursor = hovering ? 'grab' : 'default';
+  }
+}
+
+function onPointerUp() {
+  if (draggingPlayer) {
+    draggingPlayer = null;
+    canvas.style.cursor = 'default';
+  }
+}
+
+canvas.addEventListener('mousedown', onPointerDown);
+canvas.addEventListener('mousemove', onPointerMove);
+window.addEventListener('mouseup', onPointerUp);
+
+canvas.addEventListener('touchstart', onPointerDown, { passive: false });
+canvas.addEventListener('touchmove', onPointerMove, { passive: false });
+window.addEventListener('touchend', onPointerUp);
+
+function checkAllTargetsLocked() {
+  if (targets.every(t => t.locked)) {
+    targets = [];
+    btnNext.disabled = false;
+    onPhaseObjectivesComplete();
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
-//  CALL TEXT
+//  CALL TEXT, SHOT & CONFETTI
 // ═══════════════════════════════════════════════════════════
-let callTextStr = '';
 function drawCallText() {
   if (!showCallText) return;
   const p1 = players.p1;
   ctx.save();
   ctx.globalAlpha = Math.max(0, callTextAlpha);
-  ctx.font = `bold ${cx(0.075)}px Orbitron,sans-serif`;
+  ctx.font = `bold 24px Orbitron, sans-serif`;
+  const tw = ctx.measureText(callTextStr).width + 28;
+  const th = 42;
+  const tx = p1.x;
+  const ty = p1.y - 48;
+
+  ctx.fillStyle = 'rgba(0,45,98,0.92)';
+  ctx.beginPath();
+  ctx.roundRect(tx - tw / 2, ty - th / 2, tw, th, 10);
+  ctx.fill();
+  ctx.strokeStyle = GOLD;
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
   ctx.fillStyle = GOLD;
-  ctx.strokeStyle = NAVY;
-  ctx.lineWidth = 4;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  const tx = p1.x;
-  const ty = p1.y - 42;
-  // bubble
-  const tw = ctx.measureText(callTextStr).width + 20;
-  const th = cx(0.09);
-  ctx.fillStyle = 'rgba(0,45,98,0.85)';
-  ctx.beginPath();
-  ctx.roundRect(tx - tw/2, ty - th/2, tw, th, 8);
-  ctx.fill();
-  ctx.strokeStyle = GOLD;
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  // tail
-  ctx.beginPath();
-  ctx.moveTo(tx-8, ty+th/2);
-  ctx.lineTo(tx, ty+th/2+10);
-  ctx.lineTo(tx+8, ty+th/2);
-  ctx.fillStyle = 'rgba(0,45,98,0.85)';
-  ctx.fill();
-  ctx.strokeStyle = GOLD;
-  ctx.stroke();
-  // text
-  ctx.fillStyle = GOLD;
-  ctx.font = `bold ${cx(0.055)}px Orbitron,sans-serif`;
   ctx.fillText(callTextStr, tx, ty);
   ctx.restore();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  CONFETTI
-// ═══════════════════════════════════════════════════════════
 function spawnConfetti() {
-  for (let i=0; i<80; i++) {
+  for (let i = 0; i < 95; i++) {
     confettiParticles.push({
-      x: W/2 + (Math.random()-0.5)*W*0.8,
-      y: H*0.3 + Math.random()*H*0.4,
-      vx: (Math.random()-0.5)*4,
-      vy: -Math.random()*5 - 1,
-      r: 4 + Math.random()*6,
-      color: Math.random()<0.6 ? GOLD : '#fff',
-      life: 1, decay: 0.008 + Math.random()*0.012,
-      angle: Math.random()*Math.PI*2,
-      spin: (Math.random()-0.5)*0.15
+      x: W / 2 + (Math.random() - 0.5) * W * 0.7,
+      y: H * 0.35,
+      vx: (Math.random() - 0.5) * 6,
+      vy: -Math.random() * 6 - 2,
+      r: 5 + Math.random() * 6,
+      color: Math.random() < 0.6 ? GOLD : '#fff',
+      life: 1,
+      decay: 0.008 + Math.random() * 0.01,
+      angle: Math.random() * Math.PI * 2,
+      spin: (Math.random() - 0.5) * 0.15
     });
   }
 }
 
-function updateConfetti(dt) {
-  confettiParticles = confettiParticles.filter(p => p.life > 0);
-  confettiParticles.forEach(p => {
-    p.x += p.vx; p.y += p.vy;
-    p.vy += 0.12;
-    p.angle += p.spin;
-    p.life -= p.decay;
-  });
-}
-
-function drawConfetti() {
-  confettiParticles.forEach(p => {
-    ctx.save();
-    ctx.globalAlpha = Math.max(0, p.life);
-    ctx.translate(p.x, p.y);
-    ctx.rotate(p.angle);
-    ctx.fillStyle = p.color;
-    ctx.fillRect(-p.r/2, -p.r/4, p.r, p.r/2);
-    ctx.restore();
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
-//  SHOT ANIMATION (parabolic arc to basket)
-// ═══════════════════════════════════════════════════════════
-let shotProgress = -1;
-let shotStart = {x:0,y:0};
-let onShotDone = null;
-
 function startShot(fromX, fromY, cb) {
   shotProgress = 0;
-  shotStart = {x:fromX, y:fromY};
+  shotStart = { x: fromX, y: fromY };
   onShotDone = cb;
-}
-
-function updateShot(dt) {
-  if (shotProgress < 0) return;
-  shotProgress += dt / 900;
-  if (shotProgress >= 1) {
-    shotProgress = -1;
-    ball.visible = false;
-    if (onShotDone) { onShotDone(); onShotDone = null; }
-  }
 }
 
 function drawShot() {
   if (shotProgress < 0) return;
   const t = easeInOut(shotProgress);
-  const ex = HOOP_X, ey = HOOP_Y;
   const sx = shotStart.x, sy = shotStart.y;
-  const mx = (sx+ex)/2, my = Math.min(sy,ey) - cy(0.28);
-  // quadratic bezier
-  const bx = (1-t)*(1-t)*sx + 2*(1-t)*t*mx + t*t*ex;
-  const by_val = (1-t)*(1-t)*sy + 2*(1-t)*t*my + t*t*ey;
+  const mx = (sx + HOOP_X) / 2, my = Math.min(sy, HOOP_Y) - 110;
+  const bx = (1 - t) * (1 - t) * sx + 2 * (1 - t) * t * mx + t * t * HOOP_X;
+  const by = (1 - t) * (1 - t) * sy + 2 * (1 - t) * t * my + t * t * HOOP_Y;
 
-  // draw trail
   ctx.save();
-  for (let i=0; i<=10; i++) {
-    const tt = (shotProgress - 0.01*i);
-    if (tt < 0) continue;
-    const e = easeInOut(tt);
-    const tbx = (1-e)*(1-e)*sx + 2*(1-e)*e*mx + e*e*ex;
-    const tby = (1-e)*(1-e)*sy + 2*(1-e)*e*my + e*e*ey;
-    ctx.beginPath();
-    ctx.arc(tbx, tby, 4, 0, Math.PI*2);
-    ctx.fillStyle = `rgba(255,107,0,${i*0.07})`;
-    ctx.fill();
-  }
-
-  // ball
   ctx.beginPath();
-  ctx.arc(bx, by_val, 10, 0, Math.PI*2);
+  ctx.arc(bx, by, 10, 0, Math.PI * 2);
   ctx.fillStyle = ORANGE;
   ctx.fill();
   ctx.strokeStyle = '#000';
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 1.5;
   ctx.stroke();
   ctx.restore();
-
-  if (shotProgress > 0.85) {
-    ctx.save();
-    ctx.globalAlpha = (shotProgress - 0.85) / 0.15;
-    ctx.font = `bold ${cx(0.08)}px Orbitron,sans-serif`;
-    ctx.fillStyle = GOLD;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('SWOOSH! 🔥', W/2, cy(0.35));
-    ctx.restore();
-  }
 }
 
 // ═══════════════════════════════════════════════════════════
-//  FLASH EFFECT
-// ═══════════════════════════════════════════════════════════
-let flashTimer = 0;
-function triggerFlash() { flashAlpha = 0.6; flashTimer = 500; }
-function updateFlash(dt) {
-  if (flashTimer <= 0) { flashAlpha = 0; return; }
-  flashTimer -= dt;
-  flashAlpha = Math.max(0, flashAlpha - dt * 0.002);
-}
-
-// ═══════════════════════════════════════════════════════════
-//  PULSING ARROWS for decision phase
-// ═══════════════════════════════════════════════════════════
-let pulseT = 0;
-function drawPulsingArrows() {
-  if (phase !== PHASE.DECISION) return;
-  pulseT += 0.04;
-  const a = 0.5 + 0.5*Math.sin(pulseT);
-  const p1 = players.p1;
-  const p4 = players.p4;
-  const p5 = players.p5;
-  drawArrow(p1.x, p1.y, p4.x, p4.y, GOLD, false, a);
-  drawArrow(p1.x, p1.y, p5.x, p5.y, GOLD, false, 1-a+0.3);
-  // "?" over PG
-  ctx.save();
-  ctx.font = `bold ${cx(0.06)}px Orbitron,sans-serif`;
-  ctx.fillStyle = GOLD;
-  ctx.globalAlpha = 0.7 + 0.3*Math.sin(pulseT*1.5);
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('👀', p1.x, p1.y - 38);
-  ctx.restore();
-}
-
-// ═══════════════════════════════════════════════════════════
-//  PHASE ARROWS / ANNOTATIONS
-// ═══════════════════════════════════════════════════════════
-function drawPhaseAnnotations() {
-  // Phase 2: #4 & #5 screen DOWN — show screen arrows + boxes
-  if (phase === PHASE.SCREENS) {
-    const p4 = players.p4, p5 = players.p5;
-    if (p4.t >= 1) {
-      drawArrow(p4.x, p4.y, cx(POS.p4_screen.x), cy(POS.p4_screen.y), GOLD, true, 0.7);
-      drawScreenBox(cx(POS.p4_screen.x), cy(POS.p4_screen.y));
-    }
-    if (p5.t >= 1) {
-      drawArrow(p5.x, p5.y, cx(POS.p5_screen.x), cy(POS.p5_screen.y), GOLD, true, 0.7);
-      drawScreenBox(cx(POS.p5_screen.x), cy(POS.p5_screen.y));
-    }
-  }
-
-  // Phase 3: #2 & #3 pop to wings, #4 & #5 roll to blocks
-  if (phase === PHASE.POP) {
-    drawArrow(players.p2.sx, players.p2.sy, cx(POS.p2_wing.x), cy(POS.p2_wing.y), '#00e676', false, 0.8);
-    drawArrow(players.p3.sx, players.p3.sy, cx(POS.p3_wing.x), cy(POS.p3_wing.y), '#00e676', false, 0.8);
-  }
-
-  // Phase A_AWAY: PG screens for #3; #4 (ball-side block) screens AWAY for #5
-  if (phase === PHASE.A_AWAY) {
-    drawScreenBox(cx(POS.p1_a2_screen.x), cy(POS.p1_a2_screen.y));
-    drawScreenBox(cx(POS.p4_a2_screen.x), cy(POS.p4_a2_screen.y));
-    drawArrow(players.p3.sx, players.p3.sy, cx(POS.p3_a2_cut.x), cy(POS.p3_a2_cut.y), '#00e676', false, 0.8);
-    drawArrow(players.p5.sx, players.p5.sy, cx(POS.p5_a2_cut.x), cy(POS.p5_a2_cut.y), '#00e676', false, 0.8);
-  }
-
-  // Phase B_AWAY: PG screens for #2; #5 (ball-side block) screens AWAY for #4
-  if (phase === PHASE.B_AWAY) {
-    drawScreenBox(cx(POS.p1_b2_screen.x), cy(POS.p1_b2_screen.y));
-    drawScreenBox(cx(POS.p5_b2_screen.x), cy(POS.p5_b2_screen.y));
-    drawArrow(players.p2.sx, players.p2.sy, cx(POS.p2_b2_cut.x), cy(POS.p2_b2_cut.y), '#00e676', false, 0.8);
-    drawArrow(players.p4.sx, players.p4.sy, cx(POS.p4_b2_cut.x), cy(POS.p4_b2_cut.y), '#00e676', false, 0.8);
-  }
-
-  // Reset arrows
-  if (phase === PHASE.RESET_ANIM) {
-    ['p1','p2','p3','p4','p5'].forEach(key => {
-      const p = players[key];
-      const h = HOME[key];
-      drawArrow(p.sx, p.sy, cx(h.x), cy(h.y), '#ff9800', true, 0.7);
-    });
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-//  CALL TEXT ANIMATION
-// ═══════════════════════════════════════════════════════════
-function updateCallText(dt) {
-  if (!showCallText) return;
-  callTextTimer += dt;
-  callTextAlpha = 0.6 + 0.4 * Math.sin(callTextTimer * 0.004);
-}
-
-// ═══════════════════════════════════════════════════════════
-//  MAIN RENDER
+//  MAIN RENDER LOOP
 // ═══════════════════════════════════════════════════════════
 let last = 0;
 function render(ts) {
   const dt = Math.min(ts - last, 50);
   last = ts;
 
-  // Updates
   Object.values(players).forEach(p => p.update(dt));
   ball.update(dt);
-  updateCallText(dt);
-  updateConfetti(dt);
-  updateShot(dt);
-  updateFlash(dt);
 
-  // Sync ball to ball holder
-  if (ball.t >= 1 && shotProgress < 0 && ball.visible) {
-    const holder = Object.values(players).find(p => p.hasBall);
-    if (holder) {
-      ball.snapToXY(holder.x, holder.y - holder.r - ball.r);
+  if (showCallText) {
+    callTextTimer += dt;
+    callTextAlpha = 0.65 + 0.35 * Math.sin(callTextTimer * 0.005);
+  }
+
+  if (shotProgress >= 0) {
+    shotProgress += dt / 850;
+    if (shotProgress >= 1) {
+      shotProgress = -1;
+      if (onShotDone) { onShotDone(); onShotDone = null; }
     }
   }
 
-  // Draw
-  drawCourt();
-  drawPhaseAnnotations();
-  drawPulsingArrows();
+  confettiParticles = confettiParticles.filter(p => p.life > 0);
+  confettiParticles.forEach(p => {
+    p.x += p.vx; p.y += p.vy; p.vy += 0.14; p.angle += p.spin; p.life -= p.decay;
+  });
 
-  // Players (draw back-to-front by y)
-  Object.values(players).sort((a,b) => a.y - b.y).forEach(p => p.draw(ctx));
+  if (flashTimer > 0) {
+    flashTimer -= dt;
+    flashAlpha = Math.max(0, flashAlpha - dt * 0.002);
+  }
+
+  // Sync ball to ball handler
+  if (ball.t >= 1 && shotProgress < 0 && ball.visible) {
+    const holder = Object.values(players).find(p => p.hasBall);
+    if (holder) ball.snapToXY(holder.x, holder.y - holder.r - ball.r);
+  }
+
+  drawCourt();
+  drawTargetsAndGuides();
+
+  const draggableKeys = new Set(targets.filter(t => !t.locked).map(t => t.playerKey));
+  const lockedKeys    = new Set(targets.filter(t => t.locked).map(t => t.playerKey));
+
+  Object.entries(players)
+    .sort((a, b) => a[1].y - b[1].y)
+    .forEach(([key, p]) => {
+      p.draw(ctx, coachMode && draggableKeys.has(key), lockedKeys.has(key));
+    });
 
   ball.draw(ctx);
   drawShot();
   drawCallText();
-  drawConfetti();
 
-  // Flash overlay
+  confettiParticles.forEach(p => {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, p.life);
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.angle);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2);
+    ctx.restore();
+  });
+
   if (flashAlpha > 0) {
     ctx.save();
     ctx.globalAlpha = flashAlpha;
     ctx.fillStyle = GOLD;
-    ctx.fillRect(0,0,W,H);
+    ctx.fillRect(0, 0, W, H);
     ctx.restore();
   }
 
@@ -1246,50 +1131,47 @@ function render(ts) {
 requestAnimationFrame(render);
 
 // ═══════════════════════════════════════════════════════════
-//  UI HELPERS
+//  PHASE FLOW & UI UPDATES
 // ═══════════════════════════════════════════════════════════
-const btnNext  = document.getElementById('btn-next');
-const btnReset = document.getElementById('btn-reset');
-const btnRow   = document.getElementById('btn-row');
-const actionLabel = document.getElementById('action-label');
-const tipLabel    = document.getElementById('tip-label');
-const phaseFill   = document.getElementById('phase-fill');
+const btnNext      = document.getElementById('btn-next');
+const btnReset     = document.getElementById('btn-reset');
+const btnRow       = document.getElementById('btn-row');
+const actionLabel  = document.getElementById('action-label');
+const tipLabel     = document.getElementById('tip-label');
+const phaseFill    = document.getElementById('phase-fill');
 const phaseNameTxt = document.getElementById('phase-name-txt');
 const phaseNumTxt  = document.getElementById('phase-num-txt');
-const celebOverlay = document.getElementById('celebrate-overlay');
 const celebText    = document.getElementById('celebrate-text');
 
 const PHASE_INFO = {
-  [PHASE.INTRO]:   { name:'INTRO',           step:0, total:5 },
-  [PHASE.CALL]:    { name:'THE CALL',        step:1, total:5 },
-  [PHASE.SCREENS]: { name:'SET SCREENS',     step:2, total:5 },
-  [PHASE.POP]:     { name:'POP TO WINGS',    step:3, total:5 },
-  [PHASE.DECISION]:{ name:'DECISION POINT',  step:4, total:5 },
-  [PHASE.A_PASS]:  { name:'PASS LEFT',       step:5, total:7 },
-  [PHASE.A_AWAY]:  { name:'AWAY SCREENS',    step:6, total:7 },
-  [PHASE.A_SHOT]:  { name:'FIND THE SHOT',   step:7, total:7 },
-  [PHASE.B_PASS]:  { name:'PASS RIGHT',      step:5, total:7 },
-  [PHASE.B_AWAY]:  { name:'AWAY SCREENS',    step:6, total:7 },
-  [PHASE.B_SHOT]:  { name:'FIND THE SHOT',   step:7, total:7 },
-  [PHASE.RESET_ANIM]:{ name:'RESET!',        step:0, total:5 },
-  [PHASE.CELEBRATE]:{ name:'SCORE!',         step:7, total:7 },
+  [PHASE.INTRO]:     { name: 'INTRO',          step: 0, total: 5 },
+  [PHASE.CALL]:      { name: 'THE CALL',       step: 1, total: 5 },
+  [PHASE.SCREENS]:   { name: 'DOWN SCREENS',   step: 2, total: 5 },
+  [PHASE.POP]:       { name: 'POP TO WINGS',   step: 3, total: 5 },
+  [PHASE.DECISION]:  { name: 'DECISION POINT', step: 4, total: 5 },
+  [PHASE.A_PASS]:    { name: 'PASS LEFT',      step: 5, total: 7 },
+  [PHASE.A_AWAY]:    { name: 'AWAY SCREENS',   step: 6, total: 7 },
+  [PHASE.A_SHOT]:    { name: 'FIND THE SHOT',  step: 7, total: 7 },
+  [PHASE.B_PASS]:    { name: 'PASS RIGHT',     step: 5, total: 7 },
+  [PHASE.B_AWAY]:    { name: 'AWAY SCREENS',   step: 6, total: 7 },
+  [PHASE.B_SHOT]:    { name: 'FIND THE SHOT',  step: 7, total: 7 },
+  [PHASE.CELEBRATE]: { name: 'SCORE!',         step: 7, total: 7 },
 };
 
-function updateUI(action, tip, nextLabel, showPassBtns=false) {
+function updateUI(action, tip, nextLabel, showPassBtns = false) {
   actionLabel.textContent = action;
   tipLabel.textContent = tip;
 
-  const info = PHASE_INFO[phase] || {name:'',step:0,total:5};
+  const info = PHASE_INFO[phase] || { name: '', step: 0, total: 5 };
   phaseNameTxt.textContent = info.name;
   phaseNumTxt.textContent  = `Step ${info.step} / ${info.total}`;
-  phaseFill.style.width    = `${(info.step/info.total)*100}%`;
+  phaseFill.style.width    = `${(info.step / info.total) * 100}%`;
 
-  // Clear dynamic buttons
   Array.from(btnRow.querySelectorAll('.btn-pass, .btn-again')).forEach(b => b.remove());
 
-  btnNext.textContent  = nextLabel || '▶ NEXT';
+  btnNext.textContent = nextLabel || '▶ NEXT';
   btnNext.style.display = showPassBtns ? 'none' : '';
-  btnNext.disabled = animating;
+  btnNext.disabled = animating || (coachMode && targets.length > 0);
 
   if (showPassBtns) {
     const ba = document.createElement('button');
@@ -1306,105 +1188,108 @@ function updateUI(action, tip, nextLabel, showPassBtns=false) {
   }
 }
 
-function addPlayAgainBtn() {
-  btnNext.style.display = 'none';
-  Array.from(btnRow.querySelectorAll('.btn-pass')).forEach(b=>b.remove());
-
-  const ba = document.createElement('button');
-  ba.className = 'btn btn-again';
-  ba.textContent = '🔄 PLAY AGAIN!';
-  ba.onclick = () => {
-    celebOverlay.style.display = 'none';
-    celebText.style.display    = 'none';
-    confettiParticles = [];
-    phase = PHASE.INTRO;
-    initGame();
-    updateUI('Welcome back! Press NEXT to run the play again.',
-      '💡 Tip: Great teams run the same play over and over until it\'s perfect!',
-      '▶ LET\'S RUN IT!');
-  };
-  btnRow.insertBefore(ba, btnReset);
+function assignMoveOrDrag(moves, onComplete) {
+  if (coachMode) {
+    targets = moves.map(m => ({
+      playerKey: m.key,
+      x: cx(m.pos.x),
+      y: cy(m.pos.y),
+      label: m.label,
+      locked: false
+    }));
+    btnNext.disabled = true;
+  } else {
+    animating = true;
+    btnNext.disabled = true;
+    moves.forEach(m => players[m.key].moveTo(m.pos.x, m.pos.y, 850));
+    const check = () => {
+      if (Object.values(players).every(p => !p.moving)) {
+        animating = false;
+        btnNext.disabled = false;
+        if (onComplete) onComplete();
+      } else {
+        setTimeout(check, 50);
+      }
+    };
+    setTimeout(check, 100);
+  }
 }
 
-function allDone() {
-  return Object.values(players).every(p => !p.moving) && !ball.moving;
+function onPhaseObjectivesComplete() {
+  if (phase === PHASE.SCREENS) {
+    updateUI(
+      '✅ Down screens set! Now pop Maya & Zoe out to the 3-point wings.',
+      '💡 Tip: Good spacing! Keep those screens solid so the wings get open.',
+      'NEXT: POP TO WINGS →'
+    );
+  } else if (phase === PHASE.POP) {
+    phase = PHASE.DECISION;
+    updateUI(
+      '👀 5-OUT SPACING SET! Who is open? Choose which wing Chloe passes to!',
+      '💡 Tip: Look at all that floor space! Pass to either wing to trigger the away action.',
+      '',
+      true
+    );
+  } else if (phase === PHASE.A_AWAY) {
+    updateUI(
+      '✅ Away screens & cuts complete! Zoe is wide open at the top!',
+      '💡 Tip: Maya hits Zoe in rhythm for the open jumper!',
+      'PASS & SHOOT! 🏀→🏆'
+    );
+  } else if (phase === PHASE.B_AWAY) {
+    updateUI(
+      '✅ Away screens & cuts complete! Maya is wide open at the top!',
+      '💡 Tip: Zoe hits Maya in rhythm for the open jumper!',
+      'PASS & SHOOT! 🏀→🏆'
+    );
+  }
 }
 
-function waitDone(cb) {
-  animating = true;
-  btnNext.disabled = true;
-  const check = () => { allDone() ? (animating=false, btnNext.disabled=false, cb()) : setTimeout(check, 50); };
-  setTimeout(check, 100);
-}
-
-// ═══════════════════════════════════════════════════════════
-//  PHASE RUNNERS
-// ═══════════════════════════════════════════════════════════
 function runPhase1() {
   phase = PHASE.CALL;
-  animating = false;
   showCallText = true;
-  callTextStr  = '☎️ DOWNTOWN!';
+  callTextStr = '☎️ DOWNTOWN!';
   callTextTimer = 0;
   updateUI(
-    '☎️ Chloe calls "DOWNTOWN!" — everyone gets ready to move!',
-    '🔊 "Downtown!" echoes through the gym. This is the signal — feet wide, eyes up!',
-    'SET THE SCREENS →'
+    '☎️ Chloe calls "DOWNTOWN!" — Elbows get ready to screen down!',
+    '🔊 Everyone hears the call and prepares to move on rhythm.',
+    'SET DOWN SCREENS →'
   );
 }
 
 function runPhase2() {
   phase = PHASE.SCREENS;
   showCallText = false;
-  animating = true;
-  btnNext.disabled = true;
-
-  players.p4.moveTo(POS.p4_screen.x, POS.p4_screen.y, 800);
-  players.p5.moveTo(POS.p5_screen.x, POS.p5_screen.y, 800);
-
+  const moves = [
+    { key: 'p4', pos: POS.p4_screen, label: 'Screen Left' },
+    { key: 'p5', pos: POS.p5_screen, label: 'Screen Right' }
+  ];
   updateUI(
-    '📦 SCREEN DOWN — #4 Ava screens for #2 Maya | #5 Lexi screens for #3 Zoe',
-    '💡 Tip: Set a solid screen by getting your feet wide and body square!',
-    'POP TO THE WING →'
+    coachMode
+      ? '🖐️ DRAG #4 Ava & #5 Lexi down to set screens below the blocks!'
+      : '📦 SCREEN DOWN — #4 Ava & #5 Lexi screen down for the blocks!',
+    '💡 Tip: Screeners stop just outside the lane with wide feet.',
+    'NEXT: POP TO WINGS →'
   );
-
-  waitDone(() => { animating = false; btnNext.disabled = false; });
+  assignMoveOrDrag(moves, onPhaseObjectivesComplete);
 }
 
 function runPhase3() {
   phase = PHASE.POP;
-  animating = true;
-  btnNext.disabled = true;
-
-  players.p2.moveTo(POS.p2_wing.x, POS.p2_wing.y, 900);
-  players.p3.moveTo(POS.p3_wing.x, POS.p3_wing.y, 900);
-
-  setTimeout(() => {
-    players.p4.moveTo(POS.p4_block.x, POS.p4_block.y, 700);
-    players.p5.moveTo(POS.p5_block.x, POS.p5_block.y, 700);
-  }, 400);
-
+  const moves = [
+    { key: 'p2', pos: POS.p2_wing,  label: 'Left Wing' },
+    { key: 'p3', pos: POS.p3_wing,  label: 'Right Wing' },
+    { key: 'p4', pos: POS.p4_block, label: 'Left Block' },
+    { key: 'p5', pos: POS.p5_block, label: 'Right Block' }
+  ];
   updateUI(
-    '🏃 POP TO THE 3-PT LINE! — Maya & Zoe cut to the wings | Ava & Lexi hold the blocks!',
-    '💡 Tip: Use your screener! Rub shoulders with #4 and #5 as you cut to the wing!',
+    coachMode
+      ? '🖐️ DRAG Maya & Zoe out to the 3pt wings, and slide Ava & Lexi to the blocks!'
+      : '🏃 POP WIDE! Maya & Zoe cut to the 3-point wings!',
+    '💡 Tip: Stretch the defense all the way out to the 3-point line!',
     'MAKE YOUR DECISION →'
   );
-
-  waitDone(() => {
-    animating = false;
-    btnNext.disabled = false;
-    phase = PHASE.DECISION;
-    updateUI(
-      '👀 WHO\'S OPEN? YOU DECIDE! — Look left or right for the open player!',
-      '💡 Tip: See the whole floor before you pass — where\'s the defense?',
-      '',
-      true  // show pass buttons
-    );
-    const info = PHASE_INFO[PHASE.DECISION];
-    phaseFill.style.width = `${(info.step/info.total)*100}%`;
-    phaseNameTxt.textContent = info.name;
-    phaseNumTxt.textContent  = `Step ${info.step} / ${info.total}`;
-  });
+  assignMoveOrDrag(moves, onPhaseObjectivesComplete);
 }
 
 function runBranch(b) {
@@ -1416,94 +1301,58 @@ function runBranch(b) {
     phase = PHASE.A_PASS;
     players.p1.hasBall = false;
     players.p2.hasBall = true;
-    ball.moveToXY(players.p2.x, players.p2.y - players.p2.r - ball.r, 500, 30);
+    ball.moveToXY(players.p2.x, players.p2.y - players.p2.r - ball.r, 450, 30);
     updateUI(
-      '🏀 MAYA CATCHES AT THE WING! — Great pass from Chloe to Maya on the left!',
-      '💡 Tip: Catch with two hands, face the basket — read what the defense gives you!',
-      'RUN THE AWAY SCREEN →'
+      '🏀 PASS LEFT TO MAYA! Now Chloe & Ava screen away on the weak side.',
+      '💡 Tip: Pass and screen away! Never stand still after passing.',
+      'RUN AWAY SCREENS →'
     );
-    const info = PHASE_INFO[PHASE.A_PASS];
-    phaseNameTxt.textContent = info.name;
-    phaseNumTxt.textContent  = `Step ${info.step} / ${info.total}`;
-    phaseFill.style.width    = `${(info.step/info.total)*100}%`;
   } else {
     phase = PHASE.B_PASS;
     players.p1.hasBall = false;
     players.p3.hasBall = true;
-    ball.moveToXY(players.p3.x, players.p3.y - players.p3.r - ball.r, 500, 30);
+    ball.moveToXY(players.p3.x, players.p3.y - players.p3.r - ball.r, 450, 30);
     updateUI(
-      '🏀 ZOE CATCHES AT THE WING! — Great pass from Chloe to Zoe on the right!',
-      '💡 Tip: Catch ready to shoot! Square your shoulders to the basket!',
-      'RUN THE AWAY SCREEN →'
+      '🏀 PASS RIGHT TO ZOE! Now Chloe & Lexi screen away on the weak side.',
+      '💡 Tip: Pass and screen away! Create movement off the ball.',
+      'RUN AWAY SCREENS →'
     );
-    const info = PHASE_INFO[PHASE.B_PASS];
-    phaseNameTxt.textContent = info.name;
-    phaseNumTxt.textContent  = `Step ${info.step} / ${info.total}`;
-    phaseFill.style.width    = `${(info.step/info.total)*100}%`;
   }
 }
 
 function runAwayScreen() {
   if (branch === 'A') {
-    // Ball is with #2 (Maya) on LEFT wing
-    // PG screens for #3 (Zoe, right wing — non-ball side)
-    // #4 (Ava, ball-side block LEFT) screens AWAY for #5 (Lexi, right block)
     phase = PHASE.A_AWAY;
-    animating = true;
-    btnNext.disabled = true;
-
-    players.p1.moveTo(POS.p1_a2_screen.x, POS.p1_a2_screen.y, 800);
-    players.p4.moveTo(POS.p4_a2_screen.x, POS.p4_a2_screen.y, 800);
-    setTimeout(() => {
-      players.p3.moveTo(POS.p3_a2_cut.x, POS.p3_a2_cut.y, 700);
-      players.p5.moveTo(POS.p5_a2_cut.x, POS.p5_a2_cut.y, 700);
-    }, 350);
-
+    const moves = [
+      { key: 'p1', pos: POS.p1_a2_screen, label: 'Screen Wing' },
+      { key: 'p4', pos: POS.p4_a2_screen, label: 'Cross Screen' },
+      { key: 'p3', pos: POS.p3_a2_cut,    label: 'Curl Cut' },
+      { key: 'p5', pos: POS.p5_a2_cut,    label: 'Flash Elbow' }
+    ];
     updateUI(
-      '📦 AWAY SCREEN — Chloe screens for Zoe | Ava screens AWAY for Lexi — FIND THE CUTTER!',
-      '💡 Tip: Maya — look for Zoe cutting off the screen! She\'ll be open!',
-      'MAKE THE PASS & SHOOT →'
+      coachMode
+        ? '🖐️ DRAG Chloe & Ava to set away screens, and cut Zoe & Lexi into open space!'
+        : '📦 AWAY SCREENS — Chloe screens for Zoe while Ava screens across for Lexi!',
+      '💡 Tip: Cutters wait for the screener to get set, then explode into space!',
+      'PASS & SHOOT! 🏀→🏆'
     );
-
-    waitDone(() => {
-      animating = false;
-      btnNext.disabled = false;
-      updateUI(
-        '👀 MAYA FINDS THE OPEN PLAYER — Zoe is cutting free! Make the pass!',
-        '💡 Tip: Throw a crisp bounce pass to Zoe\'s outside hand!',
-        'PASS & SHOOT! 🏀→🏆'
-      );
-    });
+    assignMoveOrDrag(moves, onPhaseObjectivesComplete);
   } else {
-    // Ball is with #3 (Zoe) on RIGHT wing
-    // PG screens for #2 (Maya, left wing — non-ball side)
-    // #5 (Lexi, ball-side block RIGHT) screens AWAY for #4 (Ava, left block)
     phase = PHASE.B_AWAY;
-    animating = true;
-    btnNext.disabled = true;
-
-    players.p1.moveTo(POS.p1_b2_screen.x, POS.p1_b2_screen.y, 800);
-    players.p5.moveTo(POS.p5_b2_screen.x, POS.p5_b2_screen.y, 800);
-    setTimeout(() => {
-      players.p2.moveTo(POS.p2_b2_cut.x, POS.p2_b2_cut.y, 700);
-      players.p4.moveTo(POS.p4_b2_cut.x, POS.p4_b2_cut.y, 700);
-    }, 350);
-
+    const moves = [
+      { key: 'p1', pos: POS.p1_b2_screen, label: 'Screen Wing' },
+      { key: 'p5', pos: POS.p5_b2_screen, label: 'Cross Screen' },
+      { key: 'p2', pos: POS.p2_b2_cut,    label: 'Curl Cut' },
+      { key: 'p4', pos: POS.p4_b2_cut,    label: 'Flash Elbow' }
+    ];
     updateUI(
-      '📦 AWAY SCREEN — Chloe screens for Maya | Lexi screens AWAY for Ava — FIND THE CUTTER!',
-      '💡 Tip: Zoe — look for Maya cutting off the screen! She\'ll be open!',
-      'MAKE THE PASS & SHOOT →'
+      coachMode
+        ? '🖐️ DRAG Chloe & Lexi to set away screens, and cut Maya & Ava into open space!'
+        : '📦 AWAY SCREENS — Chloe screens for Maya while Lexi screens across for Ava!',
+      '💡 Tip: Cutters wait for the screener to get set, then explode into space!',
+      'PASS & SHOOT! 🏀→🏆'
     );
-
-    waitDone(() => {
-      animating = false;
-      btnNext.disabled = false;
-      updateUI(
-        '👀 ZOE FINDS THE OPEN PLAYER — Maya is cutting free! Make the pass!',
-        '💡 Tip: Throw a crisp bounce pass to Maya\'s outside hand!',
-        'PASS & SHOOT! 🏀→🏆'
-      );
-    });
+    assignMoveOrDrag(moves, onPhaseObjectivesComplete);
   }
 }
 
@@ -1511,152 +1360,96 @@ function runShot() {
   animating = true;
   btnNext.disabled = true;
 
-  if (branch === 'A') {
-    phase = PHASE.A_SHOT;
-    // Pass from #2 (Maya, left wing) to #3 (Zoe, cutter)
-    players.p2.hasBall = false;
-    players.p3.hasBall = true;
-    const p3 = players.p3;
-    ball.moveToXY(p3.x, p3.y - p3.r - ball.r, 400, 25);
-    setTimeout(() => {
-      players.p3.hasBall = false;
-      ball.visible = false;
-      startShot(p3.x, p3.y - p3.r, celebrate);
-    }, 500);
-  } else {
-    phase = PHASE.B_SHOT;
-    // Pass from #3 (Zoe, right wing) to #2 (Maya, cutter)
-    players.p3.hasBall = false;
-    players.p2.hasBall = true;
-    const p2 = players.p2;
-    ball.moveToXY(p2.x, p2.y - p2.r - ball.r, 400, 25);
-    setTimeout(() => {
-      players.p2.hasBall = false;
-      ball.visible = false;
-      startShot(p2.x, p2.y - p2.r, celebrate);
-    }, 500);
-  }
+  const passer = branch === 'A' ? players.p2 : players.p3;
+  const shooter = branch === 'A' ? players.p3 : players.p2;
+  phase = branch === 'A' ? PHASE.A_SHOT : PHASE.B_SHOT;
 
-  updateUI(
-    '🏀 THE PASS IS MADE — AND SHE SHOOTS!',
-    '🔊 The gym goes quiet... the ball is in the air...',
-    ''
-  );
+  passer.hasBall = false;
+  shooter.hasBall = true;
+  ball.moveToXY(shooter.x, shooter.y - shooter.r - ball.r, 400, 25);
+
+  updateUI('🏀 CRISP PASS TO THE CUTTER — AND SHE SHOOTS!', '🔊 Eyes on the rim...', '');
+
+  setTimeout(() => {
+    shooter.hasBall = false;
+    ball.visible = false;
+    startShot(shooter.x, shooter.y - shooter.r, celebrate);
+  }, 480);
 }
 
 function celebrate() {
   phase = PHASE.CELEBRATE;
-  triggerFlash();
+  flashAlpha = 0.55;
+  flashTimer = 450;
   spawnConfetti();
-  celebOverlay.style.display = 'block';
   celebText.style.display = 'block';
-  celebText.style.animation = 'none';
-  celebText.style.opacity = '1';
-
   animating = false;
+
   updateUI(
-    '🔥 FEVER UP! +2 — AMAZING PLAY! That\'s how "Downtown" works!',
-    '🏆 Great work, Fever! Teamwork makes the dream work!',
+    '🔥 SWOOSH! +2 — GREAT SPACING AND EXECUTION!',
+    '🏆 That is how you stretch the floor and score in "Downtown"!',
     ''
   );
-  const info = PHASE_INFO[PHASE.CELEBRATE];
-  phaseNameTxt.textContent = info.name;
-  phaseNumTxt.textContent  = `Step ${info.step} / ${info.total}`;
-  phaseFill.style.width    = '100%';
 
-  addPlayAgainBtn();
+  btnNext.style.display = 'none';
+  const ba = document.createElement('button');
+  ba.className = 'btn btn-again';
+  ba.textContent = '🔄 RUN IT AGAIN!';
+  ba.onclick = resetFullPlay;
+  btnRow.insertBefore(ba, btnReset);
 }
 
-function runResetAnim() {
-  phase = PHASE.RESET_ANIM;
-  animating = true;
-  btnNext.disabled = true;
-  showCallText = false;
-
-  // Clear ball holder
-  Object.values(players).forEach(p => p.hasBall = false);
-  players.p1.hasBall = true;
-
-  // Animate everyone back to home
-  players.p1.moveTo(HOME.p1.x, HOME.p1.y, 900);
-  players.p2.moveTo(HOME.p2.x, HOME.p2.y, 900);
-  players.p3.moveTo(HOME.p3.x, HOME.p3.y, 900);
-  players.p4.moveTo(HOME.p4.x, HOME.p4.y, 900);
-  players.p5.moveTo(HOME.p5.x, HOME.p5.y, 900);
-  ball.visible = true;
-
+function resetFullPlay() {
+  celebText.style.display = 'none';
+  phase = PHASE.INTRO;
+  initGame();
+  Array.from(btnRow.querySelectorAll('.btn-pass, .btn-again')).forEach(b => b.remove());
+  btnNext.style.display = '';
   updateUI(
-    '🔄 RESET! FILL THE SPOTS! — Everyone runs back to their starting position!',
-    '💡 Tip: Know your spot! In 5-out, fill the nearest open perimeter position!',
-    'RE-RUN THE PLAY →'
+    'Ready! Press "LET\'S RUN IT!" to practice the play again.',
+    coachMode ? '💡 Coach Mode active: Drag players to their target rings!' : '💡 Watch Mode active: Press Next to step through.',
+    '▶ LET\'S RUN IT!'
   );
-
-  waitDone(() => {
-    animating = false;
-    phase = PHASE.INTRO;
-    // ball snaps to p1
-    ball.snapTo(HOME.p1.x, HOME.p1.y - 0.04);
-    confettiParticles = [];
-    celebOverlay.style.display = 'none';
-    celebText.style.display    = 'none';
-    // remove any extra buttons
-    Array.from(btnRow.querySelectorAll('.btn-pass, .btn-again')).forEach(b=>b.remove());
-    btnNext.style.display = '';
-    updateUI(
-      '✅ All players reset! Now run it again from the top!',
-      '💡 Tip: Repetition builds muscle memory — run this play 10 more times!',
-      '▶ LET\'S RUN IT!'
-    );
-  });
 }
 
 // ═══════════════════════════════════════════════════════════
-//  BUTTON HANDLERS
+//  EVENT LISTENERS
 // ═══════════════════════════════════════════════════════════
 btnNext.addEventListener('click', () => {
-  if (animating) return;
-  switch(phase) {
+  if (animating || (coachMode && targets.length > 0)) return;
+  switch (phase) {
     case PHASE.INTRO:   runPhase1(); break;
     case PHASE.CALL:    runPhase2(); break;
     case PHASE.SCREENS: runPhase3(); break;
-    case PHASE.POP:     /* handled internally */ break;
-    case PHASE.DECISION: /* handled by pass buttons */ break;
     case PHASE.A_PASS:
     case PHASE.B_PASS:  runAwayScreen(); break;
     case PHASE.A_AWAY:
     case PHASE.B_AWAY:  runShot(); break;
-    case PHASE.A_SHOT:
-    case PHASE.B_SHOT:  break;
-    case PHASE.CELEBRATE: break;
   }
 });
 
-btnReset.addEventListener('click', () => {
-  if (animating && phase === PHASE.RESET_ANIM) return;
-  runResetAnim();
+btnReset.addEventListener('click', resetFullPlay);
+
+const btnModeDrag = document.getElementById('btn-mode-drag');
+const btnModeAuto = document.getElementById('btn-mode-auto');
+
+btnModeDrag.addEventListener('click', () => {
+  coachMode = true;
+  btnModeDrag.classList.add('active');
+  btnModeAuto.classList.remove('active');
+  resetFullPlay();
 });
 
-// ═══════════════════════════════════════════════════════════
-//  MODAL
-// ═══════════════════════════════════════════════════════════
+btnModeAuto.addEventListener('click', () => {
+  coachMode = false;
+  btnModeAuto.classList.add('active');
+  btnModeDrag.classList.remove('active');
+  resetFullPlay();
+});
+
 document.getElementById('modal-close').addEventListener('click', () => {
   document.getElementById('modal-overlay').style.display = 'none';
 });
-
-// ═══════════════════════════════════════════════════════════
-//  RESPONSIVE CANVAS
-// ═══════════════════════════════════════════════════════════
-// Canvas is CSS-scaled via width:100% — no resize logic needed.
-// The canvas coordinate space stays 620×520 always.
-
-// ═══════════════════════════════════════════════════════════
-//  INITIAL UI
-// ═══════════════════════════════════════════════════════════
-updateUI(
-  'Welcome! Press "LET\'S RUN IT!" to begin the "Downtown" motion offense.',
-  '💡 Tip: Pay attention to player spacing — this is a 5-out offense!',
-  '▶ LET\'S RUN IT!'
-);
 </script>
 </body>
 </html>
