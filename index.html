@@ -457,7 +457,7 @@
     <h2>🏀 COACH'S PLAYBOOK</h2>
     <p>Run <strong>"Downtown"</strong> with smart passing & spacing:</p>
     <ul>
-      <li><strong>⚠️ No Long Cross-Court Passes:</strong> Throwing skip passes all the way across the court is dangerous—when <strong>Show Defense</strong> is ON, the defender will pick it off!</li>
+      <li><strong>⚠️ No Long Cross-Court Passes:</strong> Reverse the ball back to the top of the key instead of skipping all the way to the opposite wing or opposite block—when <strong>Show Defense</strong> is ON, that skip pass gets picked off!</li>
       <li><strong>🛡️ Show Defense:</strong> Toggle defenders on/off to see 1-on-1 assignments and help-side spacing.</li>
       <li><strong>Shoot or Pass & Screen Away:</strong> Make short, crisp passes and screen away when guarded.</li>
     </ul>
@@ -613,16 +613,23 @@ let interceptLock = false;
 let bannerTimeout = null;
 
 // ═══════════════════════════════════════════════════════════
-//  LONG CROSS-COURT PASS DETECTION (ONLY CROSS-COURT SKIPS)
+//  LONG CROSS-COURT PASS DETECTION (OPPOSITE WING / OPPOSITE BLOCK ONLY)
 // ═══════════════════════════════════════════════════════════
 function evaluatePassRisk(passer, receiver) {
-  const horizSpan = Math.abs(receiver.x - passer.x);
-  // Strictly check if the pass goes from one side of the court all the way across the paint to the opposite side
-  const crossesFullCourt =
-    (passer.x < W / 2 - 45 && receiver.x > W / 2 + 45 && horizSpan > 260) ||
-    (passer.x > W / 2 + 45 && receiver.x < W / 2 - 45 && horizSpan > 260);
+  const centerX = W / 2;
+  // Center corridor covers the top of the 3-point line / point guard reversal spot
+  const centerZoneHalfW = 85;
 
-  if (!crossesFullCourt) {
+  const passerOnLeft    = passer.x < centerX - centerZoneHalfW;
+  const passerOnRight   = passer.x > centerX + centerZoneHalfW;
+  const receiverOnLeft  = receiver.x < centerX - centerZoneHalfW;
+  const receiverOnRight = receiver.x > centerX + centerZoneHalfW;
+
+  // Risky ONLY when throwing from left wing/block directly to opposite wing/block (or vice versa).
+  // Passing back to the top of the 3-point line (inside the center corridor) is ALWAYS safe.
+  const crossesToOppositeSide = (passerOnLeft && receiverOnRight) || (passerOnRight && receiverOnLeft);
+
+  if (!crossesToOppositeSide) {
     return {
       isDangerous: false,
       reason: '',
@@ -631,7 +638,7 @@ function evaluatePassRisk(passer, receiver) {
     };
   }
 
-  // Strictly 1-to-1: the single defender guarding the receiver jumps the cross-court skip pass
+  // Strictly 1-to-1: only the single defender guarding the receiver jumps the cross-court pass
   const receiverDefKey = 'd' + receiver.id;
   const def = defenders[receiverDefKey];
   const interceptPoint = {
@@ -641,7 +648,7 @@ function evaluatePassRisk(passer, receiver) {
 
   return {
     isDangerous: true,
-    reason: 'Long cross-court skip pass hangs in the air all the way across the court!',
+    reason: 'Long cross-court skip pass to the opposite side hangs in the air too long!',
     interceptor: def ? { key: receiverDefKey, defender: def } : null,
     interceptPoint
   };
@@ -1834,7 +1841,7 @@ function enterPassChoiceState(promptText) {
   phase = PHASE.DECISION_PASS;
   updateUI(
     promptText,
-    '💡 Tip: Make a short, safe pass! Long cross-court skip passes are risky and will get picked off if Defense is ON.',
+    '💡 Tip: Reverse the ball back to the top of the key or hit your side! Long cross-court skip passes to the opposite wing/block get picked off if Defense is ON.',
     ''
   );
 }
@@ -1866,7 +1873,7 @@ function executePassTo(targetKey) {
 
     updateUI(
       `🚨 PICKED OFF BY ${def.id}! Bad pass — ${risk.reason}`,
-      '💡 Coaching Point: Never throw long cross-court passes across the middle! Swing it one pass at a time.',
+      '💡 Coaching Point: Never skip the ball straight to the opposite wing or block! Pass back to the top of the key to reverse it.',
       '',
       true
     );
@@ -1877,8 +1884,8 @@ function executePassTo(targetKey) {
         ball.moveToXY(passer.x, passer.y - passer.r - ball.r, 320, 18);
       }
       updateUI(
-        `🔄 Try again! #${passer.id} ${passer.name} still has the ball — look for a shorter, safer pass.`,
-        '💡 Tip: Pass to an open teammate on the same side or top of the key instead of skipping across the court!',
+        `🔄 Try again! #${passer.id} ${passer.name} still has the ball — pass to the top of the key or your side.`,
+        '💡 Tip: Reversing the ball to the top of the 3-point line is always safe!',
         ''
       );
     }, 1550);
@@ -1904,7 +1911,7 @@ function executePassTo(targetKey) {
         ? `⚠️ DANGEROUS PASS to #${receiver.id} ${receiver.name}! (${risk.reason} Turn ON Defense to see it picked off!)`
         : `🏀 #${receiver.id} ${receiver.name} catches the pass! Shoot now or pass to any teammate.`,
       risk.isDangerous
-        ? '💡 Coaching Point: Long skip passes hang in the air—swing the ball with quick, short passes!'
+        ? '💡 Coaching Point: Pass back to the top of the key instead of skipping all the way across the court!'
         : (showDefense
             ? '💡 Good crisp pass! Notice how weak-side defenders sag into help position.'
             : '💡 Tip: Toggle "SHOW DEFENSE" to test whether long cross-court passes get picked off!'),
@@ -1920,7 +1927,7 @@ function executePassTo(targetKey) {
       ? `⚠️ RISKY PASS caught by #${receiver.id} ${receiver.name}! (${risk.reason}) Do you want to SHOOT or PASS?`
       : `🏀 #${receiver.id} ${receiver.name} catches the ball! Do you want to SHOOT or PASS?`,
     risk.isDangerous
-      ? '💡 Coaching Point: With Defense ON, that long cross-court pass gets picked off! Choose SHOOT or PASS & SCREEN AWAY.'
+      ? '💡 Coaching Point: With Defense ON, skipping to the opposite wing/block gets picked off! Choose SHOOT or PASS & SCREEN AWAY.'
       : '💡 If she is guarded, choose PASS to trigger off-ball screens away!',
     '',
     risk.isDangerous
@@ -2060,7 +2067,7 @@ function resetFullPlay() {
     updateUI(
       '🏀 FREE PLAY — Drag any player anywhere! Make short, safe passes or shoot anytime.',
       showDefense
-        ? '💡 Defense is ON: Long cross-court passes will get picked off! Swing the ball safely.'
+        ? '💡 Defense is ON: Long cross-court passes to the opposite wing/block will get picked off!'
         : '💡 Tip: Toggle "SHOW DEFENSE" at the top right to see how defenders pick off cross-court skip passes!',
       ''
     );
