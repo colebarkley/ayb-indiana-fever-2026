@@ -476,18 +476,39 @@
       <li><strong>🛡️ Show Defense:</strong> Toggle defenders on/off to see 1-on-1 assignments and help-side spacing.</li>
       <li><strong>Shoot or Pass & Screen Away:</strong> Make short, crisp passes and screen away when guarded.</li>
     </ul>
-    <button id="modal-close">HIT THE COURT! 🔥</button>
+    <button id="modal-close" type="button" onclick="document.getElementById('modal-overlay').style.display='none'">HIT THE COURT! 🔥</button>
   </div>
 </div>
 
 <script>
+
+// Polyfill ctx.roundRect for older iPadOS / iOS Safari versions
+if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+    if (typeof r === 'number') r = { tl: r, tr: r, br: r, bl: r };
+    else r = Object.assign({ tl: 0, tr: 0, br: 0, bl: 0 }, r);
+    this.beginPath();
+    this.moveTo(x + r.tl, y);
+    this.lineTo(x + w - r.tr, y);
+    this.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+    this.lineTo(x + w, y + h - r.br);
+    this.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+    this.lineTo(x + r.bl, y + h);
+    this.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+    this.lineTo(x, y + r.tl);
+    this.quadraticCurveTo(x, y, x + r.tl, y);
+    this.closePath();
+    return this;
+  };
+}
 // ═══════════════════════════════════════════════════════════
 //  DEVICE DETECTION (Auto-open Free Play on Mobile & Tablet)
 // ═══════════════════════════════════════════════════════════
 const isMobileOrTablet = () => {
   const touchCapable = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  const isIPadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
   const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  return mobileUA || (touchCapable && window.innerWidth <= 1024);
+  return isIPadOS || mobileUA || (touchCapable && window.innerWidth <= 1366);
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -543,11 +564,11 @@ const C3X_R       = COURT_R - 44;
 const ARC_R       = (C3X_R - C3X_L) / 2;
 const CORNER3_END = HOOP_Y;
 
-// Key Perimeter Spots on the Court
-const WING_ANGLE  = Math.PI * 0.25;
-const WING_X_L    = HOOP_X - (ARC_R + 22) * Math.cos(WING_ANGLE);
-const WING_Y      = HOOP_Y + (ARC_R + 22) * Math.sin(WING_ANGLE);
-const WING_X_R    = HOOP_X + (ARC_R + 22) * Math.cos(WING_ANGLE);
+// Key Perimeter Spots on the Court (Wide free-throw-line-extended wings for clean spacing)
+const WING_ANGLE  = Math.PI * 0.17;
+const WING_X_L    = HOOP_X - (ARC_R + 18) * Math.cos(WING_ANGLE);
+const WING_Y      = HOOP_Y + (ARC_R + 18) * Math.sin(WING_ANGLE);
+const WING_X_R    = HOOP_X + (ARC_R + 18) * Math.cos(WING_ANGLE);
 
 const CORNER_X_L  = C3X_L - 22;
 const CORNER_X_R  = C3X_R + 22;
@@ -852,14 +873,14 @@ class Defender {
     let targetX, targetY;
 
     if (mark.hasBall) {
-      targetX = mark.x + uxHoop * 40;
-      targetY = mark.y + uyHoop * 40;
-    } else if (distBall < 250) {
-      targetX = mark.x + uxHoop * 34 + uxBall * 22;
-      targetY = mark.y + uyHoop * 34 + uyBall * 22;
+      targetX = mark.x + uxHoop * 42;
+      targetY = mark.y + uyHoop * 42;
+    } else if (distBall < 235) {
+      targetX = mark.x + uxHoop * 36 + uxBall * 16;
+      targetY = mark.y + uyHoop * 36 + uyBall * 16;
     } else {
-      targetX = lerp(mark.x, HOOP_X, 0.36);
-      targetY = lerp(mark.y, HOOP_Y + 75, 0.32);
+      targetX = lerp(mark.x, HOOP_X, 0.34);
+      targetY = lerp(mark.y, HOOP_Y + 75, 0.30);
     }
 
     activeScreens.forEach(s => {
@@ -1442,14 +1463,122 @@ function checkAllTargetsLocked() {
   }
 }
 
+
 // ═══════════════════════════════════════════════════════════
-//  DYNAMIC SCREEN-AWAY ENGINE (COACH & WATCH MODES)
+//  REBALANCE 2 WINGS + 2 BLOCKS WHEN BALL RETURNS TO TOP OF KEY
+// ═══════════════════════════════════════════════════════════
+function isTopOfKeySpot(player) {
+  return Math.abs(player.x - TOK_X) <= 65 && player.y >= FT_Y + 45;
+}
+
+function rebalanceFourSpotsAroundTopOfKey(tokHolderKey) {
+  const fourPlayers = Object.entries(players)
+    .filter(([k]) => k !== tokHolderKey)
+    .map(([key, p]) => ({ key, p }));
+
+  if (fourPlayers.length !== 4) return;
+
+  const fourSpots = [
+    { name: 'Left Wing',   x: WING_X_L,      y: WING_Y  },
+    { name: 'Right Wing',  x: WING_X_R,      y: WING_Y  },
+    { name: 'Left Block',  x: LEFT_BLOCK_X,  y: BLOCK_Y },
+    { name: 'Right Block', x: RIGHT_BLOCK_X, y: BLOCK_Y }
+  ];
+
+  // Evaluate all 24 permutations to find the globally closest assignment
+  let bestPerm = null;
+  let bestCost = Infinity;
+
+  function permute(arr, start) {
+    if (start === arr.length) {
+      let cost = 0;
+      for (let i = 0; i < 4; i++) {
+        cost += Math.hypot(arr[i].p.x - fourSpots[i].x, arr[i].p.y - fourSpots[i].y);
+      }
+      if (cost < bestCost) {
+        bestCost = cost;
+        bestPerm = arr.slice();
+      }
+      return;
+    }
+    for (let i = start; i < arr.length; i++) {
+      [arr[start], arr[i]] = [arr[i], arr[start]];
+      permute(arr, start + 1);
+      [arr[start], arr[i]] = [arr[i], arr[start]];
+    }
+  }
+
+  permute(fourPlayers, 0);
+
+  if (bestPerm) {
+    for (let i = 0; i < 4; i++) {
+      const playerObj = bestPerm[i].p;
+      const spot = fourSpots[i];
+      if (Math.hypot(playerObj.x - spot.x, playerObj.y - spot.y) > 4) {
+        playerObj.moveToXY(spot.x, spot.y, 520);
+      }
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DYNAMIC SCREEN-AWAY & TOP-OF-KEY DOWN-SCREEN ENGINE
 // ═══════════════════════════════════════════════════════════
 function buildDynamicScreenAwayMoves() {
   const holderEntry = Object.entries(players).find(([_, p]) => p.hasBall);
   if (!holderEntry) return { moves: [], screens: [], desc: '' };
   const [holderKey, holder] = holderEntry;
 
+  const isAtTopOfKey = Math.abs(holder.x - TOK_X) <= 60 && holder.y >= FT_Y + 45;
+
+  // CASE A: Ball is at the TOP OF THE KEY
+  // The players on the WINGS screen down for the players on the BLOCK on their own side,
+  // and the block players use those down-screens to pop out to the wide 3pt wings!
+  if (isAtTopOfKey) {
+    const others = Object.entries(players)
+      .filter(([k]) => k !== holderKey)
+      .map(([k, p]) => ({ key: k, p }));
+
+    // Split into left side and right side of the court
+    const leftPlayers  = others.filter(o => o.p.x <= TOK_X);
+    const rightPlayers = others.filter(o => o.p.x > TOK_X);
+
+    while (leftPlayers.length < 2 && rightPlayers.length > 2) {
+      rightPlayers.sort((a, b) => a.p.x - b.p.x);
+      leftPlayers.push(rightPlayers.shift());
+    }
+    while (rightPlayers.length < 2 && leftPlayers.length > 2) {
+      leftPlayers.sort((a, b) => b.p.x - a.p.x);
+      rightPlayers.push(leftPlayers.shift());
+    }
+
+    // On each side, the player closer to the wing (higher y / further from baseline) is the WING screener,
+    // and the player closer to the block (lower y / closer to baseline) is the BLOCK cutter!
+    leftPlayers.sort((a, b) => b.p.y - a.p.y);
+    rightPlayers.sort((a, b) => b.p.y - a.p.y);
+
+    const leftWingScreener  = leftPlayers[0];
+    const leftBlockCutter   = leftPlayers[1];
+    const rightWingScreener = rightPlayers[0];
+    const rightBlockCutter  = rightPlayers[1];
+
+    const moves = [
+      { key: leftWingScreener.key,  pos: { x: LEFT_BLOCK_X / W,  y: BLOCK_Y / H }, label: 'Wing Screen Down L' },
+      { key: rightWingScreener.key, pos: { x: RIGHT_BLOCK_X / W, y: BLOCK_Y / H }, label: 'Wing Screen Down R' },
+      { key: leftBlockCutter.key,   pos: { x: WING_X_L / W,      y: WING_Y / H  }, label: 'Pop Left Wing' },
+      { key: rightBlockCutter.key,  pos: { x: WING_X_R / W,      y: WING_Y / H  }, label: 'Pop Right Wing' }
+    ];
+
+    const screens = [
+      { x: LEFT_BLOCK_X,  y: BLOCK_Y - 22, angle: Math.PI },
+      { x: RIGHT_BLOCK_X, y: BLOCK_Y - 22, angle: Math.PI }
+    ];
+
+    const desc = `Wings (${leftWingScreener.p.name} & ${rightWingScreener.p.name}) screen down to the blocks on their own sides while ${leftBlockCutter.p.name} & ${rightBlockCutter.p.name} pop wide to the 3pt wings!`;
+    return { moves, screens, desc };
+  }
+
+  // CASE B: Ball is on a WING or BLOCK — screen away & replace the vacated low block
   const ballOnLeft = holder.x <= W / 2;
 
   const ballSidePostKey = ballOnLeft ? 'p4' : 'p5';
@@ -1511,11 +1640,9 @@ function buildDynamicScreenAwayMoves() {
       label: 'Screen Away'
     });
 
-    const cutX = ballOnLeft ? (TOK_X + 48) : (TOK_X - 48);
-    const cutY = TOK_Y - 6;
     moves.push({
       key: perimCutter.key,
-      pos: { x: cutX / W, y: cutY / H },
+      pos: { x: TOK_X / W, y: TOK_Y / H },
       label: 'Top of Key'
     });
 
@@ -1849,8 +1976,12 @@ function onPhaseObjectivesComplete() {
       '👀 5-OUT SPACING SET! Who is open for Player 1 to pass to?'
     );
   } else if (phase === PHASE.AWAY_SCREEN_STEP) {
+    const holder = Object.values(players).find(p => p.hasBall);
+    const isAtTopOfKey = holder && Math.abs(holder.x - TOK_X) <= 60 && holder.y >= FT_Y + 45;
     enterPassChoiceState(
-      '✅ Screen-away & low-block replacement complete! Who is open now?'
+      isAtTopOfKey
+        ? '✅ Down screens set on both sides & 5-out spacing restored! Who is open now?'
+        : '✅ Screen-away & low-block replacement complete! Who is open now?'
     );
   }
 }
@@ -1872,7 +2003,6 @@ function executePassTo(targetKey) {
   const passer = currentHolderEntry ? currentHolderEntry[1] : null;
   const risk = passer ? evaluatePassRisk(passer, receiver) : { isDangerous: false };
 
-  // In Coach / Watch playbook modes, disallow risky skip passes completely
   if (mode !== 'free' && risk.isDangerous) {
     flashColor = '#ff1744';
     flashAlpha = 0.35;
@@ -1888,7 +2018,6 @@ function executePassTo(targetKey) {
     return;
   }
 
-  // In Free Play with Defense ON, allow testing the turnover so players see the steal happen
   if (showDefense && risk.isDangerous && risk.interceptor && risk.interceptPoint) {
     interceptLock = true;
     turnoverCount++;
@@ -1931,6 +2060,13 @@ function executePassTo(targetKey) {
   passCount++;
   activeScreens = [];
 
+  // Whenever the ball returns to the Top of the Key, rebalance the remaining 4 players
+  // so the closest players fill both low blocks and both wide wings!
+  const returnedToTopOfKey = isTopOfKeySpot(receiver);
+  if (returnedToTopOfKey) {
+    rebalanceFourSpotsAroundTopOfKey(targetKey);
+  }
+
   ball.visible = true;
   ball.moveToXY(receiver.x, receiver.y - receiver.r - ball.r, 420, 28);
 
@@ -1956,21 +2092,29 @@ function executePassTo(targetKey) {
 
   phase = PHASE.SHOOT_OR_PASS;
   updateUI(
-    `🏀 ${receiver.name} catches the ball! Do you want to SHOOT or PASS?`,
-    '💡 If guarded, choose PASS to trigger off-ball screens away!',
+    returnedToTopOfKey
+      ? `🏀 ${receiver.name} resets at the Top of the Key (2 wings + 2 blocks balanced)! SHOOT or PASS?`
+      : `🏀 ${receiver.name} catches the ball! Do you want to SHOOT or PASS?`,
+    returnedToTopOfKey
+      ? '💡 If no one is open, choose PASS & SCREEN AWAY so the wings screen down to the blocks on their side!'
+      : '💡 If guarded, choose PASS to trigger off-ball screens away!',
     ''
   );
 }
 
 function triggerScreenAwayAndPassChoice() {
   phase = PHASE.AWAY_SCREEN_STEP;
+  const holder = Object.values(players).find(p => p.hasBall);
+  const isAtTopOfKey = holder && Math.abs(holder.x - TOK_X) <= 60 && holder.y >= FT_Y + 45;
   const { moves, screens, desc } = buildDynamicScreenAwayMoves();
 
   updateUI(
     mode === 'drag'
-      ? `🖐️ DRAG players to screen away & fill the vacated low block! (${desc})`
-      : `🛡️ SCREEN AWAY! ${desc}`,
-    '💡 Tip: Watch the opposite low block player cut across to fill the exact low block the screener just left!',
+      ? `🖐️ DRAG players into position! (${desc})`
+      : (isAtTopOfKey ? `📦 DOWN SCREENS! ${desc}` : `🛡️ SCREEN AWAY! ${desc}`),
+    isAtTopOfKey
+      ? '💡 Tip: When the ball is at the top of the key, both sides screen down on their own side so the wings pop wide with 5-out spacing!'
+      : '💡 Tip: Watch the opposite low block player cut across to fill the exact low block the screener just left!',
     'NEXT: CHOOSE NEXT PASS →'
   );
 
@@ -2157,8 +2301,15 @@ btnModeDrag.addEventListener('click', () => setMode('drag', btnModeDrag));
 btnModeFree.addEventListener('click', () => setMode('free', btnModeFree));
 btnModeAuto.addEventListener('click', () => setMode('auto', btnModeAuto));
 
-document.getElementById('modal-close').addEventListener('click', () => {
+const closePlaybookModal = (e) => {
+  if (e && e.cancelable) e.preventDefault();
   document.getElementById('modal-overlay').style.display = 'none';
+};
+const modalCloseBtn = document.getElementById('modal-close');
+modalCloseBtn.addEventListener('click', closePlaybookModal);
+modalCloseBtn.addEventListener('touchend', closePlaybookModal, { passive: false });
+document.getElementById('modal-overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'modal-overlay') closePlaybookModal(e);
 });
 
 if (mode === 'free') {
