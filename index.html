@@ -231,6 +231,7 @@
     flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
+    align-items: stretch;
     width: 100%;
     max-width: 800px;
     margin: 14px auto 0;
@@ -251,10 +252,23 @@
     flex: 1 1 auto;
     min-width: 135px;
     max-width: 250px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
   }
   .btn:hover:not(:disabled) { transform: scale(1.04); }
   .btn:active:not(:disabled) { transform: scale(0.97); }
   .btn:disabled { opacity: .4; cursor: default; }
+
+  .btn-wrap {
+    white-space: normal;
+    font-size: clamp(0.62rem, 1.9vw, 0.74rem);
+    line-height: 1.25;
+    padding: 10px 14px;
+    letter-spacing: 0.6px;
+    max-width: 230px;
+  }
 
   .btn-next {
     background: linear-gradient(135deg, var(--gold), var(--gold2));
@@ -444,11 +458,11 @@
 </div>
 
 <div id="legend">
-  <div class="legend-item"><div class="legend-dot">1</div> Chloe (PG)</div>
-  <div class="legend-item"><div class="legend-dot">2</div> Maya (Left)</div>
-  <div class="legend-item"><div class="legend-dot">3</div> Zoe (Right)</div>
-  <div class="legend-item"><div class="legend-dot">4</div> Ava (Forward)</div>
-  <div class="legend-item"><div class="legend-dot">5</div> Lexi (Post)</div>
+  <div class="legend-item"><div class="legend-dot">1</div> Player 1 (PG)</div>
+  <div class="legend-item"><div class="legend-dot">2</div> Player 2 (Left)</div>
+  <div class="legend-item"><div class="legend-dot">3</div> Player 3 (Right)</div>
+  <div class="legend-item"><div class="legend-dot">4</div> Player 4 (Forward)</div>
+  <div class="legend-item"><div class="legend-dot">5</div> Player 5 (Post)</div>
   <div class="legend-item" id="legend-def" style="display:none;"><div class="legend-dot def">X</div> Defenders (1-on-1 Assignments)</div>
 </div>
 
@@ -617,7 +631,6 @@ let bannerTimeout = null;
 // ═══════════════════════════════════════════════════════════
 function evaluatePassRisk(passer, receiver) {
   const centerX = W / 2;
-  // Center corridor covers the top of the 3-point line / point guard reversal spot
   const centerZoneHalfW = 85;
 
   const passerOnLeft    = passer.x < centerX - centerZoneHalfW;
@@ -625,8 +638,6 @@ function evaluatePassRisk(passer, receiver) {
   const receiverOnLeft  = receiver.x < centerX - centerZoneHalfW;
   const receiverOnRight = receiver.x > centerX + centerZoneHalfW;
 
-  // Risky ONLY when throwing from left wing/block directly to opposite wing/block (or vice versa).
-  // Passing back to the top of the 3-point line (inside the center corridor) is ALWAYS safe.
   const crossesToOppositeSide = (passerOnLeft && receiverOnRight) || (passerOnRight && receiverOnLeft);
 
   if (!crossesToOppositeSide) {
@@ -638,7 +649,6 @@ function evaluatePassRisk(passer, receiver) {
     };
   }
 
-  // Strictly 1-to-1: only the single defender guarding the receiver jumps the cross-court pass
   const receiverDefKey = 'd' + receiver.id;
   const def = defenders[receiverDefKey];
   const interceptPoint = {
@@ -791,7 +801,7 @@ class Player {
 
 class Defender {
   constructor(id, assignmentKey) {
-    this.id = id; // 'X1'..'X5' strictly 1-on-1 with 'p1'..'p5'
+    this.id = id;
     this.assignmentKey = assignmentKey;
     this.x = W / 2;
     this.y = H / 2;
@@ -837,7 +847,6 @@ class Defender {
       targetX = mark.x + uxHoop * 34 + uxBall * 22;
       targetY = mark.y + uyHoop * 34 + uyBall * 22;
     } else {
-      // Weak-side 1-on-1 defender sags into help position toward the midline
       targetX = lerp(mark.x, HOOP_X, 0.36);
       targetY = lerp(mark.y, HOOP_Y + 75, 0.32);
     }
@@ -860,7 +869,6 @@ class Defender {
 
     const mark = players[this.assignmentKey];
 
-    // 1-on-1 assignment line connecting strictly one defender to one offensive player
     if (mark) {
       ctx.save();
       ctx.beginPath();
@@ -965,13 +973,12 @@ class Ball {
 
 function initGame() {
   players = {
-    p1: new Player('1', 'Chloe', HOME.p1.x, HOME.p1.y),
-    p2: new Player('2', 'Maya',  HOME.p2.x, HOME.p2.y),
-    p3: new Player('3', 'Zoe',   HOME.p3.x, HOME.p3.y),
-    p4: new Player('4', 'Ava',   HOME.p4.x, HOME.p4.y),
-    p5: new Player('5', 'Lexi',  HOME.p5.x, HOME.p5.y),
+    p1: new Player('1', 'Player 1', HOME.p1.x, HOME.p1.y),
+    p2: new Player('2', 'Player 2', HOME.p2.x, HOME.p2.y),
+    p3: new Player('3', 'Player 3', HOME.p3.x, HOME.p3.y),
+    p4: new Player('4', 'Player 4', HOME.p4.x, HOME.p4.y),
+    p5: new Player('5', 'Player 5', HOME.p5.x, HOME.p5.y),
   };
-  // Strictly 1 defender per offensive player (X1 -> 1, X2 -> 2, X3 -> 3, X4 -> 4, X5 -> 5)
   defenders = {
     d1: new Defender('X1', 'p1'),
     d2: new Defender('X2', 'p2'),
@@ -1509,7 +1516,7 @@ function buildDynamicScreenAwayMoves() {
   }
 
   const desc = (holderKey !== ballSidePostKey && holderKey !== weakSidePostKey)
-    ? `#${ballSidePost.id} ${ballSidePost.name} screens away while #${weakSidePost.id} ${weakSidePost.name} fills the vacated ${ballOnLeft ? 'LEFT' : 'RIGHT'} low block!`
+    ? `${ballSidePost.name} screens away while ${weakSidePost.name} fills the vacated ${ballOnLeft ? 'LEFT' : 'RIGHT'} low block!`
     : `Weak-side players screen away and cut into open space!`;
 
   return { moves, screens, desc };
@@ -1717,8 +1724,8 @@ function renderPassChoiceButtons() {
       const bp = document.createElement('button');
       bp.className = risk.isDangerous ? 'btn btn-pass risky' : 'btn btn-pass';
       bp.textContent = risk.isDangerous
-        ? `⚠️ RISKY SKIP: #${p.id} ${p.name}`
-        : `🏀 PASS to #${p.id} ${p.name}`;
+        ? `⚠️ RISKY SKIP: ${p.name}`
+        : `🏀 PASS to ${p.name}`;
       bp.disabled = shotProgress >= 0 || interceptLock;
       bp.onclick = () => executePassTo(key);
       btnRow.insertBefore(bp, btnReset);
@@ -1778,7 +1785,7 @@ function updateUI(action, tip, nextLabel, isDanger = false) {
     btnRow.insertBefore(bShoot, btnReset);
 
     const bPass = document.createElement('button');
-    bPass.className = 'btn btn-pass';
+    bPass.className = 'btn btn-pass btn-wrap';
     bPass.textContent = '🔄 NOT OPEN → PASS & SCREEN AWAY';
     bPass.onclick = () => triggerScreenAwayAndPassChoice();
     btnRow.insertBefore(bPass, btnReset);
@@ -1821,14 +1828,14 @@ function assignMoveOrDrag(moves, screenIndicators, onComplete) {
 function onPhaseObjectivesComplete() {
   if (phase === PHASE.SCREENS) {
     updateUI(
-      '✅ Down screens set! Now pop Maya & Zoe out to the 3-point wings.',
+      '✅ Down screens set! Now pop Player 2 & Player 3 out to the 3-point wings.',
       '💡 Tip: Good spacing! Keep those screens solid so the wings get open.',
       'NEXT: POP TO WINGS →'
     );
   } else if (phase === PHASE.POP) {
     activeScreens = [];
     enterPassChoiceState(
-      '👀 5-OUT SPACING SET! Who is open for Chloe to pass to?'
+      '👀 5-OUT SPACING SET! Who is open for Player 1 to pass to?'
     );
   } else if (phase === PHASE.AWAY_SCREEN_STEP) {
     enterPassChoiceState(
@@ -1854,7 +1861,6 @@ function executePassTo(targetKey) {
   const passer = currentHolderEntry ? currentHolderEntry[1] : null;
   const risk = passer ? evaluatePassRisk(passer, receiver) : { isDangerous: false };
 
-  // When Defense is ON and the pass goes completely across the court -> single assigned defender steals it!
   if (showDefense && risk.isDangerous && risk.interceptor && risk.interceptPoint) {
     interceptLock = true;
     turnoverCount++;
@@ -1884,7 +1890,7 @@ function executePassTo(targetKey) {
         ball.moveToXY(passer.x, passer.y - passer.r - ball.r, 320, 18);
       }
       updateUI(
-        `🔄 Try again! #${passer.id} ${passer.name} still has the ball — pass to the top of the key or your side.`,
+        `🔄 Try again! ${passer.name} still has the ball — pass to the top of the key or your side.`,
         '💡 Tip: Reversing the ball to the top of the 3-point line is always safe!',
         ''
       );
@@ -1892,7 +1898,6 @@ function executePassTo(targetKey) {
     return;
   }
 
-  // Complete the pass
   if (passer) passer.hasBall = false;
   receiver.hasBall = true;
   passCount++;
@@ -1908,8 +1913,8 @@ function executePassTo(targetKey) {
   if (mode === 'free') {
     updateUI(
       risk.isDangerous
-        ? `⚠️ DANGEROUS PASS to #${receiver.id} ${receiver.name}! (${risk.reason} Turn ON Defense to see it picked off!)`
-        : `🏀 #${receiver.id} ${receiver.name} catches the pass! Shoot now or pass to any teammate.`,
+        ? `⚠️ DANGEROUS PASS to ${receiver.name}! (${risk.reason} Turn ON Defense to see it picked off!)`
+        : `🏀 ${receiver.name} catches the pass! Shoot now or pass to any teammate.`,
       risk.isDangerous
         ? '💡 Coaching Point: Pass back to the top of the key instead of skipping all the way across the court!'
         : (showDefense
@@ -1924,11 +1929,11 @@ function executePassTo(targetKey) {
   phase = PHASE.SHOOT_OR_PASS;
   updateUI(
     risk.isDangerous
-      ? `⚠️ RISKY PASS caught by #${receiver.id} ${receiver.name}! (${risk.reason}) Do you want to SHOOT or PASS?`
-      : `🏀 #${receiver.id} ${receiver.name} catches the ball! Do you want to SHOOT or PASS?`,
+      ? `⚠️ RISKY PASS caught by ${receiver.name}! (${risk.reason}) Do you want to SHOOT or PASS?`
+      : `🏀 ${receiver.name} catches the ball! Do you want to SHOOT or PASS?`,
     risk.isDangerous
       ? '💡 Coaching Point: With Defense ON, skipping to the opposite wing/block gets picked off! Choose SHOOT or PASS & SCREEN AWAY.'
-      : '💡 If she is guarded, choose PASS to trigger off-ball screens away!',
+      : '💡 If guarded, choose PASS to trigger off-ball screens away!',
     '',
     risk.isDangerous
   );
@@ -1959,7 +1964,7 @@ function shootFromCurrentHolder() {
   ball.visible = false;
 
   if (mode !== 'free') phase = PHASE.SHOT_ANIM;
-  updateUI(`🏀 #${holder.id} ${holder.name} puts up the shot!`, '🔊 Eyes on the rim...', '');
+  updateUI(`🏀 ${holder.name} puts up the shot!`, '🔊 Eyes on the rim...', '');
 
   startShot(holder.x, holder.y - holder.r, () => {
     animating = false;
@@ -1983,7 +1988,7 @@ function shootFromCurrentHolder() {
 
     phase = PHASE.CELEBRATE;
     updateUI(
-      `🔥 SWOOSH! +2 FOR #${holder.id} ${holder.name} AFTER ${passCount} PASS${passCount === 1 ? '' : 'ES'}!`,
+      `🔥 SWOOSH! +2 FOR ${holder.name.toUpperCase()} AFTER ${passCount} PASS${passCount === 1 ? '' : 'ES'}!`,
       '🏆 Great ball movement, off-ball screens, and shot selection!',
       ''
     );
@@ -2004,7 +2009,7 @@ function runPhase1() {
   callTextStr = '☎️ DOWNTOWN!';
   callTextTimer = 0;
   updateUI(
-    '☎️ Chloe calls "DOWNTOWN!" — Elbows get ready to screen down!',
+    '☎️ Player 1 calls "DOWNTOWN!" — Elbows get ready to screen down!',
     '🔊 Everyone hears the call and prepares to move on rhythm.',
     'SET DOWN SCREENS →'
   );
@@ -2023,8 +2028,8 @@ function runPhase2() {
   ];
   updateUI(
     mode === 'drag'
-      ? '🖐️ DRAG #4 Ava & #5 Lexi down to set screens below the blocks!'
-      : '📦 SCREEN DOWN — #4 Ava & #5 Lexi screen down for the blocks!',
+      ? '🖐️ DRAG Player 4 & Player 5 down to set screens below the blocks!'
+      : '📦 SCREEN DOWN — Player 4 & Player 5 screen down for the blocks!',
     '💡 Tip: Screeners stop just outside the lane with wide feet.',
     'NEXT: POP TO WINGS →'
   );
@@ -2041,8 +2046,8 @@ function runPhase3() {
   ];
   updateUI(
     mode === 'drag'
-      ? '🖐️ DRAG Maya & Zoe out to the 3pt wings, and slide Ava & Lexi to the blocks!'
-      : '🏃 POP WIDE! Maya & Zoe cut to the 3-point wings!',
+      ? '🖐️ DRAG Player 2 & Player 3 out to the 3pt wings, and slide Player 4 & Player 5 to the blocks!'
+      : '🏃 POP WIDE! Player 2 & Player 3 cut to the 3-point wings!',
     '💡 Tip: Stretch the defense all the way out to the 3-point line!',
     'NEXT: CHOOSE PASS →'
   );
