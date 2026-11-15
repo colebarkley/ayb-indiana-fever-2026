@@ -6,490 +6,463 @@
 <title>AYB Indiana Fever | "Downtown" Interactive Playbook</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
-  }
-
-  :root {
-    --navy:   #002D62;
-    --gold:   #FFC72C;
-    --gold2:  #FFD966;
-    --bg:     #0a0a1a;
-    --panel:  #0d1a2e;
-    --green:  #00e676;
-    --orange: #FF6B00;
-    --red:    #d32f2f;
-    --radius: 12px;
-  }
-
-  body {
-    background: var(--bg);
-    color: #fff;
-    font-family: 'Rajdhani', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 0 40px;
-    overflow-x: hidden;
-    user-select: none;
-    -webkit-user-select: none;
-  }
-
-  /* ── HEADER ──────────────────────────────────── */
-  #header {
-    width: 100%;
-    background: linear-gradient(135deg, var(--navy) 60%, #003a80);
-    border-bottom: 3px solid var(--gold);
-    padding: 12px 20px 10px;
-    text-align: center;
-  }
-  #header h1 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(1.1rem, 4vw, 1.85rem);
-    color: var(--gold);
-    letter-spacing: 3px;
-    background: linear-gradient(90deg, #FFD966 0%, #fff 40%, #FFC72C 60%, #FFD966 100%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmer 3s linear infinite;
-  }
-  @keyframes shimmer { to { background-position: 200% center; } }
-  #header p {
-    font-size: clamp(0.75rem, 2.5vw, 0.95rem);
-    color: rgba(255,255,255,.72);
-    letter-spacing: 2px;
-    margin-top: 2px;
-  }
-
-  /* ── TOP CONTROLS & PLAY NAME ────────────────── */
-  #top-bar {
-    width: 100%;
-    max-width: 800px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 14px 14px 0;
-  }
-  #play-name {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(1.05rem, 3.4vw, 1.65rem);
-    color: #fff;
-    letter-spacing: 2px;
-  }
-  #play-name span { color: var(--gold); }
-
-  #controls-right {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-  }
-
-  /* Mode Toggle Pill */
-  #mode-toggle {
-    display: flex;
-    background: var(--panel);
-    border: 1.5px solid var(--gold);
-    border-radius: 999px;
-    overflow: hidden;
-  }
-  .mode-btn {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.66rem;
-    font-weight: 700;
-    padding: 8px 11px;
-    border: none;
-    background: transparent;
-    color: rgba(255,255,255,0.68);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .mode-btn.active {
-    background: var(--gold);
-    color: var(--navy);
-  }
-
-  /* Show Defense Toggle Button */
-  #btn-defense {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.66rem;
-    font-weight: 700;
-    padding: 8px 13px;
-    border-radius: 999px;
-    border: 1.5px solid rgba(255, 82, 82, 0.75);
-    background: var(--panel);
-    color: #ff8a80;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  #btn-defense.active {
-    background: linear-gradient(135deg, #c62828, #e53935);
-    color: #fff;
-    border-color: #fff;
-    box-shadow: 0 0 14px rgba(229, 57, 53, 0.6);
-  }
-
-  /* ── PHASE BAR ───────────────────────────────── */
-  #phase-bar-wrap {
-    width: 100%;
-    max-width: 800px;
-    margin: 10px auto 0;
-    padding: 0 14px;
-  }
-  #phase-label {
-    font-size: 0.85rem;
-    color: var(--gold);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: space-between;
-  }
-  #phase-track {
-    height: 8px;
-    background: rgba(255,255,255,.12);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  #phase-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--navy), var(--gold));
-    border-radius: 4px;
-    transition: width .4s ease;
-    box-shadow: 0 0 8px var(--gold);
-  }
-
-  /* ── CANVAS WRAPPER ──────────────────────────── */
-  #canvas-wrap {
-    position: relative;
-    margin: 12px auto 0;
-    width: 100%;
-    max-width: 800px;
-    padding: 0 12px;
-  }
-  canvas#court {
-    display: block;
-    width: 100%;
-    border-radius: var(--radius);
-    border: 2px solid var(--gold);
-    box-shadow: 0 0 24px rgba(255,199,44,.25), 0 0 60px rgba(0,45,98,.6);
-    touch-action: none;
-    cursor: default;
-  }
-
-  /* ── ACTION LABEL ────────────────────────────── */
-  #action-box {
-    width: 100%;
-    max-width: 800px;
-    margin: 10px auto 0;
-    padding: 0 12px;
-  }
-  #action-label {
-    background: var(--panel);
-    border: 1px solid rgba(255,199,44,.35);
-    border-radius: var(--radius);
-    padding: 10px 16px;
-    font-size: clamp(0.95rem, 2.8vw, 1.12rem);
-    font-weight: 700;
-    color: #fff;
-    text-align: center;
-    min-height: 46px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1.35;
-    transition: background 0.25s, border-color 0.25s;
-  }
-  #action-label.danger {
-    background: rgba(183, 28, 28, 0.35);
-    border-color: #ff5252;
-    color: #ffcdd2;
-  }
-  #tip-label {
-    background: rgba(0,45,98,.5);
-    border-left: 3px solid var(--gold);
-    border-radius: 0 var(--radius) var(--radius) 0;
-    padding: 7px 14px;
-    font-size: clamp(0.8rem, 2.2vw, 0.94rem);
-    color: var(--gold2);
-    margin-top: 6px;
-    font-style: italic;
-  }
-
-  /* ── BUTTONS ─────────────────────────────────── */
-  #btn-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    align-items: stretch;
-    width: 100%;
-    max-width: 800px;
-    margin: 14px auto 0;
-    padding: 0 12px;
-  }
-
-  .btn {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(0.7rem, 2.2vw, 0.86rem);
-    font-weight: 700;
-    letter-spacing: 1px;
-    padding: 12px 18px;
-    border: none;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: transform .15s, box-shadow .15s, opacity .15s;
-    white-space: nowrap;
-    flex: 1 1 auto;
-    min-width: 135px;
-    max-width: 250px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-  .btn:hover:not(:disabled) { transform: scale(1.04); }
-  .btn:active:not(:disabled) { transform: scale(0.97); }
-  .btn:disabled { opacity: .4; cursor: default; }
-
-  .btn-wrap {
-    white-space: normal;
-    font-size: clamp(0.62rem, 1.9vw, 0.74rem);
-    line-height: 1.25;
-    padding: 10px 14px;
-    letter-spacing: 0.6px;
-    max-width: 230px;
-  }
-
-  .btn-next {
-    background: linear-gradient(135deg, var(--gold), var(--gold2));
-    color: var(--navy);
-    box-shadow: 0 0 16px rgba(255,199,44,.5);
-  }
-  .btn-shoot {
-    background: linear-gradient(135deg, #ff5722, #ff9800);
-    color: #fff;
-    border: 2px solid #fff;
-    box-shadow: 0 0 18px rgba(255,107,0,.6);
-  }
-  .btn-reset {
-    background: transparent;
-    color: rgba(255,100,100,1);
-    border: 2px solid rgba(255,100,100,.6);
-    max-width: 185px;
-  }
-  .btn-pass {
-    background: linear-gradient(135deg, var(--navy), #0040a0);
-    color: var(--gold);
-    border: 2px solid var(--gold);
-    box-shadow: 0 0 14px rgba(255,199,44,.35);
-    max-width: 250px;
-  }
-  .btn-pass.risky {
-    background: linear-gradient(135deg, #4a0e0e, #7f1d1d);
-    color: #ff8a80;
-    border: 2px solid #ff5252;
-    box-shadow: 0 0 12px rgba(255, 82, 82, 0.35);
-    opacity: 0.85;
-  }
-  .btn-again {
-    background: linear-gradient(135deg,#28a745,#52d470);
-    color: #fff;
-    box-shadow: 0 0 18px rgba(40,167,69,.5);
-  }
-
-  /* ── LEGEND ──────────────────────────────────── */
-  #legend {
-    width: 100%;
-    max-width: 800px;
-    margin: 14px auto 0;
-    padding: 0 12px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-  }
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    background: var(--panel);
-    border: 1px solid rgba(255,199,44,.2);
-    border-radius: 999px;
-    padding: 5px 12px;
-    font-size: 0.84rem;
-    font-weight: 700;
-  }
-  .legend-dot {
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    background: var(--navy);
-    border: 2px solid var(--gold);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.68rem;
-    font-weight: 900;
-    color: var(--gold);
-    flex-shrink: 0;
-  }
-  .legend-dot.def {
-    background: #b71c1c;
-    border-color: #fff;
-    color: #fff;
-  }
-
-  /* ── MODAL ───────────────────────────────────── */
-  #modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.82);
-    z-index: 999;
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
-  }
-  #modal {
-    background: var(--panel);
-    border: 2px solid var(--gold);
-    border-radius: 16px;
-    max-width: 490px;
-    width: 100%;
-    padding: 26px 24px 22px;
-    text-align: center;
-    box-shadow: 0 0 40px rgba(255,199,44,.3);
-  }
-  #modal h2 {
-    font-family: 'Orbitron', sans-serif;
-    color: var(--gold);
-    font-size: 1.3rem;
-    margin-bottom: 12px;
-  }
-  #modal p {
-    font-size: 0.96rem;
-    color: rgba(255,255,255,.88);
-    line-height: 1.5;
-    margin-bottom: 12px;
-  }
-  #modal ul {
-    text-align: left;
-    color: rgba(255,255,255,.85);
-    font-size: 0.9rem;
-    line-height: 1.65;
-    padding-left: 20px;
-    margin-bottom: 18px;
-  }
-  #modal-close {
-    font-family: 'Orbitron', sans-serif;
-    background: linear-gradient(135deg, var(--gold), var(--gold2));
-    color: var(--navy);
-    border: none;
-    border-radius: 999px;
-    padding: 12px 34px;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 0 16px rgba(255,199,44,.5);
-  }
-
-  #celebrate-text {
-    position: absolute;
-    top: 48%; left: 50%;
-    transform: translate(-50%,-50%);
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(1.35rem, 4.3vw, 2.3rem);
-    color: var(--gold);
-    text-shadow: 0 0 24px rgba(0,0,0,.95), 0 0 20px rgba(255,199,44,.9);
-    text-align: center;
-    white-space: nowrap;
-    display: none;
-    pointer-events: none;
-  }
-  #celebrate-text.turnover {
-    color: #ff5252;
-    text-shadow: 0 0 24px rgba(0,0,0,.98), 0 0 20px rgba(255, 23, 68, 0.95);
-  }
+*, *::before, *::after {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+-webkit-tap-highlight-color: transparent;
+-webkit-touch-callout: none;
+}
+:root {
+--navy:   #002D62;
+--gold:   #FFC72C;
+--gold2:  #FFD966;
+--bg:     #0a0a1a;
+--panel:  #0d1a2e;
+--green:  #00e676;
+--orange: #FF6B00;
+--red:    #d32f2f;
+--radius: 12px;
+}
+body {
+background: var(--bg);
+color: #fff;
+font-family: 'Rajdhani', sans-serif;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0 0 40px;
+overflow-x: hidden;
+user-select: none;
+-webkit-user-select: none;
+}
+/* ── HEADER ──────────────────────────────────── */
+#header {
+width: 100%;
+background: linear-gradient(135deg, var(--navy) 60%, #003a80);
+border-bottom: 3px solid var(--gold);
+padding: 12px 20px 10px;
+text-align: center;
+}
+#header h1 {
+font-family: 'Orbitron', sans-serif;
+font-size: clamp(1.1rem, 4vw, 1.85rem);
+color: var(--gold);
+letter-spacing: 3px;
+background: linear-gradient(90deg, #FFD966 0%, #fff 40%, #FFC72C 60%, #FFD966 100%);
+background-size: 200% auto;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+animation: shimmer 3s linear infinite;
+}
+@keyframes shimmer { to { background-position: 200% center; } }
+#header p {
+font-size: clamp(0.75rem, 2.5vw, 0.95rem);
+color: rgba(255,255,255,.72);
+letter-spacing: 2px;
+margin-top: 2px;
+}
+/* ── TOP CONTROLS & PLAY NAME ────────────────── */
+#top-bar {
+width: 100%;
+max-width: 800px;
+display: flex;
+flex-wrap: wrap;
+align-items: center;
+justify-content: space-between;
+gap: 10px;
+padding: 14px 14px 0;
+}
+#play-name {
+font-family: 'Orbitron', sans-serif;
+font-size: clamp(1.05rem, 3.4vw, 1.65rem);
+color: #fff;
+letter-spacing: 2px;
+}
+#play-name span { color: var(--gold); }
+#controls-right {
+display: flex;
+flex-wrap: wrap;
+align-items: center;
+gap: 8px;
+}
+/* Mode Toggle Pill */
+#mode-toggle {
+display: flex;
+background: var(--panel);
+border: 1.5px solid var(--gold);
+border-radius: 999px;
+overflow: hidden;
+}
+.mode-btn {
+font-family: 'Orbitron', sans-serif;
+font-size: 0.66rem;
+font-weight: 700;
+padding: 8px 11px;
+border: none;
+background: transparent;
+color: rgba(255,255,255,0.68);
+cursor: pointer;
+transition: all 0.2s;
+}
+.mode-btn.active {
+background: var(--gold);
+color: var(--navy);
+}
+/* Show Defense Toggle Button */
+#btn-defense {
+font-family: 'Orbitron', sans-serif;
+font-size: 0.66rem;
+font-weight: 700;
+padding: 8px 13px;
+border-radius: 999px;
+border: 1.5px solid rgba(255, 82, 82, 0.75);
+background: var(--panel);
+color: #ff8a80;
+cursor: pointer;
+transition: all 0.2s;
+}
+#btn-defense.active {
+background: linear-gradient(135deg, #c62828, #e53935);
+color: #fff;
+border-color: #fff;
+box-shadow: 0 0 14px rgba(229, 57, 53, 0.6);
+}
+/* ── PHASE BAR ───────────────────────────────── */
+#phase-bar-wrap {
+width: 100%;
+max-width: 800px;
+margin: 10px auto 0;
+padding: 0 14px;
+}
+#phase-label {
+font-size: 0.85rem;
+color: var(--gold);
+letter-spacing: 2px;
+text-transform: uppercase;
+margin-bottom: 4px;
+display: flex;
+justify-content: space-between;
+}
+#phase-track {
+height: 8px;
+background: rgba(255,255,255,.12);
+border-radius: 4px;
+overflow: hidden;
+}
+#phase-fill {
+height: 100%;
+background: linear-gradient(90deg, var(--navy), var(--gold));
+border-radius: 4px;
+transition: width .4s ease;
+box-shadow: 0 0 8px var(--gold);
+}
+/* ── CANVAS WRAPPER ──────────────────────────── */
+#canvas-wrap {
+position: relative;
+margin: 12px auto 0;
+width: 100%;
+max-width: 800px;
+padding: 0 12px;
+}
+canvas#court {
+display: block;
+width: 100%;
+border-radius: var(--radius);
+border: 2px solid var(--gold);
+box-shadow: 0 0 24px rgba(255,199,44,.25), 0 0 60px rgba(0,45,98,.6);
+touch-action: none;
+cursor: default;
+}
+/* ── ACTION LABEL ────────────────────────────── */
+#action-box {
+width: 100%;
+max-width: 800px;
+margin: 10px auto 0;
+padding: 0 12px;
+}
+#action-label {
+background: var(--panel);
+border: 1px solid rgba(255,199,44,.35);
+border-radius: var(--radius);
+padding: 10px 16px;
+font-size: clamp(0.95rem, 2.8vw, 1.12rem);
+font-weight: 700;
+color: #fff;
+text-align: center;
+min-height: 46px;
+display: flex;
+align-items: center;
+justify-content: center;
+line-height: 1.35;
+transition: background 0.25s, border-color 0.25s;
+}
+#action-label.danger {
+background: rgba(183, 28, 28, 0.35);
+border-color: #ff5252;
+color: #ffcdd2;
+}
+#tip-label {
+background: rgba(0,45,98,.5);
+border-left: 3px solid var(--gold);
+border-radius: 0 var(--radius) var(--radius) 0;
+padding: 7px 14px;
+font-size: clamp(0.8rem, 2.2vw, 0.94rem);
+color: var(--gold2);
+margin-top: 6px;
+font-style: italic;
+}
+/* ── BUTTONS ─────────────────────────────────── */
+#btn-row {
+display: flex;
+flex-wrap: wrap;
+gap: 10px;
+justify-content: center;
+align-items: stretch;
+width: 100%;
+max-width: 800px;
+margin: 14px auto 0;
+padding: 0 12px;
+}
+.btn {
+font-family: 'Orbitron', sans-serif;
+font-size: clamp(0.7rem, 2.2vw, 0.86rem);
+font-weight: 700;
+letter-spacing: 1px;
+padding: 12px 18px;
+border: none;
+border-radius: 999px;
+cursor: pointer;
+transition: transform .15s, box-shadow .15s, opacity .15s;
+white-space: nowrap;
+flex: 1 1 auto;
+min-width: 135px;
+max-width: 250px;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+text-align: center;
+}
+.btn:hover:not(:disabled) { transform: scale(1.04); }
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.btn:disabled { opacity: .4; cursor: default; }
+.btn-wrap {
+white-space: normal;
+font-size: clamp(0.62rem, 1.9vw, 0.74rem);
+line-height: 1.25;
+padding: 10px 14px;
+letter-spacing: 0.6px;
+max-width: 230px;
+}
+.btn-next {
+background: linear-gradient(135deg, var(--gold), var(--gold2));
+color: var(--navy);
+box-shadow: 0 0 16px rgba(255,199,44,.5);
+}
+.btn-shoot {
+background: linear-gradient(135deg, #ff5722, #ff9800);
+color: #fff;
+border: 2px solid #fff;
+box-shadow: 0 0 18px rgba(255,107,0,.6);
+}
+.btn-reset {
+background: transparent;
+color: rgba(255,100,100,1);
+border: 2px solid rgba(255,100,100,.6);
+max-width: 185px;
+}
+.btn-pass {
+background: linear-gradient(135deg, var(--navy), #0040a0);
+color: var(--gold);
+border: 2px solid var(--gold);
+box-shadow: 0 0 14px rgba(255,199,44,.35);
+max-width: 250px;
+}
+.btn-pass.risky {
+background: linear-gradient(135deg, #4a0e0e, #7f1d1d);
+color: #ff8a80;
+border: 2px solid #ff5252;
+box-shadow: 0 0 12px rgba(255, 82, 82, 0.35);
+opacity: 0.85;
+}
+.btn-again {
+background: linear-gradient(135deg,#28a745,#52d470);
+color: #fff;
+box-shadow: 0 0 18px rgba(40,167,69,.5);
+}
+/* ── LEGEND ──────────────────────────────────── */
+#legend {
+width: 100%;
+max-width: 800px;
+margin: 14px auto 0;
+padding: 0 12px;
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+justify-content: center;
+}
+.legend-item {
+display: flex;
+align-items: center;
+gap: 7px;
+background: var(--panel);
+border: 1px solid rgba(255,199,44,.2);
+border-radius: 999px;
+padding: 5px 12px;
+font-size: 0.84rem;
+font-weight: 700;
+}
+.legend-dot {
+width: 22px; height: 22px;
+border-radius: 50%;
+background: var(--navy);
+border: 2px solid var(--gold);
+display: flex; align-items: center; justify-content: center;
+font-size: 0.68rem;
+font-weight: 900;
+color: var(--gold);
+flex-shrink: 0;
+}
+.legend-dot.def {
+background: #b71c1c;
+border-color: #fff;
+color: #fff;
+}
+/* ── MODAL ───────────────────────────────────── */
+#modal-overlay {
+position: fixed; inset: 0;
+background: rgba(0,0,0,.82);
+z-index: 999;
+display: flex; align-items: center; justify-content: center;
+padding: 20px;
+}
+#modal {
+background: var(--panel);
+border: 2px solid var(--gold);
+border-radius: 16px;
+max-width: 490px;
+width: 100%;
+padding: 26px 24px 22px;
+text-align: center;
+box-shadow: 0 0 40px rgba(255,199,44,.3);
+}
+#modal h2 {
+font-family: 'Orbitron', sans-serif;
+color: var(--gold);
+font-size: 1.3rem;
+margin-bottom: 12px;
+}
+#modal p {
+font-size: 0.96rem;
+color: rgba(255,255,255,.88);
+line-height: 1.5;
+margin-bottom: 12px;
+}
+#modal ul {
+text-align: left;
+color: rgba(255,255,255,.85);
+font-size: 0.9rem;
+line-height: 1.65;
+padding-left: 20px;
+margin-bottom: 18px;
+}
+#modal-close {
+font-family: 'Orbitron', sans-serif;
+background: linear-gradient(135deg, var(--gold), var(--gold2));
+color: var(--navy);
+border: none;
+border-radius: 999px;
+padding: 12px 34px;
+font-size: 1rem;
+font-weight: 700;
+cursor: pointer;
+box-shadow: 0 0 16px rgba(255,199,44,.5);
+}
+#celebrate-text {
+position: absolute;
+top: 48%; left: 50%;
+transform: translate(-50%,-50%);
+font-family: 'Orbitron', sans-serif;
+font-size: clamp(1.35rem, 4.3vw, 2.3rem);
+color: var(--gold);
+text-shadow: 0 0 24px rgba(0,0,0,.95), 0 0 20px rgba(255,199,44,.9);
+text-align: center;
+white-space: nowrap;
+display: none;
+pointer-events: none;
+}
+#celebrate-text.turnover {
+color: #ff5252;
+text-shadow: 0 0 24px rgba(0,0,0,.98), 0 0 20px rgba(255, 23, 68, 0.95);
+}
 </style>
 </head>
 <body>
-
 <div id="header">
-  <h1>⚡ AYB INDIANA FEVER ⚡</h1>
-  <p>5TH / 6TH GRADE · INTERACTIVE SPACING & MOTION PLAYBOOK</p>
+<h1>⚡ AYB INDIANA FEVER ⚡</h1>
+<p>5TH / 6TH GRADE · INTERACTIVE SPACING & MOTION PLAYBOOK</p>
 </div>
-
 <div id="top-bar">
-  <div id="play-name">PLAY: <span>"DOWNTOWN"</span></div>
-  <div id="controls-right">
-    <button id="btn-defense">🛡️ SHOW DEFENSE</button>
-    <div id="mode-toggle">
-      <button class="mode-btn" id="btn-mode-free">🏀 FREE PLAY</button>
-      <button class="mode-btn active" id="btn-mode-drag">🖐️ COACH MODE</button>
-      <button class="mode-btn" id="btn-mode-auto">▶️ WATCH</button>
-    </div>
-  </div>
+<div id="play-name">PLAY: <span>"DOWNTOWN"</span></div>
+<div id="controls-right">
+<button id="btn-defense">🛡️ SHOW DEFENSE</button>
+<div id="mode-toggle">
+<button class="mode-btn" id="btn-mode-free">🏀 FREE PLAY</button>
+<button class="mode-btn active" id="btn-mode-drag">🖐️ COACH MODE</button>
+<button class="mode-btn" id="btn-mode-auto">▶️ WATCH</button>
 </div>
-
+</div>
+</div>
 <div id="phase-bar-wrap">
-  <div id="phase-label">
-    <span id="phase-name-txt">INTRO</span>
-    <span id="phase-num-txt">Step 0 / 6</span>
-  </div>
-  <div id="phase-track"><div id="phase-fill" style="width:0%"></div></div>
+<div id="phase-label">
+<span id="phase-name-txt">INTRO</span>
+<span id="phase-num-txt">Step 0 / 6</span>
 </div>
-
+<div id="phase-track"><div id="phase-fill" style="width:0%"></div></div>
+</div>
 <div id="canvas-wrap">
-  <canvas id="court" width="780" height="640"></canvas>
-  <div id="celebrate-text">🔥 FEVER UP! +2 🔥</div>
+<canvas id="court" width="780" height="640"></canvas>
+<div id="celebrate-text">🔥 FEVER UP! +2 🔥</div>
 </div>
-
 <div id="action-box">
-  <div id="action-label">Welcome to Downtown! Press LET'S RUN IT to start.</div>
-  <div id="tip-label">💡 Tip: Toggle "SHOW DEFENSE" to see how long cross-court passes get picked off!</div>
+<div id="action-label">Welcome to Downtown! Press LET'S RUN IT to start.</div>
+<div id="tip-label">💡 Tip: Toggle "SHOW DEFENSE" to see how long cross-court passes get picked off!</div>
 </div>
-
 <div id="btn-row">
-  <button class="btn btn-next" id="btn-next">▶ LET'S RUN IT!</button>
-  <button class="btn btn-reset" id="btn-reset">⚠️ RESET COURT</button>
+<button class="btn btn-next" id="btn-next">▶ LET'S RUN IT!</button>
+<button class="btn btn-reset" id="btn-reset">⚠️ RESET COURT</button>
 </div>
-
 <div id="legend">
-  <div class="legend-item"><div class="legend-dot">1</div> Player 1 (PG)</div>
-  <div class="legend-item"><div class="legend-dot">2</div> Player 2 (Left)</div>
-  <div class="legend-item"><div class="legend-dot">3</div> Player 3 (Right)</div>
-  <div class="legend-item"><div class="legend-dot">4</div> Player 4 (Forward)</div>
-  <div class="legend-item"><div class="legend-dot">5</div> Player 5 (Post)</div>
-  <div class="legend-item" id="legend-def" style="display:none;"><div class="legend-dot def">X</div> Defenders (1-on-1 Assignments)</div>
+<div class="legend-item"><div class="legend-dot">1</div> Player 1 (PG)</div>
+<div class="legend-item"><div class="legend-dot">2</div> Player 2 (Left)</div>
+<div class="legend-item"><div class="legend-dot">3</div> Player 3 (Right)</div>
+<div class="legend-item"><div class="legend-dot">4</div> Player 4 (Forward)</div>
+<div class="legend-item"><div class="legend-dot">5</div> Player 5 (Post)</div>
+<div class="legend-item" id="legend-def" style="display:none;"><div class="legend-dot def">X</div> Defenders (1-on-1 Assignments)</div>
 </div>
-
 <div id="modal-overlay">
-  <div id="modal">
-    <h2>🏀 COACH'S PLAYBOOK</h2>
-    <p>Run <strong>"Downtown"</strong> with smart passing & spacing:</p>
-    <ul>
-      <li><strong>⚠️ No Risky Skip Passes:</strong> From the wing, reverse to the top of the key or hit your ball-side post. From near the basket, kick out to your ball-side wing—never throw all the way out to the top of the key!</li>
-      <li><strong>🛡️ Show Defense:</strong> Toggle defenders on/off to see 1-on-1 assignments and help-side spacing.</li>
-      <li><strong>Shoot or Pass & Screen Away:</strong> Make short, crisp passes and screen away when guarded.</li>
-    </ul>
-    <button id="modal-close">HIT THE COURT! 🔥</button>
-  </div>
+<div id="modal">
+<h2>🏀 COACH'S PLAYBOOK</h2>
+<p>Run <strong>"Downtown"</strong> with smart passing & spacing:</p>
+<ul>
+<li><strong>⚠️ No Risky Skip Passes:</strong> From the wing, reverse to the top of the key or hit your ball-side post. From near the basket, kick out to your ball-side wing—never throw all the way out to the top of the key!</li>
+<li><strong>🛡️ Show Defense:</strong> Toggle defenders on/off to see 1-on-1 assignments and help-side spacing.</li>
+<li><strong>Shoot or Pass & Screen Away:</strong> Make short, crisp passes and screen away when guarded.</li>
+</ul>
+<button id="modal-close">HIT THE COURT! 🔥</button>
 </div>
-
+</div>
 <script>
 // ═══════════════════════════════════════════════════════════
 //  DEVICE DETECTION (Auto-open Free Play on Mobile & Tablet)
 // ═══════════════════════════════════════════════════════════
 const isMobileOrTablet = () => {
-  const touchCapable = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-  const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  return mobileUA || (touchCapable && window.innerWidth <= 1024);
+const touchCapable = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+return mobileUA || (touchCapable && window.innerWidth <= 1024);
 };
-
 // ═══════════════════════════════════════════════════════════
 //  CONSTANTS & PROPORTIONAL HALF-COURT GEOMETRY (780 x 640)
 // ═══════════════════════════════════════════════════════════
@@ -501,20 +474,16 @@ const GREEN  = '#00e676';
 const RED    = '#c62828';
 const COURT_WOOD = '#E3C28F';
 const APRON_COLOR = '#16243d';
-
-const easeInOut = t => t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
-const easeOut   = t => 1 - (1-t)*(1-t);
+const easeInOut = t => t < 0.5 ? 2tt : -1+(4-2*t)t;
+const easeOut   = t => 1 - (1-t)(1-t);
 const lerp      = (a,b,t) => a + (b-a)*t;
-
 const canvas = document.getElementById('court');
 const ctx    = canvas.getContext('2d');
 const W = 780, H = 640;
 canvas.width  = W;
 canvas.height = H;
-
 const cx = p => p * W;
 const cy = p => p * H;
-
 // Court boundaries
 const MARGIN_X    = 36;
 const MARGIN_TOP  = 24;
@@ -524,92 +493,78 @@ const COURT_R     = W - MARGIN_X;
 const COURT_W     = COURT_R - COURT_L;
 const BASELINE_Y  = MARGIN_TOP;
 const HALFCOURT_Y = H - MARGIN_BOT;
-
 // Key / Paint
 const PAINT_W     = 176;
 const PAINT_X     = (W - PAINT_W) / 2;
 const FT_Y        = BASELINE_Y + 235;
 const PAINT_H     = FT_Y - BASELINE_Y;
 const FT_R        = PAINT_W / 2;
-
 // Hoop & Backboard
 const HOOP_X      = W / 2;
 const HOOP_Y      = BASELINE_Y + 52;
 const BLOCK_Y     = BASELINE_Y + 105;
-
 // 3-Point Line
 const C3X_L       = COURT_L + 44;
 const C3X_R       = COURT_R - 44;
 const ARC_R       = (C3X_R - C3X_L) / 2;
 const CORNER3_END = HOOP_Y;
-
 // Key Perimeter Spots on the Court
 const WING_ANGLE  = Math.PI * 0.25;
 const WING_X_L    = HOOP_X - (ARC_R + 22) * Math.cos(WING_ANGLE);
 const WING_Y      = HOOP_Y + (ARC_R + 22) * Math.sin(WING_ANGLE);
 const WING_X_R    = HOOP_X + (ARC_R + 22) * Math.cos(WING_ANGLE);
-
 const CORNER_X_L  = C3X_L - 22;
 const CORNER_X_R  = C3X_R + 22;
 const CORNER_Y    = BASELINE_Y + 48;
-
 const TOK_X       = W / 2;
 const TOK_Y       = HOOP_Y + ARC_R + 28;
-
 // Low block coordinates
 const LEFT_BLOCK_X  = PAINT_X - 24;
 const RIGHT_BLOCK_X = PAINT_X + PAINT_W + 24;
-
 // ═══════════════════════════════════════════════════════════
 //  PLAYER STARTING & PLAY POSITIONS
 // ═══════════════════════════════════════════════════════════
 const HOME = {
-  p1: { x: TOK_X/W,                    y: TOK_Y/H   },
-  p2: { x: LEFT_BLOCK_X/W,             y: BLOCK_Y/H },
-  p3: { x: RIGHT_BLOCK_X/W,            y: BLOCK_Y/H },
-  p4: { x: (PAINT_X - 22)/W,           y: FT_Y/H    },
-  p5: { x: (PAINT_X + PAINT_W + 22)/W, y: FT_Y/H    },
+p1: { x: TOK_X/W,                    y: TOK_Y/H   },
+p2: { x: LEFT_BLOCK_X/W,             y: BLOCK_Y/H },
+p3: { x: RIGHT_BLOCK_X/W,            y: BLOCK_Y/H },
+p4: { x: (PAINT_X - 22)/W,           y: FT_Y/H    },
+p5: { x: (PAINT_X + PAINT_W + 22)/W, y: FT_Y/H    },
 };
-
 const POS = {
-  p4_screen: { x: (PAINT_X - 26)/W,           y: (BLOCK_Y + 34)/H },
-  p5_screen: { x: (PAINT_X + PAINT_W + 26)/W, y: (BLOCK_Y + 34)/H },
-
-  p2_wing:   { x: WING_X_L/W,      y: WING_Y/H },
-  p3_wing:   { x: WING_X_R/W,      y: WING_Y/H },
-  p4_block:  { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H },
-  p5_block:  { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H },
+p4_screen: { x: (PAINT_X - 26)/W,           y: (BLOCK_Y + 34)/H },
+p5_screen: { x: (PAINT_X + PAINT_W + 26)/W, y: (BLOCK_Y + 34)/H },
+p2_wing:   { x: WING_X_L/W,      y: WING_Y/H },
+p3_wing:   { x: WING_X_R/W,      y: WING_Y/H },
+p4_block:  { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H },
+p5_block:  { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H },
 };
-
 // ═══════════════════════════════════════════════════════════
 //  GAME STATE
 // ═══════════════════════════════════════════════════════════
 const PHASE = {
-  INTRO: 0,
-  CALL: 1,
-  SCREENS: 2,
-  POP: 3,
-  DECISION_PASS: 4,
-  SHOOT_OR_PASS: 5,
-  AWAY_SCREEN_STEP: 6,
-  SHOT_ANIM: 7,
-  CELEBRATE: 8
+INTRO: 0,
+CALL: 1,
+SCREENS: 2,
+POP: 3,
+DECISION_PASS: 4,
+SHOOT_OR_PASS: 5,
+AWAY_SCREEN_STEP: 6,
+SHOT_ANIM: 7,
+CELEBRATE: 8
 };
-
 let mode = isMobileOrTablet() ? 'free' : 'drag';
 let showDefense = false;
 let phase = PHASE.INTRO;
 let animating = false;
 let passCount = 0;
 let turnoverCount = 0;
-
 let targets = [];         // { playerKey, x, y, label, locked }
 let activeScreens = [];   // { x, y, angle }
 let draggingEntity = null; // { type: 'offense'|'defense', key: string }
 let dragStartScreenPos = { x: 0, y: 0 };
 let dragMoved = false;
 let dragOffset = { x: 0, y: 0 };
-
 let players = {};
 let defenders = {};
 let ball;
@@ -626,1076 +581,977 @@ let shotStart = { x: 0, y: 0 };
 let onShotDone = null;
 let interceptLock = false;
 let bannerTimeout = null;
-
 // ═══════════════════════════════════════════════════════════
 //  LONG CROSS-COURT & POST-TO-TOP SKIP PASS DETECTION
 // ═══════════════════════════════════════════════════════════
 function evaluatePassRisk(passer, receiver) {
-  const centerX = W / 2;
-  const centerZoneHalfW = 60;
-
-  const passerOnLeft    = passer.x < centerX - centerZoneHalfW;
-  const passerOnRight   = passer.x > centerX + centerZoneHalfW;
-  const receiverOnLeft  = receiver.x < centerX - centerZoneHalfW;
-  const receiverOnRight = receiver.x > centerX + centerZoneHalfW;
-
-  // 1. Cross-court pass from one side of the court to the opposite wing or opposite low block
-  const crossesToOppositeSide = (passerOnLeft && receiverOnRight) || (passerOnRight && receiverOnLeft);
-
-  // 2. Post/low-block player near the basket trying to throw all the way out to the top of the key
-  const passerNearBasket = passer.y < FT_Y - 15;
-  const receiverAtTopOfKey = Math.abs(receiver.x - centerX) <= centerZoneHalfW && receiver.y >= FT_Y + 45;
-  const postToTopSkip = passerNearBasket && receiverAtTopOfKey;
-
-  if (!crossesToOppositeSide && !postToTopSkip) {
-    return {
-      isDangerous: false,
-      reason: '',
-      interceptor: null,
-      interceptPoint: null
-    };
-  }
-
-  const receiverDefKey = 'd' + receiver.id;
-  const def = defenders[receiverDefKey];
-  const interceptPoint = {
-    x: lerp(passer.x, receiver.x, 0.58),
-    y: lerp(passer.y, receiver.y, 0.58)
-  };
-
-  const reason = postToTopSkip
-    ? 'Passing from near the basket all the way out to the top of the key is too risky!'
-    : 'Cross-court skip pass to the opposite side is too risky!';
-
-  return {
-    isDangerous: true,
-    reason,
-    interceptor: def ? { key: receiverDefKey, defender: def } : null,
-    interceptPoint
-  };
+const centerX = W / 2;
+const centerZoneHalfW = 60;
+const passerOnLeft    = passer.x < centerX - centerZoneHalfW;
+const passerOnRight   = passer.x > centerX + centerZoneHalfW;
+const receiverOnLeft  = receiver.x < centerX - centerZoneHalfW;
+const receiverOnRight = receiver.x > centerX + centerZoneHalfW;
+// 1. Cross-court pass from one side of the court to the opposite wing or opposite low block
+const crossesToOppositeSide = (passerOnLeft && receiverOnRight) || (passerOnRight && receiverOnLeft);
+// 2. Post/low-block player near the basket trying to throw all the way out to the top of the key
+const passerNearBasket = passer.y < FT_Y - 15;
+const receiverAtTopOfKey = Math.abs(receiver.x - centerX) <= centerZoneHalfW && receiver.y >= FT_Y + 45;
+const postToTopSkip = passerNearBasket && receiverAtTopOfKey;
+if (!crossesToOppositeSide && !postToTopSkip) {
+return {
+isDangerous: false,
+reason: '',
+interceptor: null,
+interceptPoint: null
+};
 }
-
+const receiverDefKey = 'd' + receiver.id;
+const def = defenders[receiverDefKey];
+const interceptPoint = {
+x: lerp(passer.x, receiver.x, 0.58),
+y: lerp(passer.y, receiver.y, 0.58)
+};
+const reason = postToTopSkip
+? 'Passing from near the basket all the way out to the top of the key is too risky!'
+: 'Cross-court skip pass to the opposite side is too risky!';
+return {
+isDangerous: true,
+reason,
+interceptor: def ? { key: receiverDefKey, defender: def } : null,
+interceptPoint
+};
+}
 function showBannerAlert(text, isTurnover = false, duration = 2200) {
-  if (bannerTimeout) clearTimeout(bannerTimeout);
-  celebText.textContent = text;
-  celebText.classList.toggle('turnover', isTurnover);
-  celebText.style.display = 'block';
-  if (duration > 0) {
-    bannerTimeout = setTimeout(() => {
-      celebText.style.display = 'none';
-      celebText.classList.remove('turnover');
-    }, duration);
-  }
+if (bannerTimeout) clearTimeout(bannerTimeout);
+celebText.textContent = text;
+celebText.classList.toggle('turnover', isTurnover);
+celebText.style.display = 'block';
+if (duration > 0) {
+bannerTimeout = setTimeout(() => {
+celebText.style.display = 'none';
+celebText.classList.remove('turnover');
+}, duration);
 }
-
+}
 // ═══════════════════════════════════════════════════════════
 //  PLAYER, DEFENDER & BALL CLASSES (1-ON-1 ASSIGNMENTS)
 // ═══════════════════════════════════════════════════════════
 class Player {
-  constructor(id, name, px, py) {
-    this.id = id;
-    this.name = name;
-    this.x = cx(px);
-    this.y = cy(py);
-    this.tx = this.x;
-    this.ty = this.y;
-    this.sx = this.x;
-    this.sy = this.y;
-    this.t = 1;
-    this.dur = 800;
-    this.elapsed = 0;
-    this.hasBall = false;
-    this.trail = [];
-    this.r = 22;
-  }
-  moveTo(px, py, dur = 800) {
-    this.sx = this.x; this.sy = this.y;
-    this.tx = cx(px); this.ty = cy(py);
-    this.t = 0; this.elapsed = 0; this.dur = dur;
-    this.trail = [];
-  }
-  moveToXY(x, y, dur = 800) {
-    this.sx = this.x; this.sy = this.y;
-    this.tx = x; this.ty = y;
-    this.t = 0; this.elapsed = 0; this.dur = dur;
-    this.trail = [];
-  }
-  snapTo(px, py) {
-    this.x = cx(px); this.y = cy(py);
-    this.tx = this.x; this.ty = this.y;
-    this.t = 1; this.trail = [];
-  }
-  get moving() { return this.t < 1; }
-  update(dt) {
-    if (this.t >= 1) return;
-    this.elapsed += dt;
-    this.t = Math.min(1, this.elapsed / this.dur);
-    const e = easeInOut(this.t);
-    if (this.t < 0.98) this.trail.push({ x: this.x, y: this.y });
-    if (this.trail.length > 5) this.trail.shift();
-    this.x = lerp(this.sx, this.tx, e);
-    this.y = lerp(this.sy, this.ty, e);
-  }
-  draw(ctx, isDraggable, isLocked, isPassTarget, isBeingDragged, isOpenLook, isRiskyTarget) {
-    this.trail.forEach((p, i) => {
-      const a = (i + 1) / this.trail.length * 0.25;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, this.r * 0.75, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(0,45,98,${a})`;
-      ctx.fill();
-    });
-
-    if (isBeingDragged) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.r + 11, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255, 199, 44, 0.22)';
-      ctx.fill();
-      ctx.strokeStyle = GOLD;
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      ctx.restore();
-    } else if ((isDraggable && !isLocked) || isPassTarget) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.r + 7, 0, Math.PI * 2);
-      ctx.strokeStyle = isRiskyTarget ? 'rgba(255, 82, 82, 0.9)' : (isPassTarget ? 'rgba(255,199,44,0.88)' : GREEN);
-      ctx.lineWidth = 2.5;
-      ctx.setLineDash([5, 4]);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    ctx.beginPath();
-    ctx.ellipse(this.x, this.y + this.r * 0.85, this.r * 0.9, this.r * 0.3, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0,0,0,0.28)';
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-    ctx.fillStyle = isLocked ? '#004d26' : NAVY;
-    ctx.fill();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = this.hasBall ? ORANGE : (isLocked ? GREEN : GOLD);
-    ctx.stroke();
-
-    ctx.fillStyle = this.hasBall ? ORANGE : (isLocked ? GREEN : GOLD);
-    ctx.font = `bold 17px Orbitron, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(this.id, this.x, this.y - 1);
-
-    ctx.font = `bold 11px Rajdhani, sans-serif`;
-    const nw = ctx.measureText(this.name).width + 10;
-    ctx.fillStyle = 'rgba(10,10,26,0.84)';
-    ctx.beginPath();
-    ctx.roundRect(this.x - nw / 2, this.y + this.r + 3, nw, 15, 4);
-    ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.fillText(this.name, this.x, this.y + this.r + 10.5);
-
-    if (showDefense && isOpenLook && !this.hasBall) {
-      ctx.save();
-      const label = 'OPEN!';
-      ctx.font = 'bold 10px Orbitron, sans-serif';
-      const bw = ctx.measureText(label).width + 10;
-      ctx.fillStyle = GREEN;
-      ctx.beginPath();
-      ctx.roundRect(this.x - bw / 2, this.y - this.r - 22, bw, 15, 4);
-      ctx.fill();
-      ctx.fillStyle = '#00240f';
-      ctx.fillText(label, this.x, this.y - this.r - 14.5);
-      ctx.restore();
-    }
-  }
+constructor(id, name, px, py) {
+this.id = id;
+this.name = name;
+this.x = cx(px);
+this.y = cy(py);
+this.tx = this.x;
+this.ty = this.y;
+this.sx = this.x;
+this.sy = this.y;
+this.t = 1;
+this.dur = 800;
+this.elapsed = 0;
+this.hasBall = false;
+this.trail = [];
+this.r = 22;
 }
-
+moveTo(px, py, dur = 800) {
+this.sx = this.x; this.sy = this.y;
+this.tx = cx(px); this.ty = cy(py);
+this.t = 0; this.elapsed = 0; this.dur = dur;
+this.trail = [];
+}
+moveToXY(x, y, dur = 800) {
+this.sx = this.x; this.sy = this.y;
+this.tx = x; this.ty = y;
+this.t = 0; this.elapsed = 0; this.dur = dur;
+this.trail = [];
+}
+snapTo(px, py) {
+this.x = cx(px); this.y = cy(py);
+this.tx = this.x; this.ty = this.y;
+this.t = 1; this.trail = [];
+}
+get moving() { return this.t < 1; }
+update(dt) {
+if (this.t >= 1) return;
+this.elapsed += dt;
+this.t = Math.min(1, this.elapsed / this.dur);
+const e = easeInOut(this.t);
+if (this.t < 0.98) this.trail.push({ x: this.x, y: this.y });
+if (this.trail.length > 5) this.trail.shift();
+this.x = lerp(this.sx, this.tx, e);
+this.y = lerp(this.sy, this.ty, e);
+}
+draw(ctx, isDraggable, isLocked, isPassTarget, isBeingDragged, isOpenLook, isRiskyTarget) {
+this.trail.forEach((p, i) => {
+const a = (i + 1) / this.trail.length * 0.25;
+ctx.beginPath();
+ctx.arc(p.x, p.y, this.r * 0.75, 0, Math.PI * 2);
+ctx.fillStyle = ⁠rgba(0,45,98,${a})⁠;
+ctx.fill();
+});
+if (isBeingDragged) {
+ctx.save();
+ctx.beginPath();
+ctx.arc(this.x, this.y, this.r + 11, 0, Math.PI * 2);
+ctx.fillStyle = 'rgba(255, 199, 44, 0.22)';
+ctx.fill();
+ctx.strokeStyle = GOLD;
+ctx.lineWidth = 3;
+ctx.stroke();
+ctx.restore();
+} else if ((isDraggable && !isLocked) || isPassTarget) {
+ctx.save();
+ctx.beginPath();
+ctx.arc(this.x, this.y, this.r + 7, 0, Math.PI * 2);
+ctx.strokeStyle = isRiskyTarget ? 'rgba(255, 82, 82, 0.9)' : (isPassTarget ? 'rgba(255,199,44,0.88)' : GREEN);
+ctx.lineWidth = 2.5;
+ctx.setLineDash([5, 4]);
+ctx.stroke();
+ctx.restore();
+}
+ctx.beginPath();
+ctx.ellipse(this.x, this.y + this.r * 0.85, this.r * 0.9, this.r * 0.3, 0, 0, Math.PI * 2);
+ctx.fillStyle = 'rgba(0,0,0,0.28)';
+ctx.fill();
+ctx.beginPath();
+ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+ctx.fillStyle = isLocked ? '#004d26' : NAVY;
+ctx.fill();
+ctx.lineWidth = 3;
+ctx.strokeStyle = this.hasBall ? ORANGE : (isLocked ? GREEN : GOLD);
+ctx.stroke();
+ctx.fillStyle = this.hasBall ? ORANGE : (isLocked ? GREEN : GOLD);
+ctx.font = ⁠bold 17px Orbitron, sans-serif⁠;
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+ctx.fillText(this.id, this.x, this.y - 1);
+ctx.font = ⁠bold 11px Rajdhani, sans-serif⁠;
+const nw = ctx.measureText(this.name).width + 10;
+ctx.fillStyle = 'rgba(10,10,26,0.84)';
+ctx.beginPath();
+ctx.roundRect(this.x - nw / 2, this.y + this.r + 3, nw, 15, 4);
+ctx.fill();
+ctx.fillStyle = '#fff';
+ctx.fillText(this.name, this.x, this.y + this.r + 10.5);
+if (showDefense && isOpenLook && !this.hasBall) {
+ctx.save();
+const label = 'OPEN!';
+ctx.font = 'bold 10px Orbitron, sans-serif';
+const bw = ctx.measureText(label).width + 10;
+ctx.fillStyle = GREEN;
+ctx.beginPath();
+ctx.roundRect(this.x - bw / 2, this.y - this.r - 22, bw, 15, 4);
+ctx.fill();
+ctx.fillStyle = '#00240f';
+ctx.fillText(label, this.x, this.y - this.r - 14.5);
+ctx.restore();
+}
+}
+}
 class Defender {
-  constructor(id, assignmentKey) {
-    this.id = id;
-    this.assignmentKey = assignmentKey;
-    this.x = W / 2;
-    this.y = H / 2;
-    this.r = 19;
-    this.manualOverride = false;
-    this.stealDash = null;
-  }
-
-  update(dt) {
-    if (this.stealDash && this.stealDash.timer > 0) {
-      this.stealDash.timer -= dt;
-      this.x = lerp(this.x, this.stealDash.x, Math.min(1, dt * 0.025));
-      this.y = lerp(this.y, this.stealDash.y, Math.min(1, dt * 0.025));
-      if (this.stealDash.timer <= 0) this.stealDash = null;
-      return;
-    }
-
-    if (this.manualOverride && mode === 'free') return;
-
-    const mark = players[this.assignmentKey];
-    const holderEntry = Object.entries(players).find(([_, p]) => p.hasBall);
-    const holder = holderEntry ? holderEntry[1] : players.p1;
-    if (!mark) return;
-
-    const toHoopX = HOOP_X - mark.x;
-    const toHoopY = HOOP_Y - mark.y;
-    const distHoop = Math.max(1, Math.hypot(toHoopX, toHoopY));
-    const uxHoop = toHoopX / distHoop;
-    const uyHoop = toHoopY / distHoop;
-
-    const toBallX = holder.x - mark.x;
-    const toBallY = holder.y - mark.y;
-    const distBall = Math.max(1, Math.hypot(toBallX, toBallY));
-    const uxBall = toBallX / distBall;
-    const uyBall = toBallY / distBall;
-
-    let targetX, targetY;
-
-    if (mark.hasBall) {
-      targetX = mark.x + uxHoop * 40;
-      targetY = mark.y + uyHoop * 40;
-    } else if (distBall < 250) {
-      targetX = mark.x + uxHoop * 34 + uxBall * 22;
-      targetY = mark.y + uyHoop * 34 + uyBall * 22;
-    } else {
-      targetX = lerp(mark.x, HOOP_X, 0.36);
-      targetY = lerp(mark.y, HOOP_Y + 75, 0.32);
-    }
-
-    activeScreens.forEach(s => {
-      const distScreenToMark = Math.hypot(s.x - mark.x, s.y - mark.y);
-      if (distScreenToMark < 95) {
-        targetX = s.x + (s.x - mark.x) * 0.45;
-        targetY = s.y + (s.y - mark.y) * 0.45;
-      }
-    });
-
-    const followSpeed = Math.min(1, dt * 0.0065);
-    this.x = lerp(this.x, targetX, followSpeed);
-    this.y = lerp(this.y, targetY, followSpeed);
-  }
-
-  draw(ctx, isBeingDragged) {
-    if (!showDefense) return;
-
-    const mark = players[this.assignmentKey];
-
-    if (mark) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(this.x, this.y);
-      ctx.lineTo(mark.x, mark.y);
-      ctx.strokeStyle = 'rgba(211, 47, 47, 0.28)';
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([4, 4]);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    if (isBeingDragged) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.r + 10, 0, Math.PI * 2);
-      ctx.strokeStyle = '#ff8a80';
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    ctx.beginPath();
-    ctx.ellipse(this.x, this.y + this.r * 0.85, this.r * 0.85, this.r * 0.28, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0,0,0,0.25)';
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-    ctx.fillStyle = RED;
-    ctx.fill();
-    ctx.lineWidth = 2.5;
-    ctx.strokeStyle = '#fff';
-    ctx.stroke();
-
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 13px Orbitron, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(this.id, this.x, this.y);
-  }
+constructor(id, assignmentKey) {
+this.id = id;
+this.assignmentKey = assignmentKey;
+this.x = W / 2;
+this.y = H / 2;
+this.r = 19;
+this.manualOverride = false;
+this.stealDash = null;
 }
-
+update(dt) {
+if (this.stealDash && this.stealDash.timer > 0) {
+this.stealDash.timer -= dt;
+this.x = lerp(this.x, this.stealDash.x, Math.min(1, dt * 0.025));
+this.y = lerp(this.y, this.stealDash.y, Math.min(1, dt * 0.025));
+if (this.stealDash.timer <= 0) this.stealDash = null;
+return;
+}
+if (this.manualOverride && mode === 'free') return;
+const mark = players[this.assignmentKey];
+const holderEntry = Object.entries(players).find(([_, p]) => p.hasBall);
+const holder = holderEntry ? holderEntry[1] : players.p1;
+if (!mark) return;
+const toHoopX = HOOP_X - mark.x;
+const toHoopY = HOOP_Y - mark.y;
+const distHoop = Math.max(1, Math.hypot(toHoopX, toHoopY));
+const uxHoop = toHoopX / distHoop;
+const uyHoop = toHoopY / distHoop;
+const toBallX = holder.x - mark.x;
+const toBallY = holder.y - mark.y;
+const distBall = Math.max(1, Math.hypot(toBallX, toBallY));
+const uxBall = toBallX / distBall;
+const uyBall = toBallY / distBall;
+let targetX, targetY;
+if (mark.hasBall) {
+targetX = mark.x + uxHoop * 40;
+targetY = mark.y + uyHoop * 40;
+} else if (distBall < 250) {
+targetX = mark.x + uxHoop * 34 + uxBall * 22;
+targetY = mark.y + uyHoop * 34 + uyBall * 22;
+} else {
+targetX = lerp(mark.x, HOOP_X, 0.36);
+targetY = lerp(mark.y, HOOP_Y + 75, 0.32);
+}
+activeScreens.forEach(s => {
+const distScreenToMark = Math.hypot(s.x - mark.x, s.y - mark.y);
+if (distScreenToMark < 95) {
+targetX = s.x + (s.x - mark.x) * 0.45;
+targetY = s.y + (s.y - mark.y) * 0.45;
+}
+});
+const followSpeed = Math.min(1, dt * 0.0065);
+this.x = lerp(this.x, targetX, followSpeed);
+this.y = lerp(this.y, targetY, followSpeed);
+}
+draw(ctx, isBeingDragged) {
+if (!showDefense) return;
+const mark = players[this.assignmentKey];
+if (mark) {
+ctx.save();
+ctx.beginPath();
+ctx.moveTo(this.x, this.y);
+ctx.lineTo(mark.x, mark.y);
+ctx.strokeStyle = 'rgba(211, 47, 47, 0.28)';
+ctx.lineWidth = 1.5;
+ctx.setLineDash([4, 4]);
+ctx.stroke();
+ctx.restore();
+}
+if (isBeingDragged) {
+ctx.save();
+ctx.beginPath();
+ctx.arc(this.x, this.y, this.r + 10, 0, Math.PI * 2);
+ctx.strokeStyle = '#ff8a80';
+ctx.lineWidth = 2.5;
+ctx.stroke();
+ctx.restore();
+}
+ctx.beginPath();
+ctx.ellipse(this.x, this.y + this.r * 0.85, this.r * 0.85, this.r * 0.28, 0, 0, Math.PI * 2);
+ctx.fillStyle = 'rgba(0,0,0,0.25)';
+ctx.fill();
+ctx.beginPath();
+ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+ctx.fillStyle = RED;
+ctx.fill();
+ctx.lineWidth = 2.5;
+ctx.strokeStyle = '#fff';
+ctx.stroke();
+ctx.fillStyle = '#fff';
+ctx.font = 'bold 13px Orbitron, sans-serif';
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+ctx.fillText(this.id, this.x, this.y);
+}
+}
 class Ball {
-  constructor(px, py) {
-    this.x = cx(px); this.y = cy(py);
-    this.tx = this.x; this.ty = this.y;
-    this.sx = this.x; this.sy = this.y;
-    this.t = 1; this.elapsed = 0; this.dur = 450;
-    this.arcH = 0;
-    this.r = 10;
-    this.visible = true;
-    this.bouncePhase = 0;
-  }
-  moveToXY(x, y, dur = 450, arcH = 26) {
-    this.sx = this.x; this.sy = this.y;
-    this.tx = x; this.ty = y;
-    this.t = 0; this.elapsed = 0; this.dur = dur;
-    this.arcH = arcH;
-  }
-  snapTo(px, py) {
-    this.x = cx(px); this.y = cy(py);
-    this.tx = this.x; this.ty = this.y;
-    this.t = 1;
-  }
-  snapToXY(x, y) {
-    this.x = x; this.y = y;
-    this.tx = x; this.ty = y;
-    this.t = 1;
-  }
-  get moving() { return this.t < 1; }
-  update(dt) {
-    this.bouncePhase += dt * 0.005;
-    if (this.t >= 1) return;
-    this.elapsed += dt;
-    this.t = Math.min(1, this.elapsed / this.dur);
-    const e = easeOut(this.t);
-    this.x = lerp(this.sx, this.tx, e);
-    this.y = lerp(this.sy, this.ty, e) - Math.sin(this.t * Math.PI) * this.arcH;
-  }
-  draw(ctx) {
-    if (!this.visible) return;
-    const bounce = Math.sin(this.bouncePhase) * 2.5;
-    const bx = this.x, by = this.y + (this.t >= 1 ? bounce : 0);
-
-    ctx.beginPath();
-    ctx.arc(bx, by, this.r, 0, Math.PI * 2);
-    ctx.fillStyle = ORANGE;
-    ctx.fill();
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 1.3;
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(bx - this.r, by);
-    ctx.lineTo(bx + this.r, by);
-    ctx.moveTo(bx, by - this.r);
-    ctx.lineTo(bx, by + this.r);
-    ctx.stroke();
-  }
+constructor(px, py) {
+this.x = cx(px); this.y = cy(py);
+this.tx = this.x; this.ty = this.y;
+this.sx = this.x; this.sy = this.y;
+this.t = 1; this.elapsed = 0; this.dur = 450;
+this.arcH = 0;
+this.r = 10;
+this.visible = true;
+this.bouncePhase = 0;
 }
-
+moveToXY(x, y, dur = 450, arcH = 26) {
+this.sx = this.x; this.sy = this.y;
+this.tx = x; this.ty = y;
+this.t = 0; this.elapsed = 0; this.dur = dur;
+this.arcH = arcH;
+}
+snapTo(px, py) {
+this.x = cx(px); this.y = cy(py);
+this.tx = this.x; this.ty = this.y;
+this.t = 1;
+}
+snapToXY(x, y) {
+this.x = x; this.y = y;
+this.tx = x; this.ty = y;
+this.t = 1;
+}
+get moving() { return this.t < 1; }
+update(dt) {
+this.bouncePhase += dt * 0.005;
+if (this.t >= 1) return;
+this.elapsed += dt;
+this.t = Math.min(1, this.elapsed / this.dur);
+const e = easeOut(this.t);
+this.x = lerp(this.sx, this.tx, e);
+this.y = lerp(this.sy, this.ty, e) - Math.sin(this.t * Math.PI) * this.arcH;
+}
+draw(ctx) {
+if (!this.visible) return;
+const bounce = Math.sin(this.bouncePhase) * 2.5;
+const bx = this.x, by = this.y + (this.t >= 1 ? bounce : 0);
+ctx.beginPath();
+ctx.arc(bx, by, this.r, 0, Math.PI * 2);
+ctx.fillStyle = ORANGE;
+ctx.fill();
+ctx.strokeStyle = '#000';
+ctx.lineWidth = 1.3;
+ctx.stroke();
+ctx.beginPath();
+ctx.moveTo(bx - this.r, by);
+ctx.lineTo(bx + this.r, by);
+ctx.moveTo(bx, by - this.r);
+ctx.lineTo(bx, by + this.r);
+ctx.stroke();
+}
+}
 function initGame() {
-  players = {
-    p1: new Player('1', 'Player 1', HOME.p1.x, HOME.p1.y),
-    p2: new Player('2', 'Player 2', HOME.p2.x, HOME.p2.y),
-    p3: new Player('3', 'Player 3', HOME.p3.x, HOME.p3.y),
-    p4: new Player('4', 'Player 4', HOME.p4.x, HOME.p4.y),
-    p5: new Player('5', 'Player 5', HOME.p5.x, HOME.p5.y),
-  };
-  defenders = {
-    d1: new Defender('X1', 'p1'),
-    d2: new Defender('X2', 'p2'),
-    d3: new Defender('X3', 'p3'),
-    d4: new Defender('X4', 'p4'),
-    d5: new Defender('X5', 'p5'),
-  };
-  Object.values(defenders).forEach(d => d.update(1000));
-
-  players.p1.hasBall = true;
-  ball = new Ball(HOME.p1.x, HOME.p1.y - 0.05);
-  targets = [];
-  activeScreens = [];
-  draggingEntity = null;
-  showCallText = false;
-  flashAlpha = 0;
-  shotProgress = -1;
-  confettiParticles = [];
-  animating = false;
-  interceptLock = false;
-  passCount = 0;
-  turnoverCount = 0;
+players = {
+p1: new Player('1', 'Player 1', HOME.p1.x, HOME.p1.y),
+p2: new Player('2', 'Player 2', HOME.p2.x, HOME.p2.y),
+p3: new Player('3', 'Player 3', HOME.p3.x, HOME.p3.y),
+p4: new Player('4', 'Player 4', HOME.p4.x, HOME.p4.y),
+p5: new Player('5', 'Player 5', HOME.p5.x, HOME.p5.y),
+};
+defenders = {
+d1: new Defender('X1', 'p1'),
+d2: new Defender('X2', 'p2'),
+d3: new Defender('X3', 'p3'),
+d4: new Defender('X4', 'p4'),
+d5: new Defender('X5', 'p5'),
+};
+Object.values(defenders).forEach(d => d.update(1000));
+players.p1.hasBall = true;
+ball = new Ball(HOME.p1.x, HOME.p1.y - 0.05);
+targets = [];
+activeScreens = [];
+draggingEntity = null;
+showCallText = false;
+flashAlpha = 0;
+shotProgress = -1;
+confettiParticles = [];
+animating = false;
+interceptLock = false;
+passCount = 0;
+turnoverCount = 0;
 }
-
 initGame();
-
 // ═══════════════════════════════════════════════════════════
 //  DRAW COMPLETE REGULATION HALF-COURT
 // ═══════════════════════════════════════════════════════════
 function drawCourt() {
-  ctx.fillStyle = APRON_COLOR;
-  ctx.fillRect(0, 0, W, H);
-
-  ctx.fillStyle = COURT_WOOD;
-  ctx.fillRect(COURT_L, BASELINE_Y, COURT_W, HALFCOURT_Y - BASELINE_Y);
-
-  ctx.strokeStyle = 'rgba(139,105,20,0.12)';
-  ctx.lineWidth = 1;
-  for (let y = BASELINE_Y; y < HALFCOURT_Y; y += 14) {
-    ctx.beginPath(); ctx.moveTo(COURT_L, y); ctx.lineTo(COURT_R, y); ctx.stroke();
-  }
-
-  const CL = '#1e1e1e';
-  ctx.strokeStyle = CL;
-  ctx.lineWidth = 3;
-  ctx.strokeRect(COURT_L, BASELINE_Y, COURT_W, HALFCOURT_Y - BASELINE_Y);
-
-  ctx.fillStyle = 'rgba(185, 28, 28, 0.52)';
-  ctx.fillRect(PAINT_X, BASELINE_Y, PAINT_W, PAINT_H);
-  ctx.lineWidth = 2.5;
-  ctx.strokeRect(PAINT_X, BASELINE_Y, PAINT_W, PAINT_H);
-
-  const laneMarks = [BASELINE_Y + 85, BLOCK_Y, BASELINE_Y + 148, BASELINE_Y + 188];
-  laneMarks.forEach((my, idx) => {
-    const tickW = idx === 1 ? 10 : 7;
-    ctx.lineWidth = idx === 1 ? 3.5 : 2;
-    ctx.beginPath();
-    ctx.moveTo(PAINT_X - tickW, my); ctx.lineTo(PAINT_X, my);
-    ctx.moveTo(PAINT_X + PAINT_W, my); ctx.lineTo(PAINT_X + PAINT_W + tickW, my);
-    ctx.stroke();
-  });
-  ctx.lineWidth = 2.5;
-
-  ctx.beginPath();
-  ctx.arc(W / 2, FT_Y, FT_R, 0, Math.PI);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(W / 2, FT_Y, FT_R, Math.PI, Math.PI * 2);
-  ctx.setLineDash([7, 7]);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  ctx.strokeStyle = CL;
-  ctx.lineWidth = 2.8;
-  ctx.beginPath();
-  ctx.moveTo(C3X_L, BASELINE_Y);
-  ctx.lineTo(C3X_L, CORNER3_END);
-  ctx.arc(HOOP_X, HOOP_Y, ARC_R, Math.PI, 0, true);
-  ctx.lineTo(C3X_R, BASELINE_Y);
-  ctx.stroke();
-
-  const boardW = 76;
-  ctx.fillStyle = '#222';
-  ctx.fillRect(W / 2 - boardW / 2, BASELINE_Y + 34, boardW, 5);
-
-  ctx.beginPath();
-  ctx.arc(HOOP_X, HOOP_Y, 44, 0, Math.PI);
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(HOOP_X, HOOP_Y, 15, 0, Math.PI * 2);
-  ctx.strokeStyle = '#d32f2f';
-  ctx.lineWidth = 3.5;
-  ctx.stroke();
-
-  ctx.strokeStyle = CL;
-  ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  ctx.arc(W / 2, HALFCOURT_Y, 68, Math.PI, Math.PI * 2);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(W / 2, HALFCOURT_Y, 24, Math.PI, Math.PI * 2);
-  ctx.stroke();
-
-  drawCourtLabel('BLOCK', PAINT_X - 10, BLOCK_Y - 18, 'right');
-  drawCourtLabel('BLOCK', PAINT_X + PAINT_W + 10, BLOCK_Y - 18, 'left');
-  drawCourtLabel('ELBOW', PAINT_X - 10, FT_Y - 18, 'right');
-  drawCourtLabel('ELBOW', PAINT_X + PAINT_W + 10, FT_Y - 18, 'left');
-  drawCourtLabel('TOP OF KEY', TOK_X, TOK_Y + 34, 'center');
-  drawCourtLabel('LEFT WING', WING_X_L - 12, WING_Y - 26, 'right');
-  drawCourtLabel('RIGHT WING', WING_X_R + 12, WING_Y - 26, 'left');
-  drawCourtLabel('CORNER', C3X_L - 6, CORNER_Y - 22, 'right');
-  drawCourtLabel('CORNER', C3X_R + 6, CORNER_Y - 22, 'left');
-
-  if (mode === 'free' || phase === PHASE.SHOOT_OR_PASS) {
-    drawCourtLabel('TAP RIM TO SHOOT', HOOP_X, HOOP_Y + 26, 'center');
-  }
+ctx.fillStyle = APRON_COLOR;
+ctx.fillRect(0, 0, W, H);
+ctx.fillStyle = COURT_WOOD;
+ctx.fillRect(COURT_L, BASELINE_Y, COURT_W, HALFCOURT_Y - BASELINE_Y);
+ctx.strokeStyle = 'rgba(139,105,20,0.12)';
+ctx.lineWidth = 1;
+for (let y = BASELINE_Y; y < HALFCOURT_Y; y += 14) {
+ctx.beginPath(); ctx.moveTo(COURT_L, y); ctx.lineTo(COURT_R, y); ctx.stroke();
 }
-
+const CL = '#1e1e1e';
+ctx.strokeStyle = CL;
+ctx.lineWidth = 3;
+ctx.strokeRect(COURT_L, BASELINE_Y, COURT_W, HALFCOURT_Y - BASELINE_Y);
+ctx.fillStyle = 'rgba(185, 28, 28, 0.52)';
+ctx.fillRect(PAINT_X, BASELINE_Y, PAINT_W, PAINT_H);
+ctx.lineWidth = 2.5;
+ctx.strokeRect(PAINT_X, BASELINE_Y, PAINT_W, PAINT_H);
+const laneMarks = [BASELINE_Y + 85, BLOCK_Y, BASELINE_Y + 148, BASELINE_Y + 188];
+laneMarks.forEach((my, idx) => {
+const tickW = idx === 1 ? 10 : 7;
+ctx.lineWidth = idx === 1 ? 3.5 : 2;
+ctx.beginPath();
+ctx.moveTo(PAINT_X - tickW, my); ctx.lineTo(PAINT_X, my);
+ctx.moveTo(PAINT_X + PAINT_W, my); ctx.lineTo(PAINT_X + PAINT_W + tickW, my);
+ctx.stroke();
+});
+ctx.lineWidth = 2.5;
+ctx.beginPath();
+ctx.arc(W / 2, FT_Y, FT_R, 0, Math.PI);
+ctx.stroke();
+ctx.beginPath();
+ctx.arc(W / 2, FT_Y, FT_R, Math.PI, Math.PI * 2);
+ctx.setLineDash([7, 7]);
+ctx.stroke();
+ctx.setLineDash([]);
+ctx.strokeStyle = CL;
+ctx.lineWidth = 2.8;
+ctx.beginPath();
+ctx.moveTo(C3X_L, BASELINE_Y);
+ctx.lineTo(C3X_L, CORNER3_END);
+ctx.arc(HOOP_X, HOOP_Y, ARC_R, Math.PI, 0, true);
+ctx.lineTo(C3X_R, BASELINE_Y);
+ctx.stroke();
+const boardW = 76;
+ctx.fillStyle = '#222';
+ctx.fillRect(W / 2 - boardW / 2, BASELINE_Y + 34, boardW, 5);
+ctx.beginPath();
+ctx.arc(HOOP_X, HOOP_Y, 44, 0, Math.PI);
+ctx.lineWidth = 2;
+ctx.stroke();
+ctx.beginPath();
+ctx.arc(HOOP_X, HOOP_Y, 15, 0, Math.PI * 2);
+ctx.strokeStyle = '#d32f2f';
+ctx.lineWidth = 3.5;
+ctx.stroke();
+ctx.strokeStyle = CL;
+ctx.lineWidth = 2.5;
+ctx.beginPath();
+ctx.arc(W / 2, HALFCOURT_Y, 68, Math.PI, Math.PI * 2);
+ctx.stroke();
+ctx.beginPath();
+ctx.arc(W / 2, HALFCOURT_Y, 24, Math.PI, Math.PI * 2);
+ctx.stroke();
+drawCourtLabel('BLOCK', PAINT_X - 10, BLOCK_Y - 18, 'right');
+drawCourtLabel('BLOCK', PAINT_X + PAINT_W + 10, BLOCK_Y - 18, 'left');
+drawCourtLabel('ELBOW', PAINT_X - 10, FT_Y - 18, 'right');
+drawCourtLabel('ELBOW', PAINT_X + PAINT_W + 10, FT_Y - 18, 'left');
+drawCourtLabel('TOP OF KEY', TOK_X, TOK_Y + 34, 'center');
+drawCourtLabel('LEFT WING', WING_X_L - 12, WING_Y - 26, 'right');
+drawCourtLabel('RIGHT WING', WING_X_R + 12, WING_Y - 26, 'left');
+drawCourtLabel('CORNER', C3X_L - 6, CORNER_Y - 22, 'right');
+drawCourtLabel('CORNER', C3X_R + 6, CORNER_Y - 22, 'left');
+if (mode === 'free' || phase === PHASE.SHOOT_OR_PASS) {
+drawCourtLabel('TAP RIM TO SHOOT', HOOP_X, HOOP_Y + 26, 'center');
+}
+}
 function drawCourtLabel(text, x, y, align) {
-  ctx.save();
-  ctx.font = `bold 10px Rajdhani, sans-serif`;
-  ctx.textAlign = align;
-  ctx.textBaseline = 'middle';
-  const w = ctx.measureText(text).width + 10;
-  const bx = align === 'center' ? x - w / 2 : align === 'right' ? x - w : x;
-  ctx.fillStyle = 'rgba(255,255,255,0.75)';
-  ctx.beginPath();
-  ctx.roundRect(bx, y - 8, w, 16, 4);
-  ctx.fill();
-  ctx.fillStyle = '#111';
-  ctx.fillText(text, align === 'center' ? x : align === 'right' ? x - 5 : x + 5, y);
-  ctx.restore();
+ctx.save();
+ctx.font = ⁠bold 10px Rajdhani, sans-serif⁠;
+ctx.textAlign = align;
+ctx.textBaseline = 'middle';
+const w = ctx.measureText(text).width + 10;
+const bx = align === 'center' ? x - w / 2 : align === 'right' ? x - w : x;
+ctx.fillStyle = 'rgba(255,255,255,0.75)';
+ctx.beginPath();
+ctx.roundRect(bx, y - 8, w, 16, 4);
+ctx.fill();
+ctx.fillStyle = '#111';
+ctx.fillText(text, align === 'center' ? x : align === 'right' ? x - 5 : x + 5, y);
+ctx.restore();
 }
-
 // ═══════════════════════════════════════════════════════════
 //  DRAW TARGETS, SCREENS & PASSING LANES (SAFE VS. SKIP PASS)
 // ═══════════════════════════════════════════════════════════
 let pulseAnim = 0;
 function drawTargetsAndGuides() {
-  pulseAnim += 0.05;
-  const pulse = Math.sin(pulseAnim) * 4;
-
-  activeScreens.forEach(s => {
-    ctx.save();
-    ctx.translate(s.x, s.y);
-    ctx.rotate(s.angle);
-    ctx.strokeStyle = NAVY;
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(0, 26);
-    ctx.moveTo(-18, 0);
-    ctx.lineTo(18, 0);
-    ctx.stroke();
-
-    ctx.strokeStyle = GOLD;
-    ctx.lineWidth = 2.5;
-    ctx.stroke();
-    ctx.restore();
-  });
-
-  targets.forEach(t => {
-    const p = players[t.playerKey];
-    ctx.save();
-
-    if (!t.locked) {
-      ctx.beginPath();
-      ctx.moveTo(p.x, p.y);
-      ctx.lineTo(t.x, t.y);
-      ctx.strokeStyle = 'rgba(0, 230, 118, 0.6)';
-      ctx.lineWidth = 2.5;
-      ctx.setLineDash([6, 6]);
-      ctx.stroke();
-      ctx.setLineDash([]);
-    }
-
-    ctx.beginPath();
-    ctx.arc(t.x, t.y, t.locked ? 24 : 26 + pulse, 0, Math.PI * 2);
-    ctx.fillStyle = t.locked ? 'rgba(0, 230, 118, 0.28)' : 'rgba(0, 230, 118, 0.14)';
-    ctx.fill();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = t.locked ? GREEN : '#00c853';
-    ctx.stroke();
-
-    ctx.font = 'bold 11px Orbitron, sans-serif';
-    ctx.fillStyle = '#003314';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(t.locked ? '✓' : `#${p.id}`, t.x, t.y);
-
-    if (t.label && !t.locked) {
-      const lw = ctx.measureText(t.label).width + 10;
-      ctx.fillStyle = GREEN;
-      ctx.beginPath();
-      ctx.roundRect(t.x - lw / 2, t.y - 42, lw, 16, 4);
-      ctx.fill();
-      ctx.fillStyle = '#00220d';
-      ctx.font = 'bold 10px Rajdhani, sans-serif';
-      ctx.fillText(t.label, t.x, t.y - 34);
-    }
-
-    ctx.restore();
-  });
-
-  if (phase === PHASE.DECISION_PASS && mode !== 'free') {
-    const holder = Object.values(players).find(p => p.hasBall);
-    if (holder) {
-      const a = 0.55 + 0.4 * Math.sin(pulseAnim);
-      Object.values(players).forEach(teammate => {
-        if (teammate !== holder) {
-          const risk = evaluatePassRisk(holder, teammate);
-          const lineColor = risk.isDangerous ? '#ff1744' : GOLD;
-          drawArrow(holder.x, holder.y, teammate.x, teammate.y, lineColor, true, a);
-
-          if (risk.isDangerous) {
-            const mx = (holder.x + teammate.x) / 2;
-            const my = (holder.y + teammate.y) / 2;
-            ctx.save();
-            const warnTxt = '⚠️ RISKY SKIP!';
-            ctx.font = 'bold 10px Orbitron, sans-serif';
-            const ww = ctx.measureText(warnTxt).width + 10;
-            ctx.fillStyle = 'rgba(183, 28, 28, 0.94)';
-            ctx.beginPath();
-            ctx.roundRect(mx - ww / 2, my - 9, ww, 18, 5);
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 1.2;
-            ctx.stroke();
-            ctx.fillStyle = '#fff';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(warnTxt, mx, my);
-            ctx.restore();
-          }
-        }
-      });
-    }
-  }
+pulseAnim += 0.05;
+const pulse = Math.sin(pulseAnim) * 4;
+activeScreens.forEach(s => {
+ctx.save();
+ctx.translate(s.x, s.y);
+ctx.rotate(s.angle);
+ctx.strokeStyle = NAVY;
+ctx.lineWidth = 5;
+ctx.beginPath();
+ctx.moveTo(0, 0);
+ctx.lineTo(0, 26);
+ctx.moveTo(-18, 0);
+ctx.lineTo(18, 0);
+ctx.stroke();
+ctx.strokeStyle = GOLD;
+ctx.lineWidth = 2.5;
+ctx.stroke();
+ctx.restore();
+});
+targets.forEach(t => {
+const p = players[t.playerKey];
+ctx.save();
+if (!t.locked) {
+ctx.beginPath();
+ctx.moveTo(p.x, p.y);
+ctx.lineTo(t.x, t.y);
+ctx.strokeStyle = 'rgba(0, 230, 118, 0.6)';
+ctx.lineWidth = 2.5;
+ctx.setLineDash([6, 6]);
+ctx.stroke();
+ctx.setLineDash([]);
 }
-
+ctx.beginPath();
+ctx.arc(t.x, t.y, t.locked ? 24 : 26 + pulse, 0, Math.PI * 2);
+ctx.fillStyle = t.locked ? 'rgba(0, 230, 118, 0.28)' : 'rgba(0, 230, 118, 0.14)';
+ctx.fill();
+ctx.lineWidth = 3;
+ctx.strokeStyle = t.locked ? GREEN : '#00c853';
+ctx.stroke();
+ctx.font = 'bold 11px Orbitron, sans-serif';
+ctx.fillStyle = '#003314';
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+ctx.fillText(t.locked ? '✓' : ⁠#${p.id}⁠, t.x, t.y);
+if (t.label && !t.locked) {
+const lw = ctx.measureText(t.label).width + 10;
+ctx.fillStyle = GREEN;
+ctx.beginPath();
+ctx.roundRect(t.x - lw / 2, t.y - 42, lw, 16, 4);
+ctx.fill();
+ctx.fillStyle = '#00220d';
+ctx.font = 'bold 10px Rajdhani, sans-serif';
+ctx.fillText(t.label, t.x, t.y - 34);
+}
+ctx.restore();
+});
+if (phase === PHASE.DECISION_PASS && mode !== 'free') {
+const holder = Object.values(players).find(p => p.hasBall);
+if (holder) {
+const a = 0.55 + 0.4 * Math.sin(pulseAnim);
+Object.values(players).forEach(teammate => {
+if (teammate !== holder) {
+const risk = evaluatePassRisk(holder, teammate);
+const lineColor = risk.isDangerous ? '#ff1744' : GOLD;
+drawArrow(holder.x, holder.y, teammate.x, teammate.y, lineColor, true, a);
+if (risk.isDangerous) {
+const mx = (holder.x + teammate.x) / 2;
+const my = (holder.y + teammate.y) / 2;
+ctx.save();
+const warnTxt = '⚠️ RISKY SKIP!';
+ctx.font = 'bold 10px Orbitron, sans-serif';
+const ww = ctx.measureText(warnTxt).width + 10;
+ctx.fillStyle = 'rgba(183, 28, 28, 0.94)';
+ctx.beginPath();
+ctx.roundRect(mx - ww / 2, my - 9, ww, 18, 5);
+ctx.fill();
+ctx.strokeStyle = '#fff';
+ctx.lineWidth = 1.2;
+ctx.stroke();
+ctx.fillStyle = '#fff';
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+ctx.fillText(warnTxt, mx, my);
+ctx.restore();
+}
+}
+});
+}
+}
+}
 function drawArrow(x1, y1, x2, y2, color, dash = false, alpha = 1) {
-  ctx.save();
-  ctx.globalAlpha = alpha;
-  if (dash) ctx.setLineDash([8, 6]);
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 2.8;
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  const angle = Math.atan2(y2 - y1, x2 - x1);
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(x2, y2);
-  ctx.lineTo(x2 - 13 * Math.cos(angle - 0.4), y2 - 13 * Math.sin(angle - 0.4));
-  ctx.lineTo(x2 - 13 * Math.cos(angle + 0.4), y2 - 13 * Math.sin(angle + 0.4));
-  ctx.closePath();
-  ctx.fill();
-  ctx.restore();
+ctx.save();
+ctx.globalAlpha = alpha;
+if (dash) ctx.setLineDash([8, 6]);
+ctx.strokeStyle = color;
+ctx.lineWidth = 2.8;
+ctx.beginPath();
+ctx.moveTo(x1, y1);
+ctx.lineTo(x2, y2);
+ctx.stroke();
+ctx.setLineDash([]);
+const angle = Math.atan2(y2 - y1, x2 - x1);
+ctx.fillStyle = color;
+ctx.beginPath();
+ctx.moveTo(x2, y2);
+ctx.lineTo(x2 - 13 * Math.cos(angle - 0.4), y2 - 13 * Math.sin(angle - 0.4));
+ctx.lineTo(x2 - 13 * Math.cos(angle + 0.4), y2 - 13 * Math.sin(angle + 0.4));
+ctx.closePath();
+ctx.fill();
+ctx.restore();
 }
-
 // ═══════════════════════════════════════════════════════════
 //  TOUCH & MOUSE POINTER INTERACTIONS
 // ═══════════════════════════════════════════════════════════
 function getPointerClientPos(e) {
-  if (e.touches && e.touches.length > 0) {
-    return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-  }
-  if (e.changedTouches && e.changedTouches.length > 0) {
-    return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-  }
-  return { x: e.clientX, y: e.clientY };
+if (e.touches && e.touches.length > 0) {
+return { x: e.touches[0].clientX, y: e.touches[0].clientY };
 }
-
+if (e.changedTouches && e.changedTouches.length > 0) {
+return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+}
+return { x: e.clientX, y: e.clientY };
+}
 function getCanvasCoords(e) {
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = W / rect.width;
-  const scaleY = H / rect.height;
-  const client = getPointerClientPos(e);
-  return {
-    x: (client.x - rect.left) * scaleX,
-    y: (client.y - rect.top) * scaleY,
-    clientX: client.x,
-    clientY: client.y
-  };
+const rect = canvas.getBoundingClientRect();
+const scaleX = W / rect.width;
+const scaleY = H / rect.height;
+const client = getPointerClientPos(e);
+return {
+x: (client.x - rect.left) * scaleX,
+y: (client.y - rect.top) * scaleY,
+clientX: client.x,
+clientY: client.y
+};
 }
-
 function canClickToShoot() {
-  return mode === 'free' || phase === PHASE.SHOOT_OR_PASS;
+return mode === 'free' || phase === PHASE.SHOOT_OR_PASS;
 }
-
 function onPointerDown(e) {
-  if (interceptLock) return;
-  const pt = getCanvasCoords(e);
-  const touchBonus = e.type === 'touchstart' ? 22 : 12;
-
-  if (canClickToShoot() && Math.hypot(pt.x - HOOP_X, pt.y - HOOP_Y) <= 38) {
-    if (e.cancelable) e.preventDefault();
-    shootFromCurrentHolder();
-    return;
-  }
-
-  let closest = null;
-  let closestDist = Infinity;
-
-  for (const [key, p] of Object.entries(players)) {
-    const dist = Math.hypot(pt.x - p.x, pt.y - p.y);
-    if (dist <= p.r + touchBonus && dist < closestDist) {
-      closestDist = dist;
-      closest = { type: 'offense', key, entity: p };
-    }
-  }
-
-  if (showDefense && mode === 'free') {
-    for (const [key, d] of Object.entries(defenders)) {
-      const dist = Math.hypot(pt.x - d.x, pt.y - d.y);
-      if (dist <= d.r + touchBonus && dist < closestDist) {
-        closestDist = dist;
-        closest = { type: 'defense', key, entity: d };
-      }
-    }
-  }
-
-  if (!closest) return;
-
-  if (closest.type === 'defense') {
-    if (e.cancelable) e.preventDefault();
-    draggingEntity = { type: 'defense', key: closest.key };
-    closest.entity.manualOverride = true;
-    dragStartScreenPos = { x: pt.clientX, y: pt.clientY };
-    dragMoved = false;
-    dragOffset = { x: closest.entity.x - pt.x, y: closest.entity.y - pt.y };
-    canvas.style.cursor = 'grabbing';
-    return;
-  }
-
-  const p = closest.entity;
-
-  if (phase === PHASE.DECISION_PASS && mode !== 'free' && !p.hasBall) {
-    if (e.cancelable) e.preventDefault();
-    executePassTo(closest.key);
-    return;
-  }
-
-  if (mode === 'drag' && targets.length > 0) {
-    const target = targets.find(t => t.playerKey === closest.key && !t.locked);
-    if (target) {
-      if (e.cancelable) e.preventDefault();
-      draggingEntity = { type: 'offense', key: closest.key };
-      dragStartScreenPos = { x: pt.clientX, y: pt.clientY };
-      dragMoved = false;
-      dragOffset = { x: p.x - pt.x, y: p.y - pt.y };
-      canvas.style.cursor = 'grabbing';
-    }
-    return;
-  }
-
-  if (mode === 'free') {
-    if (e.cancelable) e.preventDefault();
-    p.t = 1;
-    draggingEntity = { type: 'offense', key: closest.key };
-    dragStartScreenPos = { x: pt.clientX, y: pt.clientY };
-    dragMoved = false;
-    dragOffset = { x: p.x - pt.x, y: p.y - pt.y };
-    canvas.style.cursor = 'grabbing';
-  }
+if (interceptLock) return;
+const pt = getCanvasCoords(e);
+const touchBonus = e.type === 'touchstart' ? 22 : 12;
+if (canClickToShoot() && Math.hypot(pt.x - HOOP_X, pt.y - HOOP_Y) <= 38) {
+if (e.cancelable) e.preventDefault();
+shootFromCurrentHolder();
+return;
 }
-
+let closest = null;
+let closestDist = Infinity;
+for (const [key, p] of Object.entries(players)) {
+const dist = Math.hypot(pt.x - p.x, pt.y - p.y);
+if (dist <= p.r + touchBonus && dist < closestDist) {
+closestDist = dist;
+closest = { type: 'offense', key, entity: p };
+}
+}
+if (showDefense && mode === 'free') {
+for (const [key, d] of Object.entries(defenders)) {
+const dist = Math.hypot(pt.x - d.x, pt.y - d.y);
+if (dist <= d.r + touchBonus && dist < closestDist) {
+closestDist = dist;
+closest = { type: 'defense', key, entity: d };
+}
+}
+}
+if (!closest) return;
+if (closest.type === 'defense') {
+if (e.cancelable) e.preventDefault();
+draggingEntity = { type: 'defense', key: closest.key };
+closest.entity.manualOverride = true;
+dragStartScreenPos = { x: pt.clientX, y: pt.clientY };
+dragMoved = false;
+dragOffset = { x: closest.entity.x - pt.x, y: closest.entity.y - pt.y };
+canvas.style.cursor = 'grabbing';
+return;
+}
+const p = closest.entity;
+if (phase === PHASE.DECISION_PASS && mode !== 'free' && !p.hasBall) {
+if (e.cancelable) e.preventDefault();
+executePassTo(closest.key);
+return;
+}
+if (mode === 'drag' && targets.length > 0) {
+const target = targets.find(t => t.playerKey === closest.key && !t.locked);
+if (target) {
+if (e.cancelable) e.preventDefault();
+draggingEntity = { type: 'offense', key: closest.key };
+dragStartScreenPos = { x: pt.clientX, y: pt.clientY };
+dragMoved = false;
+dragOffset = { x: p.x - pt.x, y: p.y - pt.y };
+canvas.style.cursor = 'grabbing';
+}
+return;
+}
+if (mode === 'free') {
+if (e.cancelable) e.preventDefault();
+p.t = 1;
+draggingEntity = { type: 'offense', key: closest.key };
+dragStartScreenPos = { x: pt.clientX, y: pt.clientY };
+dragMoved = false;
+dragOffset = { x: p.x - pt.x, y: p.y - pt.y };
+canvas.style.cursor = 'grabbing';
+}
+}
 function onPointerMove(e) {
-  const pt = getCanvasCoords(e);
-
-  if (draggingEntity) {
-    if (e.cancelable) e.preventDefault();
-
-    if (Math.hypot(pt.clientX - dragStartScreenPos.x, pt.clientY - dragStartScreenPos.y) > 12) {
-      dragMoved = true;
-    }
-
-    const minX = mode === 'free' ? 22 : COURT_L + 16;
-    const maxX = mode === 'free' ? W - 22 : COURT_R - 16;
-    const minY = mode === 'free' ? 22 : BASELINE_Y + 16;
-    const maxY = mode === 'free' ? H - 22 : HALFCOURT_Y - 16;
-
-    if (draggingEntity.type === 'defense') {
-      const d = defenders[draggingEntity.key];
-      d.x = Math.max(minX, Math.min(maxX, pt.x + dragOffset.x));
-      d.y = Math.max(minY, Math.min(maxY, pt.y + dragOffset.y));
-      return;
-    }
-
-    const p = players[draggingEntity.key];
-    p.x = Math.max(minX, Math.min(maxX, pt.x + dragOffset.x));
-    p.y = Math.max(minY, Math.min(maxY, pt.y + dragOffset.y));
-    p.tx = p.x;
-    p.ty = p.y;
-
-    if (mode === 'drag') {
-      const target = targets.find(t => t.playerKey === draggingEntity.key && !t.locked);
-      if (target && Math.hypot(p.x - target.x, p.y - target.y) < 32) {
-        p.x = target.x;
-        p.y = target.y;
-        target.locked = true;
-        draggingEntity = null;
-        canvas.style.cursor = 'default';
-        checkAllTargetsLocked();
-      }
-    }
-    return;
-  }
-
-  const hoveringOffense = Object.entries(players).some(([key, p]) => {
-    if (Math.hypot(pt.x - p.x, pt.y - p.y) > p.r + 12) return false;
-    if (mode === 'free') return true;
-    if (phase === PHASE.DECISION_PASS && !p.hasBall) return true;
-    if (mode === 'drag') return targets.some(t => t.playerKey === key && !t.locked);
-    return false;
-  });
-  const hoveringDefense = showDefense && mode === 'free' && Object.values(defenders).some(d => Math.hypot(pt.x - d.x, pt.y - d.y) <= d.r + 12);
-  const hoveringHoop = canClickToShoot() && Math.hypot(pt.x - HOOP_X, pt.y - HOOP_Y) <= 34;
-  canvas.style.cursor = (hoveringOffense || hoveringDefense || hoveringHoop) ? 'pointer' : 'default';
+const pt = getCanvasCoords(e);
+if (draggingEntity) {
+if (e.cancelable) e.preventDefault();
+if (Math.hypot(pt.clientX - dragStartScreenPos.x, pt.clientY - dragStartScreenPos.y) > 12) {
+dragMoved = true;
 }
-
+const minX = mode === 'free' ? 22 : COURT_L + 16;
+const maxX = mode === 'free' ? W - 22 : COURT_R - 16;
+const minY = mode === 'free' ? 22 : BASELINE_Y + 16;
+const maxY = mode === 'free' ? H - 22 : HALFCOURT_Y - 16;
+if (draggingEntity.type === 'defense') {
+const d = defenders[draggingEntity.key];
+d.x = Math.max(minX, Math.min(maxX, pt.x + dragOffset.x));
+d.y = Math.max(minY, Math.min(maxY, pt.y + dragOffset.y));
+return;
+}
+const p = players[draggingEntity.key];
+p.x = Math.max(minX, Math.min(maxX, pt.x + dragOffset.x));
+p.y = Math.max(minY, Math.min(maxY, pt.y + dragOffset.y));
+p.tx = p.x;
+p.ty = p.y;
+if (mode === 'drag') {
+const target = targets.find(t => t.playerKey === draggingEntity.key && !t.locked);
+if (target && Math.hypot(p.x - target.x, p.y - target.y) < 32) {
+p.x = target.x;
+p.y = target.y;
+target.locked = true;
+draggingEntity = null;
+canvas.style.cursor = 'default';
+checkAllTargetsLocked();
+}
+}
+return;
+}
+const hoveringOffense = Object.entries(players).some(([key, p]) => {
+if (Math.hypot(pt.x - p.x, pt.y - p.y) > p.r + 12) return false;
+if (mode === 'free') return true;
+if (phase === PHASE.DECISION_PASS && !p.hasBall) return true;
+if (mode === 'drag') return targets.some(t => t.playerKey === key && !t.locked);
+return false;
+});
+const hoveringDefense = showDefense && mode === 'free' && Object.values(defenders).some(d => Math.hypot(pt.x - d.x, pt.y - d.y) <= d.r + 12);
+const hoveringHoop = canClickToShoot() && Math.hypot(pt.x - HOOP_X, pt.y - HOOP_Y) <= 34;
+canvas.style.cursor = (hoveringOffense || hoveringDefense || hoveringHoop) ? 'pointer' : 'default';
+}
 function onPointerUp() {
-  if (draggingEntity) {
-    if (draggingEntity.type === 'offense' && mode === 'free' && !dragMoved) {
-      executePassTo(draggingEntity.key);
-    }
-    draggingEntity = null;
-    canvas.style.cursor = 'default';
-  }
+if (draggingEntity) {
+if (draggingEntity.type === 'offense' && mode === 'free' && !dragMoved) {
+executePassTo(draggingEntity.key);
 }
-
+draggingEntity = null;
+canvas.style.cursor = 'default';
+}
+}
 canvas.addEventListener('mousedown', onPointerDown);
 canvas.addEventListener('mousemove', onPointerMove);
 window.addEventListener('mouseup', onPointerUp);
-
 canvas.addEventListener('touchstart', onPointerDown, { passive: false });
 canvas.addEventListener('touchmove', onPointerMove, { passive: false });
 window.addEventListener('touchend', onPointerUp);
 window.addEventListener('touchcancel', onPointerUp);
-
 function checkAllTargetsLocked() {
-  if (targets.every(t => t.locked)) {
-    targets = [];
-    btnNext.disabled = false;
-    onPhaseObjectivesComplete();
-  }
+if (targets.every(t => t.locked)) {
+targets = [];
+btnNext.disabled = false;
+onPhaseObjectivesComplete();
 }
-
+}
 // ═══════════════════════════════════════════════════════════
-//  DYNAMIC SCREEN-AWAY ENGINE (COACH & WATCH MODES)
+//  DYNAMIC SCREEN-AWAY & TOP-OF-KEY DOWN-SCREEN ENGINE
 // ═══════════════════════════════════════════════════════════
 function buildDynamicScreenAwayMoves() {
-  const holderEntry = Object.entries(players).find(([_, p]) => p.hasBall);
-  if (!holderEntry) return { moves: [], screens: [], desc: '' };
-  const [holderKey, holder] = holderEntry;
-
-  const ballOnLeft = holder.x <= W / 2;
-
-  const ballSidePostKey = ballOnLeft ? 'p4' : 'p5';
-  const weakSidePostKey = ballOnLeft ? 'p5' : 'p4';
-  const ballSidePost    = players[ballSidePostKey];
-  const weakSidePost    = players[weakSidePostKey];
-
-  const vacatedBlockX = ballOnLeft ? LEFT_BLOCK_X : RIGHT_BLOCK_X;
-  const vacatedBlockY = BLOCK_Y;
-
-  const postScreenX = ballOnLeft ? (PAINT_X + PAINT_W - 10) : (PAINT_X + 10);
-  const postScreenY = BLOCK_Y + 6;
-
-  const moves = [];
-  const screens = [];
-
-  if (holderKey !== ballSidePostKey && holderKey !== weakSidePostKey) {
-    moves.push({
-      key: ballSidePostKey,
-      pos: { x: postScreenX / W, y: postScreenY / H },
-      label: 'Screen Away'
-    });
-    moves.push({
-      key: weakSidePostKey,
-      pos: { x: vacatedBlockX / W, y: vacatedBlockY / H },
-      label: ballOnLeft ? 'Fill Left Block' : 'Fill Right Block'
-    });
-    screens.push({
-      x: postScreenX + (ballOnLeft ? 20 : -20),
-      y: postScreenY,
-      angle: ballOnLeft ? Math.PI / 2 : -Math.PI / 2
-    });
-  } else {
-    const otherPostKey = holderKey === 'p4' ? 'p5' : 'p4';
-    const targetBlockX = holder.x < W / 2 ? RIGHT_BLOCK_X : LEFT_BLOCK_X;
-    moves.push({
-      key: otherPostKey,
-      pos: { x: targetBlockX / W, y: BLOCK_Y / H },
-      label: 'Seal Opposite Block'
-    });
-  }
-
-  const perimeterKeys = ['p1', 'p2', 'p3'].filter(k => k !== holderKey);
-  if (perimeterKeys.length >= 2) {
-    const sortedPerim = perimeterKeys
-      .map(k => ({ key: k, p: players[k], dist: Math.hypot(players[k].x - holder.x, players[k].y - holder.y) }))
-      .sort((a, b) => b.dist - a.dist);
-
-    const perimCutter   = sortedPerim[0];
-    const perimScreener = sortedPerim[1];
-
-    const dirX = holder.x > perimCutter.p.x ? 1 : -1;
-    const pScreenX = Math.max(COURT_L + 45, Math.min(COURT_R - 45, perimCutter.p.x + dirX * 36));
-    const pScreenY = Math.max(BASELINE_Y + 45, Math.min(HALFCOURT_Y - 45, perimCutter.p.y - 26));
-
-    moves.push({
-      key: perimScreener.key,
-      pos: { x: pScreenX / W, y: pScreenY / H },
-      label: 'Screen Away'
-    });
-
-    const cutX = ballOnLeft ? (TOK_X + 48) : (TOK_X - 48);
-    const cutY = TOK_Y - 6;
-    moves.push({
-      key: perimCutter.key,
-      pos: { x: cutX / W, y: cutY / H },
-      label: 'Top of Key'
-    });
-
-    screens.push({
-      x: pScreenX + dirX * 18,
-      y: pScreenY,
-      angle: dirX > 0 ? Math.PI / 2 : -Math.PI / 2
-    });
-  }
-
-  const desc = (holderKey !== ballSidePostKey && holderKey !== weakSidePostKey)
-    ? `${ballSidePost.name} screens away while ${weakSidePost.name} fills the vacated ${ballOnLeft ? 'LEFT' : 'RIGHT'} low block!`
-    : `Weak-side players screen away and cut into open space!`;
-
-  return { moves, screens, desc };
+const holderEntry = Object.entries(players).find(([_, p]) => p.hasBall);
+if (!holderEntry) return { moves: [], screens: [], desc: '' };
+const [holderKey, holder] = holderEntry;
+const isAtTopOfKey = Math.abs(holder.x - TOK_X) <= 60 && holder.y >= FT_Y + 45;
+// CASE A: Ball is at the TOP OF THE KEY
+// Posts screen DOWN on their own side (NOT across) for the low-block players to pop out to both 3pt wings,
+// ensuring full 5-out spacing with zero crowding at the top of the key.
+if (isAtTopOfKey) {
+const others = Object.entries(players)
+.filter(([k]) => k !== holderKey)
+.map(([k, p]) => ({ key: k, p }));
+const leftPlayers  = others.filter(o => o.p.x <= TOK_X).sort((a, b) => a.p.y - b.p.y);
+const rightPlayers = others.filter(o => o.p.x > TOK_X).sort((a, b) => a.p.y - b.p.y);
+while (leftPlayers.length < 2 && rightPlayers.length > 2) {
+leftPlayers.push(rightPlayers.pop());
 }
-
+while (rightPlayers.length < 2 && leftPlayers.length > 2) {
+rightPlayers.push(leftPlayers.pop());
+}
+const leftWingCutter  = leftPlayers[0];
+const leftScreener    = leftPlayers[1];
+const rightWingCutter = rightPlayers[0];
+const rightScreener   = rightPlayers[1];
+const moves = [
+{ key: leftScreener.key,    pos: { x: POS.p4_screen.x, y: POS.p4_screen.y }, label: 'Down Screen L' },
+{ key: rightScreener.key,   pos: { x: POS.p5_screen.x, y: POS.p5_screen.y }, label: 'Down Screen R' },
+{ key: leftWingCutter.key,  pos: { x: POS.p2_wing.x,   y: POS.p2_wing.y   }, label: 'Pop Left Wing' },
+{ key: rightWingCutter.key, pos: { x: POS.p3_wing.x,   y: POS.p3_wing.y   }, label: 'Pop Right Wing' }
+];
+const screens = [
+{ x: cx(POS.p4_screen.x), y: cy(POS.p4_screen.y) - 22, angle: Math.PI },
+{ x: cx(POS.p5_screen.x), y: cy(POS.p5_screen.y) - 22, angle: Math.PI }
+];
+const desc = ⁠${leftScreener.p.name} & ${rightScreener.p.name} screen down on their own sides while ${leftWingCutter.p.name} & ${rightWingCutter.p.name} pop wide to the 3pt wings!⁠;
+return { moves, screens, desc };
+}
+// CASE B: Ball is on a WING or BLOCK — screen away & replace the vacated low block
+const ballOnLeft = holder.x <= W / 2;
+const ballSidePostKey = ballOnLeft ? 'p4' : 'p5';
+const weakSidePostKey = ballOnLeft ? 'p5' : 'p4';
+const ballSidePost    = players[ballSidePostKey];
+const weakSidePost    = players[weakSidePostKey];
+const vacatedBlockX = ballOnLeft ? LEFT_BLOCK_X : RIGHT_BLOCK_X;
+const vacatedBlockY = BLOCK_Y;
+const postScreenX = ballOnLeft ? (PAINT_X + PAINT_W - 10) : (PAINT_X + 10);
+const postScreenY = BLOCK_Y + 6;
+const moves = [];
+const screens = [];
+if (holderKey !== ballSidePostKey && holderKey !== weakSidePostKey) {
+moves.push({
+key: ballSidePostKey,
+pos: { x: postScreenX / W, y: postScreenY / H },
+label: 'Screen Away'
+});
+moves.push({
+key: weakSidePostKey,
+pos: { x: vacatedBlockX / W, y: vacatedBlockY / H },
+label: ballOnLeft ? 'Fill Left Block' : 'Fill Right Block'
+});
+screens.push({
+x: postScreenX + (ballOnLeft ? 20 : -20),
+y: postScreenY,
+angle: ballOnLeft ? Math.PI / 2 : -Math.PI / 2
+});
+} else {
+const otherPostKey = holderKey === 'p4' ? 'p5' : 'p4';
+const targetBlockX = holder.x < W / 2 ? RIGHT_BLOCK_X : LEFT_BLOCK_X;
+moves.push({
+key: otherPostKey,
+pos: { x: targetBlockX / W, y: BLOCK_Y / H },
+label: 'Seal Opposite Block'
+});
+}
+const perimeterKeys = ['p1', 'p2', 'p3'].filter(k => k !== holderKey);
+if (perimeterKeys.length >= 2) {
+const sortedPerim = perimeterKeys
+.map(k => ({ key: k, p: players[k], dist: Math.hypot(players[k].x - holder.x, players[k].y - holder.y) }))
+.sort((a, b) => b.dist - a.dist);
+const perimCutter   = sortedPerim[0];
+const perimScreener = sortedPerim[1];
+const dirX = holder.x > perimCutter.p.x ? 1 : -1;
+const pScreenX = Math.max(COURT_L + 45, Math.min(COURT_R - 45, perimCutter.p.x + dirX * 36));
+const pScreenY = Math.max(BASELINE_Y + 45, Math.min(HALFCOURT_Y - 45, perimCutter.p.y - 26));
+moves.push({
+key: perimScreener.key,
+pos: { x: pScreenX / W, y: pScreenY / H },
+label: 'Screen Away'
+});
+moves.push({
+key: perimCutter.key,
+pos: { x: TOK_X / W, y: TOK_Y / H },
+label: 'Top of Key'
+});
+screens.push({
+x: pScreenX + dirX * 18,
+y: pScreenY,
+angle: dirX > 0 ? Math.PI / 2 : -Math.PI / 2
+});
+}
+const desc = (holderKey !== ballSidePostKey && holderKey !== weakSidePostKey)
+? ⁠${ballSidePost.name} screens away while ${weakSidePost.name} fills the vacated ${ballOnLeft ? 'LEFT' : 'RIGHT'} low block!⁠
+: ⁠Weak-side players screen away and cut into open space!⁠;
+return { moves, screens, desc };
+}
 // ═══════════════════════════════════════════════════════════
 //  CALL TEXT, SHOT & CONFETTI
 // ═══════════════════════════════════════════════════════════
 function drawCallText() {
-  if (!showCallText) return;
-  const p1 = players.p1;
-  ctx.save();
-  ctx.globalAlpha = Math.max(0, callTextAlpha);
-  ctx.font = `bold 22px Orbitron, sans-serif`;
-  const tw = ctx.measureText(callTextStr).width + 28;
-  const th = 40;
-  const tx = p1.x;
-  const ty = p1.y - 48;
-
-  ctx.fillStyle = 'rgba(0,45,98,0.92)';
-  ctx.beginPath();
-  ctx.roundRect(tx - tw / 2, ty - th / 2, tw, th, 10);
-  ctx.fill();
-  ctx.strokeStyle = GOLD;
-  ctx.lineWidth = 2.5;
-  ctx.stroke();
-
-  ctx.fillStyle = GOLD;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(callTextStr, tx, ty);
-  ctx.restore();
+if (!showCallText) return;
+const p1 = players.p1;
+ctx.save();
+ctx.globalAlpha = Math.max(0, callTextAlpha);
+ctx.font = ⁠bold 22px Orbitron, sans-serif⁠;
+const tw = ctx.measureText(callTextStr).width + 28;
+const th = 40;
+const tx = p1.x;
+const ty = p1.y - 48;
+ctx.fillStyle = 'rgba(0,45,98,0.92)';
+ctx.beginPath();
+ctx.roundRect(tx - tw / 2, ty - th / 2, tw, th, 10);
+ctx.fill();
+ctx.strokeStyle = GOLD;
+ctx.lineWidth = 2.5;
+ctx.stroke();
+ctx.fillStyle = GOLD;
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+ctx.fillText(callTextStr, tx, ty);
+ctx.restore();
 }
-
 function spawnConfetti() {
-  for (let i = 0; i < 95; i++) {
-    confettiParticles.push({
-      x: W / 2 + (Math.random() - 0.5) * W * 0.7,
-      y: H * 0.35,
-      vx: (Math.random() - 0.5) * 6,
-      vy: -Math.random() * 6 - 2,
-      r: 5 + Math.random() * 6,
-      color: Math.random() < 0.6 ? GOLD : '#fff',
-      life: 1,
-      decay: 0.008 + Math.random() * 0.01,
-      angle: Math.random() * Math.PI * 2,
-      spin: (Math.random() - 0.5) * 0.15
-    });
-  }
+for (let i = 0; i < 95; i++) {
+confettiParticles.push({
+x: W / 2 + (Math.random() - 0.5) * W * 0.7,
+y: H * 0.35,
+vx: (Math.random() - 0.5) * 6,
+vy: -Math.random() * 6 - 2,
+r: 5 + Math.random() * 6,
+color: Math.random() < 0.6 ? GOLD : '#fff',
+life: 1,
+decay: 0.008 + Math.random() * 0.01,
+angle: Math.random() * Math.PI * 2,
+spin: (Math.random() - 0.5) * 0.15
+});
 }
-
+}
 function startShot(fromX, fromY, cb) {
-  shotProgress = 0;
-  shotStart = { x: fromX, y: fromY };
-  onShotDone = cb;
+shotProgress = 0;
+shotStart = { x: fromX, y: fromY };
+onShotDone = cb;
 }
-
 function drawShot() {
-  if (shotProgress < 0) return;
-  const t = easeInOut(shotProgress);
-  const sx = shotStart.x, sy = shotStart.y;
-  const mx = (sx + HOOP_X) / 2, my = Math.min(sy, HOOP_Y) - 110;
-  const bx = (1 - t) * (1 - t) * sx + 2 * (1 - t) * t * mx + t * t * HOOP_X;
-  const by = (1 - t) * (1 - t) * sy + 2 * (1 - t) * t * my + t * t * HOOP_Y;
-
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(bx, by, 10, 0, Math.PI * 2);
-  ctx.fillStyle = ORANGE;
-  ctx.fill();
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-  ctx.restore();
+if (shotProgress < 0) return;
+const t = easeInOut(shotProgress);
+const sx = shotStart.x, sy = shotStart.y;
+const mx = (sx + HOOP_X) / 2, my = Math.min(sy, HOOP_Y) - 110;
+const bx = (1 - t) * (1 - t) * sx + 2 * (1 - t) * t * mx + t * t * HOOP_X;
+const by = (1 - t) * (1 - t) * sy + 2 * (1 - t) * t * my + t * t * HOOP_Y;
+ctx.save();
+ctx.beginPath();
+ctx.arc(bx, by, 10, 0, Math.PI * 2);
+ctx.fillStyle = ORANGE;
+ctx.fill();
+ctx.strokeStyle = '#000';
+ctx.lineWidth = 1.5;
+ctx.stroke();
+ctx.restore();
 }
-
 // ═══════════════════════════════════════════════════════════
 //  MAIN RENDER LOOP
 // ═══════════════════════════════════════════════════════════
 let last = 0;
 function render(ts) {
-  const dt = Math.min(ts - last, 50);
-  last = ts;
-
-  Object.values(players).forEach(p => p.update(dt));
-  Object.values(defenders).forEach(d => d.update(dt));
-  ball.update(dt);
-
-  if (showCallText) {
-    callTextTimer += dt;
-    callTextAlpha = 0.65 + 0.35 * Math.sin(callTextTimer * 0.005);
-  }
-
-  if (shotProgress >= 0) {
-    shotProgress += dt / 850;
-    if (shotProgress >= 1) {
-      shotProgress = -1;
-      if (onShotDone) { onShotDone(); onShotDone = null; }
-    }
-  }
-
-  confettiParticles = confettiParticles.filter(p => p.life > 0);
-  confettiParticles.forEach(p => {
-    p.x += p.vx; p.y += p.vy; p.vy += 0.14; p.angle += p.spin; p.life -= p.decay;
-  });
-
-  if (flashTimer > 0) {
-    flashTimer -= dt;
-    flashAlpha = Math.max(0, flashAlpha - dt * 0.002);
-  }
-
-  if (ball.t >= 1 && shotProgress < 0 && ball.visible && !interceptLock) {
-    const holder = Object.values(players).find(p => p.hasBall);
-    if (holder) ball.snapToXY(holder.x, holder.y - holder.r - ball.r);
-  }
-
-  drawCourt();
-  drawTargetsAndGuides();
-
-  if (showDefense) {
-    Object.entries(defenders).forEach(([key, d]) => {
-      const isBeingDragged = draggingEntity && draggingEntity.type === 'defense' && draggingEntity.key === key;
-      d.draw(ctx, isBeingDragged);
-    });
-  }
-
-  const holder = Object.values(players).find(p => p.hasBall);
-  const draggableKeys = new Set(targets.filter(t => !t.locked).map(t => t.playerKey));
-  const lockedKeys    = new Set(targets.filter(t => t.locked).map(t => t.playerKey));
-
-  Object.entries(players)
-    .sort((a, b) => a[1].y - b[1].y)
-    .forEach(([key, p]) => {
-      const isPassTarget = (mode === 'free' || phase === PHASE.DECISION_PASS) && !p.hasBall;
-      const isBeingDragged = draggingEntity && draggingEntity.type === 'offense' && draggingEntity.key === key;
-      const def = defenders['d' + p.id];
-      const isOpenLook = def ? Math.hypot(p.x - def.x, p.y - def.y) > 64 : false;
-      const isRiskyTarget = (holder && !p.hasBall && isPassTarget) ? evaluatePassRisk(holder, p).isDangerous : false;
-
-      p.draw(ctx, mode === 'drag' && draggableKeys.has(key), lockedKeys.has(key), isPassTarget, isBeingDragged, isOpenLook, isRiskyTarget);
-    });
-
-  ball.draw(ctx);
-  drawShot();
-  drawCallText();
-
-  confettiParticles.forEach(p => {
-    ctx.save();
-    ctx.globalAlpha = Math.max(0, p.life);
-    ctx.translate(p.x, p.y);
-    ctx.rotate(p.angle);
-    ctx.fillStyle = p.color;
-    ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2);
-    ctx.restore();
-  });
-
-  if (flashAlpha > 0) {
-    ctx.save();
-    ctx.globalAlpha = flashAlpha;
-    ctx.fillStyle = flashColor;
-    ctx.fillRect(0, 0, W, H);
-    ctx.restore();
-  }
-
-  requestAnimationFrame(render);
+const dt = Math.min(ts - last, 50);
+last = ts;
+Object.values(players).forEach(p => p.update(dt));
+Object.values(defenders).forEach(d => d.update(dt));
+ball.update(dt);
+if (showCallText) {
+callTextTimer += dt;
+callTextAlpha = 0.65 + 0.35 * Math.sin(callTextTimer * 0.005);
+}
+if (shotProgress >= 0) {
+shotProgress += dt / 850;
+if (shotProgress >= 1) {
+shotProgress = -1;
+if (onShotDone) { onShotDone(); onShotDone = null; }
+}
+}
+confettiParticles = confettiParticles.filter(p => p.life > 0);
+confettiParticles.forEach(p => {
+p.x += p.vx; p.y += p.vy; p.vy += 0.14; p.angle += p.spin; p.life -= p.decay;
+});
+if (flashTimer > 0) {
+flashTimer -= dt;
+flashAlpha = Math.max(0, flashAlpha - dt * 0.002);
+}
+if (ball.t >= 1 && shotProgress < 0 && ball.visible && !interceptLock) {
+const holder = Object.values(players).find(p => p.hasBall);
+if (holder) ball.snapToXY(holder.x, holder.y - holder.r - ball.r);
+}
+drawCourt();
+drawTargetsAndGuides();
+if (showDefense) {
+Object.entries(defenders).forEach(([key, d]) => {
+const isBeingDragged = draggingEntity && draggingEntity.type === 'defense' && draggingEntity.key === key;
+d.draw(ctx, isBeingDragged);
+});
+}
+const holder = Object.values(players).find(p => p.hasBall);
+const draggableKeys = new Set(targets.filter(t => !t.locked).map(t => t.playerKey));
+const lockedKeys    = new Set(targets.filter(t => t.locked).map(t => t.playerKey));
+Object.entries(players)
+.sort((a, b) => a[1].y - b[1].y)
+.forEach(([key, p]) => {
+const isPassTarget = (mode === 'free' || phase === PHASE.DECISION_PASS) && !p.hasBall;
+const isBeingDragged = draggingEntity && draggingEntity.type === 'offense' && draggingEntity.key === key;
+const def = defenders['d' + p.id];
+const isOpenLook = def ? Math.hypot(p.x - def.x, p.y - def.y) > 64 : false;
+const isRiskyTarget = (holder && !p.hasBall && isPassTarget) ? evaluatePassRisk(holder, p).isDangerous : false;
+p.draw(ctx, mode === 'drag' && draggableKeys.has(key), lockedKeys.has(key), isPassTarget, isBeingDragged, isOpenLook, isRiskyTarget);
+});
+ball.draw(ctx);
+drawShot();
+drawCallText();
+confettiParticles.forEach(p => {
+ctx.save();
+ctx.globalAlpha = Math.max(0, p.life);
+ctx.translate(p.x, p.y);
+ctx.rotate(p.angle);
+ctx.fillStyle = p.color;
+ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2);
+ctx.restore();
+});
+if (flashAlpha > 0) {
+ctx.save();
+ctx.globalAlpha = flashAlpha;
+ctx.fillStyle = flashColor;
+ctx.fillRect(0, 0, W, H);
+ctx.restore();
 }
 requestAnimationFrame(render);
-
+}
+requestAnimationFrame(render);
 // ═══════════════════════════════════════════════════════════
 //  PHASE FLOW & UI UPDATES
 // ═══════════════════════════════════════════════════════════
@@ -1710,462 +1566,411 @@ const phaseFill    = document.getElementById('phase-fill');
 const phaseNameTxt = document.getElementById('phase-name-txt');
 const phaseNumTxt  = document.getElementById('phase-num-txt');
 const celebText    = document.getElementById('celebrate-text');
-
 const PHASE_INFO = {
-  [PHASE.INTRO]:            { name: 'INTRO',           step: 0, total: 6 },
-  [PHASE.CALL]:             { name: 'THE CALL',        step: 1, total: 6 },
-  [PHASE.SCREENS]:          { name: 'DOWN SCREENS',    step: 2, total: 6 },
-  [PHASE.POP]:              { name: 'POP TO WINGS',    step: 3, total: 6 },
-  [PHASE.DECISION_PASS]:    { name: 'CHOOSE PASS',     step: 4, total: 6 },
-  [PHASE.SHOOT_OR_PASS]:    { name: 'SHOOT OR PASS?',  step: 5, total: 6 },
-  [PHASE.AWAY_SCREEN_STEP]: { name: 'SCREEN AWAY',     step: 5, total: 6 },
-  [PHASE.SHOT_ANIM]:        { name: 'SHOT UP!',        step: 6, total: 6 },
-  [PHASE.CELEBRATE]:        { name: 'SCORE!',          step: 6, total: 6 },
+[PHASE.INTRO]:            { name: 'INTRO',           step: 0, total: 6 },
+[PHASE.CALL]:             { name: 'THE CALL',        step: 1, total: 6 },
+[PHASE.SCREENS]:          { name: 'DOWN SCREENS',    step: 2, total: 6 },
+[PHASE.POP]:              { name: 'POP TO WINGS',    step: 3, total: 6 },
+[PHASE.DECISION_PASS]:    { name: 'CHOOSE PASS',     step: 4, total: 6 },
+[PHASE.SHOOT_OR_PASS]:    { name: 'SHOOT OR PASS?',  step: 5, total: 6 },
+[PHASE.AWAY_SCREEN_STEP]: { name: 'SCREEN AWAY',     step: 5, total: 6 },
+[PHASE.SHOT_ANIM]:        { name: 'SHOT UP!',        step: 6, total: 6 },
+[PHASE.CELEBRATE]:        { name: 'SCORE!',          step: 6, total: 6 },
 };
-
 function clearDynamicButtons() {
-  Array.from(btnRow.querySelectorAll('.btn-pass, .btn-shoot, .btn-again')).forEach(b => b.remove());
+Array.from(btnRow.querySelectorAll('.btn-pass, .btn-shoot, .btn-again')).forEach(b => b.remove());
 }
-
 function renderPassChoiceButtons() {
-  const holder = Object.values(players).find(p => p.hasBall);
-  Object.entries(players).forEach(([key, p]) => {
-    if (p !== holder) {
-      const risk = holder ? evaluatePassRisk(holder, p) : { isDangerous: false };
-      const bp = document.createElement('button');
-      bp.className = risk.isDangerous ? 'btn btn-pass risky' : 'btn btn-pass';
-      bp.textContent = risk.isDangerous
-        ? `⚠️ RISKY SKIP: ${p.name}`
-        : `🏀 PASS to ${p.name}`;
-      bp.disabled = shotProgress >= 0 || interceptLock;
-      bp.onclick = () => executePassTo(key);
-      btnRow.insertBefore(bp, btnReset);
-    }
-  });
+const holder = Object.values(players).find(p => p.hasBall);
+Object.entries(players).forEach(([key, p]) => {
+if (p !== holder) {
+const risk = holder ? evaluatePassRisk(holder, p) : { isDangerous: false };
+const bp = document.createElement('button');
+bp.className = risk.isDangerous ? 'btn btn-pass risky' : 'btn btn-pass';
+bp.textContent = risk.isDangerous
+? ⁠⚠️ RISKY SKIP: ${p.name}⁠
+: ⁠🏀 PASS to ${p.name}⁠;
+bp.disabled = shotProgress >= 0 || interceptLock;
+bp.onclick = () => executePassTo(key);
+btnRow.insertBefore(bp, btnReset);
 }
-
+});
+}
 function renderFreePlayActionButtons() {
-  clearDynamicButtons();
-  const holder = Object.values(players).find(p => p.hasBall);
-
-  const bShoot = document.createElement('button');
-  bShoot.className = 'btn btn-shoot';
-  bShoot.textContent = `🔥 SHOOT (${holder ? holder.name : ''})`;
-  bShoot.disabled = shotProgress >= 0 || interceptLock;
-  bShoot.onclick = () => shootFromCurrentHolder();
-  btnRow.insertBefore(bShoot, btnReset);
-
-  renderPassChoiceButtons();
+clearDynamicButtons();
+const holder = Object.values(players).find(p => p.hasBall);
+const bShoot = document.createElement('button');
+bShoot.className = 'btn btn-shoot';
+bShoot.textContent = ⁠🔥 SHOOT (${holder ? holder.name : ''})⁠;
+bShoot.disabled = shotProgress >= 0 || interceptLock;
+bShoot.onclick = () => shootFromCurrentHolder();
+btnRow.insertBefore(bShoot, btnReset);
+renderPassChoiceButtons();
 }
-
 function updateUI(action, tip, nextLabel, isDanger = false) {
-  actionLabel.textContent = action;
-  actionLabel.classList.toggle('danger', isDanger);
-  tipLabel.textContent = tip;
-
-  if (mode === 'free') {
-    phaseNameTxt.textContent = 'FREE PLAY — OPEN COURT';
-    phaseNumTxt.textContent  = `Passes: ${passCount}${turnoverCount > 0 ? ` · Turnovers: ${turnoverCount}` : ''}`;
-    phaseFill.style.width    = '100%';
-    btnNext.style.display    = 'none';
-    renderFreePlayActionButtons();
-    return;
-  }
-
-  const info = PHASE_INFO[phase] || { name: '', step: 0, total: 6 };
-  phaseNameTxt.textContent = info.name;
-  phaseNumTxt.textContent  = `Step ${info.step} / ${info.total}`;
-  phaseFill.style.width    = `${(info.step / info.total) * 100}%`;
-
-  clearDynamicButtons();
-
-  if (phase === PHASE.DECISION_PASS) {
-    btnNext.style.display = 'none';
-    renderPassChoiceButtons();
-    return;
-  }
-
-  if (phase === PHASE.SHOOT_OR_PASS) {
-    btnNext.style.display = 'none';
-    const holder = Object.values(players).find(p => p.hasBall);
-
-    const bShoot = document.createElement('button');
-    bShoot.className = 'btn btn-shoot';
-    bShoot.textContent = `🔥 SHOOT (${holder ? holder.name : ''})`;
-    bShoot.onclick = () => shootFromCurrentHolder();
-    btnRow.insertBefore(bShoot, btnReset);
-
-    const bPass = document.createElement('button');
-    bPass.className = 'btn btn-pass btn-wrap';
-    bPass.textContent = '🔄 NOT OPEN → PASS & SCREEN AWAY';
-    bPass.onclick = () => triggerScreenAwayAndPassChoice();
-    btnRow.insertBefore(bPass, btnReset);
-    return;
-  }
-
-  btnNext.textContent = nextLabel || '▶ NEXT';
-  btnNext.style.display = '';
-  btnNext.disabled = animating || (mode === 'drag' && targets.length > 0);
+actionLabel.textContent = action;
+actionLabel.classList.toggle('danger', isDanger);
+tipLabel.textContent = tip;
+if (mode === 'free') {
+phaseNameTxt.textContent = 'FREE PLAY — OPEN COURT';
+phaseNumTxt.textContent  = ⁠Passes: ${passCount}${turnoverCount > 0 ? ⁠ · Turnovers: ${turnoverCount}⁠ : ''}⁠;
+phaseFill.style.width    = '100%';
+btnNext.style.display    = 'none';
+renderFreePlayActionButtons();
+return;
 }
-
+const info = PHASE_INFO[phase] || { name: '', step: 0, total: 6 };
+phaseNameTxt.textContent = info.name;
+phaseNumTxt.textContent  = ⁠Step ${info.step} / ${info.total}⁠;
+phaseFill.style.width    = ⁠${(info.step / info.total) * 100}%⁠;
+clearDynamicButtons();
+if (phase === PHASE.DECISION_PASS) {
+btnNext.style.display = 'none';
+renderPassChoiceButtons();
+return;
+}
+if (phase === PHASE.SHOOT_OR_PASS) {
+btnNext.style.display = 'none';
+const holder = Object.values(players).find(p => p.hasBall);
+const bShoot = document.createElement('button');
+bShoot.className = 'btn btn-shoot';
+bShoot.textContent = ⁠🔥 SHOOT (${holder ? holder.name : ''})⁠;
+bShoot.onclick = () => shootFromCurrentHolder();
+btnRow.insertBefore(bShoot, btnReset);
+const bPass = document.createElement('button');
+bPass.className = 'btn btn-pass btn-wrap';
+bPass.textContent = '🔄 NOT OPEN → PASS & SCREEN AWAY';
+bPass.onclick = () => triggerScreenAwayAndPassChoice();
+btnRow.insertBefore(bPass, btnReset);
+return;
+}
+btnNext.textContent = nextLabel || '▶ NEXT';
+btnNext.style.display = '';
+btnNext.disabled = animating || (mode === 'drag' && targets.length > 0);
+}
 function assignMoveOrDrag(moves, screenIndicators, onComplete) {
-  activeScreens = screenIndicators || [];
-  if (mode === 'drag') {
-    targets = moves.map(m => ({
-      playerKey: m.key,
-      x: cx(m.pos.x),
-      y: cy(m.pos.y),
-      label: m.label,
-      locked: false
-    }));
-    btnNext.disabled = true;
-  } else {
-    animating = true;
-    btnNext.disabled = true;
-    moves.forEach(m => players[m.key].moveTo(m.pos.x, m.pos.y, 850));
-    const check = () => {
-      if (Object.values(players).every(p => !p.moving)) {
-        animating = false;
-        btnNext.disabled = false;
-        if (onComplete) onComplete();
-      } else {
-        setTimeout(check, 50);
-      }
-    };
-    setTimeout(check, 100);
-  }
+activeScreens = screenIndicators || [];
+if (mode === 'drag') {
+targets = moves.map(m => ({
+playerKey: m.key,
+x: cx(m.pos.x),
+y: cy(m.pos.y),
+label: m.label,
+locked: false
+}));
+btnNext.disabled = true;
+} else {
+animating = true;
+btnNext.disabled = true;
+moves.forEach(m => players[m.key].moveTo(m.pos.x, m.pos.y, 850));
+const check = () => {
+if (Object.values(players).every(p => !p.moving)) {
+animating = false;
+btnNext.disabled = false;
+if (onComplete) onComplete();
+} else {
+setTimeout(check, 50);
 }
-
+};
+setTimeout(check, 100);
+}
+}
 function onPhaseObjectivesComplete() {
-  if (phase === PHASE.SCREENS) {
-    updateUI(
-      '✅ Down screens set! Now pop Player 2 & Player 3 out to the 3-point wings.',
-      '💡 Tip: Good spacing! Keep those screens solid so the wings get open.',
-      'NEXT: POP TO WINGS →'
-    );
-  } else if (phase === PHASE.POP) {
-    activeScreens = [];
-    enterPassChoiceState(
-      '👀 5-OUT SPACING SET! Who is open for Player 1 to pass to?'
-    );
-  } else if (phase === PHASE.AWAY_SCREEN_STEP) {
-    enterPassChoiceState(
-      '✅ Screen-away & low-block replacement complete! Who is open now?'
-    );
-  }
+if (phase === PHASE.SCREENS) {
+updateUI(
+'✅ Down screens set! Now pop Player 2 & Player 3 out to the 3-point wings.',
+'💡 Tip: Good spacing! Keep those screens solid so the wings get open.',
+'NEXT: POP TO WINGS →'
+);
+} else if (phase === PHASE.POP) {
+activeScreens = [];
+enterPassChoiceState(
+'👀 5-OUT SPACING SET! Who is open for Player 1 to pass to?'
+);
+} else if (phase === PHASE.AWAY_SCREEN_STEP) {
+const holder = Object.values(players).find(p => p.hasBall);
+const isAtTopOfKey = holder && Math.abs(holder.x - TOK_X) <= 60 && holder.y >= FT_Y + 45;
+enterPassChoiceState(
+isAtTopOfKey
+? '✅ Down screens set on both sides & 5-out spacing restored! Who is open now?'
+: '✅ Screen-away & low-block replacement complete! Who is open now?'
+);
 }
-
+}
 function enterPassChoiceState(promptText) {
-  phase = PHASE.DECISION_PASS;
-  updateUI(
-    promptText,
-    '💡 Tip: Make short, safe passes on your side (or wing-to-top reversal)—risky skip passes are blocked!',
-    ''
-  );
+phase = PHASE.DECISION_PASS;
+updateUI(
+promptText,
+'💡 Tip: Make short, safe passes on your side (or wing-to-top reversal)—risky skip passes are blocked!',
+''
+);
 }
-
 function executePassTo(targetKey) {
-  const currentHolderEntry = Object.entries(players).find(([_, p]) => p.hasBall);
-  const receiver = players[targetKey];
-  if (!receiver || receiver.hasBall || shotProgress >= 0 || interceptLock) return;
-
-  const passer = currentHolderEntry ? currentHolderEntry[1] : null;
-  const risk = passer ? evaluatePassRisk(passer, receiver) : { isDangerous: false };
-
-  // In Coach / Watch playbook modes, disallow risky skip passes completely
-  if (mode !== 'free' && risk.isDangerous) {
-    flashColor = '#ff1744';
-    flashAlpha = 0.35;
-    flashTimer = 320;
-    showBannerAlert('🚫 TOO RISKY! NO SKIP PASS! 🚫', true, 1750);
-
-    updateUI(
-      `🚫 Can't pass to ${receiver.name} — ${risk.reason} Pick a safe teammate on your side!`,
-      '💡 Coaching Point: Wings can reverse to the top of the key; post players near the basket kick out to their ball-side wing.',
-      '',
-      true
-    );
-    return;
-  }
-
-  // In Free Play with Defense ON, allow testing the turnover so players see the steal happen
-  if (showDefense && risk.isDangerous && risk.interceptor && risk.interceptPoint) {
-    interceptLock = true;
-    turnoverCount++;
-    const def = risk.interceptor.defender;
-    const stealX = risk.interceptPoint.x;
-    const stealY = risk.interceptPoint.y;
-
-    def.stealDash = { x: stealX, y: stealY, timer: 1350 };
-    ball.visible = true;
-    ball.moveToXY(stealX, stealY, 260, 14);
-
-    flashColor = '#ff1744';
-    flashAlpha = 0.48;
-    flashTimer = 420;
-    showBannerAlert('🚨 PICKED OFF! TURNOVER! 🚨', true, 1750);
-
-    updateUI(
-      `🚨 PICKED OFF BY ${def.id}! Bad pass — ${risk.reason}`,
-      '💡 Coaching Point: Avoid long skip passes across the paint or midline!',
-      '',
-      true
-    );
-
-    setTimeout(() => {
-      interceptLock = false;
-      if (passer) {
-        ball.moveToXY(passer.x, passer.y - passer.r - ball.r, 320, 18);
-      }
-      updateUI(
-        `🔄 Try again! ${passer.name} still has the ball — pass to a safe teammate.`,
-        '💡 Tip: Short passes on your side or wing-to-top reversals are safe!',
-        ''
-      );
-    }, 1550);
-    return;
-  }
-
-  if (passer) passer.hasBall = false;
-  receiver.hasBall = true;
-  passCount++;
-  activeScreens = [];
-
-  ball.visible = true;
-  ball.moveToXY(receiver.x, receiver.y - receiver.r - ball.r, 420, 28);
-
-  if (risk.isDangerous && !showDefense) {
-    showBannerAlert('⚠️ DANGEROUS SKIP PASS!', true, 1650);
-  }
-
-  if (mode === 'free') {
-    updateUI(
-      risk.isDangerous
-        ? `⚠️ DANGEROUS PASS to ${receiver.name}! (${risk.reason} Turn ON Defense to see it picked off!)`
-        : `🏀 ${receiver.name} catches the pass! Shoot now or pass to any teammate.`,
-      risk.isDangerous
-        ? '💡 Coaching Point: Avoid long skip passes across the paint or midline!'
-        : (showDefense
-            ? '💡 Good crisp pass! Notice how weak-side defenders sag into help position.'
-            : '💡 Tip: Toggle "SHOW DEFENSE" to test whether long skip passes get picked off!'),
-      '',
-      risk.isDangerous
-    );
-    return;
-  }
-
-  phase = PHASE.SHOOT_OR_PASS;
-  updateUI(
-    `🏀 ${receiver.name} catches the ball! Do you want to SHOOT or PASS?`,
-    '💡 If guarded, choose PASS to trigger off-ball screens away!',
-    ''
-  );
+const currentHolderEntry = Object.entries(players).find(([_, p]) => p.hasBall);
+const receiver = players[targetKey];
+if (!receiver || receiver.hasBall || shotProgress >= 0 || interceptLock) return;
+const passer = currentHolderEntry ? currentHolderEntry[1] : null;
+const risk = passer ? evaluatePassRisk(passer, receiver) : { isDangerous: false };
+if (mode !== 'free' && risk.isDangerous) {
+flashColor = '#ff1744';
+flashAlpha = 0.35;
+flashTimer = 320;
+showBannerAlert('🚫 TOO RISKY! NO SKIP PASS! 🚫', true, 1750);
+updateUI(
+⁠🚫 Can't pass to ${receiver.name} — ${risk.reason} Pick a safe teammate on your side!⁠,
+'💡 Coaching Point: Wings can reverse to the top of the key; post players near the basket kick out to their ball-side wing.',
+'',
+true
+);
+return;
 }
-
+if (showDefense && risk.isDangerous && risk.interceptor && risk.interceptPoint) {
+interceptLock = true;
+turnoverCount++;
+const def = risk.interceptor.defender;
+const stealX = risk.interceptPoint.x;
+const stealY = risk.interceptPoint.y;
+def.stealDash = { x: stealX, y: stealY, timer: 1350 };
+ball.visible = true;
+ball.moveToXY(stealX, stealY, 260, 14);
+flashColor = '#ff1744';
+flashAlpha = 0.48;
+flashTimer = 420;
+showBannerAlert('🚨 PICKED OFF! TURNOVER! 🚨', true, 1750);
+updateUI(
+⁠🚨 PICKED OFF BY ${def.id}! Bad pass — ${risk.reason}⁠,
+'💡 Coaching Point: Avoid long skip passes across the paint or midline!',
+'',
+true
+);
+setTimeout(() => {
+interceptLock = false;
+if (passer) {
+ball.moveToXY(passer.x, passer.y - passer.r - ball.r, 320, 18);
+}
+updateUI(
+⁠🔄 Try again! ${passer.name} still has the ball — pass to a safe teammate.⁠,
+'💡 Tip: Short passes on your side or wing-to-top reversals are safe!',
+''
+);
+}, 1550);
+return;
+}
+if (passer) passer.hasBall = false;
+receiver.hasBall = true;
+passCount++;
+activeScreens = [];
+ball.visible = true;
+ball.moveToXY(receiver.x, receiver.y - receiver.r - ball.r, 420, 28);
+if (risk.isDangerous && !showDefense) {
+showBannerAlert('⚠️ DANGEROUS SKIP PASS!', true, 1650);
+}
+if (mode === 'free') {
+updateUI(
+risk.isDangerous
+? ⁠⚠️ DANGEROUS PASS to ${receiver.name}! (${risk.reason} Turn ON Defense to see it picked off!)⁠
+: ⁠🏀 ${receiver.name} catches the pass! Shoot now or pass to any teammate.⁠,
+risk.isDangerous
+? '💡 Coaching Point: Avoid long skip passes across the paint or midline!'
+: (showDefense
+? '💡 Good crisp pass! Notice how weak-side defenders sag into help position.'
+: '💡 Tip: Toggle "SHOW DEFENSE" to test whether long skip passes get picked off!'),
+'',
+risk.isDangerous
+);
+return;
+}
+phase = PHASE.SHOOT_OR_PASS;
+updateUI(
+⁠🏀 ${receiver.name} catches the ball! Do you want to SHOOT or PASS?⁠,
+'💡 If guarded, choose PASS to trigger off-ball screens away!',
+''
+);
+}
 function triggerScreenAwayAndPassChoice() {
-  phase = PHASE.AWAY_SCREEN_STEP;
-  const { moves, screens, desc } = buildDynamicScreenAwayMoves();
-
-  updateUI(
-    mode === 'drag'
-      ? `🖐️ DRAG players to screen away & fill the vacated low block! (${desc})`
-      : `🛡️ SCREEN AWAY! ${desc}`,
-    '💡 Tip: Watch the opposite low block player cut across to fill the exact low block the screener just left!',
-    'NEXT: CHOOSE NEXT PASS →'
-  );
-
-  assignMoveOrDrag(moves, screens, onPhaseObjectivesComplete);
+phase = PHASE.AWAY_SCREEN_STEP;
+const holder = Object.values(players).find(p => p.hasBall);
+const isAtTopOfKey = holder && Math.abs(holder.x - TOK_X) <= 60 && holder.y >= FT_Y + 45;
+const { moves, screens, desc } = buildDynamicScreenAwayMoves();
+updateUI(
+mode === 'drag'
+? ⁠🖐️ DRAG players into position! (${desc})⁠
+: (isAtTopOfKey ? ⁠📦 DOWN SCREENS! ${desc}⁠ : ⁠🛡️ SCREEN AWAY! ${desc}⁠),
+isAtTopOfKey
+? '💡 Tip: When the ball is at the top of the key, both sides screen down on their own side so the wings pop wide with 5-out spacing!'
+: '💡 Tip: Watch the opposite low block player cut across to fill the exact low block the screener just left!',
+'NEXT: CHOOSE NEXT PASS →'
+);
+assignMoveOrDrag(moves, screens, onPhaseObjectivesComplete);
 }
-
 function shootFromCurrentHolder() {
-  const holder = Object.values(players).find(p => p.hasBall);
-  if (!holder || shotProgress >= 0 || interceptLock) return;
-
-  animating = true;
-  activeScreens = [];
-  holder.hasBall = false;
-  ball.visible = false;
-
-  if (mode !== 'free') phase = PHASE.SHOT_ANIM;
-  updateUI(`🏀 ${holder.name} puts up the shot!`, '🔊 Eyes on the rim...', '');
-
-  startShot(holder.x, holder.y - holder.r, () => {
-    animating = false;
-    flashColor = GOLD;
-    flashAlpha = 0.55;
-    flashTimer = 450;
-    spawnConfetti();
-    showBannerAlert('🔥 FEVER UP! +2 🔥', false, mode === 'free' ? 2400 : 0);
-
-    if (mode === 'free') {
-      holder.hasBall = true;
-      ball.visible = true;
-      ball.snapToXY(holder.x, holder.y - holder.r - ball.r);
-      updateUI(
-        `🔥 SWOOSH! Great bucket by ${holder.name}!`,
-        '💡 Drag players anywhere on the court, pass to any teammate, or shoot again!',
-        ''
-      );
-      return;
-    }
-
-    phase = PHASE.CELEBRATE;
-    updateUI(
-      `🔥 SWOOSH! +2 FOR ${holder.name.toUpperCase()} AFTER ${passCount} PASS${passCount === 1 ? '' : 'ES'}!`,
-      '🏆 Great ball movement, off-ball screens, and shot selection!',
-      ''
-    );
-
-    btnNext.style.display = 'none';
-    clearDynamicButtons();
-    const ba = document.createElement('button');
-    ba.className = 'btn btn-again';
-    ba.textContent = '🔄 RUN IT AGAIN!';
-    ba.onclick = resetFullPlay;
-    btnRow.insertBefore(ba, btnReset);
-  });
+const holder = Object.values(players).find(p => p.hasBall);
+if (!holder || shotProgress >= 0 || interceptLock) return;
+animating = true;
+activeScreens = [];
+holder.hasBall = false;
+ball.visible = false;
+if (mode !== 'free') phase = PHASE.SHOT_ANIM;
+updateUI(⁠🏀 ${holder.name} puts up the shot!⁠, '🔊 Eyes on the rim...', '');
+startShot(holder.x, holder.y - holder.r, () => {
+animating = false;
+flashColor = GOLD;
+flashAlpha = 0.55;
+flashTimer = 450;
+spawnConfetti();
+showBannerAlert('🔥 FEVER UP! +2 🔥', false, mode === 'free' ? 2400 : 0);
+if (mode === 'free') {
+holder.hasBall = true;
+ball.visible = true;
+ball.snapToXY(holder.x, holder.y - holder.r - ball.r);
+updateUI(
+⁠🔥 SWOOSH! Great bucket by ${holder.name}!⁠,
+'💡 Drag players anywhere on the court, pass to any teammate, or shoot again!',
+''
+);
+return;
 }
-
+phase = PHASE.CELEBRATE;
+updateUI(
+⁠🔥 SWOOSH! +2 FOR ${holder.name.toUpperCase()} AFTER ${passCount} PASS${passCount === 1 ? '' : 'ES'}!⁠,
+'🏆 Great ball movement, off-ball screens, and shot selection!',
+''
+);
+btnNext.style.display = 'none';
+clearDynamicButtons();
+const ba = document.createElement('button');
+ba.className = 'btn btn-again';
+ba.textContent = '🔄 RUN IT AGAIN!';
+ba.onclick = resetFullPlay;
+btnRow.insertBefore(ba, btnReset);
+});
+}
 function runPhase1() {
-  phase = PHASE.CALL;
-  showCallText = true;
-  callTextStr = '☎️ DOWNTOWN!';
-  callTextTimer = 0;
-  updateUI(
-    '☎️ Player 1 calls "DOWNTOWN!" — Elbows get ready to screen down!',
-    '🔊 Everyone hears the call and prepares to move on rhythm.',
-    'SET DOWN SCREENS →'
-  );
+phase = PHASE.CALL;
+showCallText = true;
+callTextStr = '☎️ DOWNTOWN!';
+callTextTimer = 0;
+updateUI(
+'☎️ Player 1 calls "DOWNTOWN!" — Elbows get ready to screen down!',
+'🔊 Everyone hears the call and prepares to move on rhythm.',
+'SET DOWN SCREENS →'
+);
 }
-
 function runPhase2() {
-  phase = PHASE.SCREENS;
-  showCallText = false;
-  const moves = [
-    { key: 'p4', pos: POS.p4_screen, label: 'Screen Left' },
-    { key: 'p5', pos: POS.p5_screen, label: 'Screen Right' }
-  ];
-  const screens = [
-    { x: cx(POS.p4_screen.x), y: cy(POS.p4_screen.y) - 22, angle: Math.PI },
-    { x: cx(POS.p5_screen.x), y: cy(POS.p5_screen.y) - 22, angle: Math.PI }
-  ];
-  updateUI(
-    mode === 'drag'
-      ? '🖐️ DRAG Player 4 & Player 5 down to set screens below the blocks!'
-      : '📦 SCREEN DOWN — Player 4 & Player 5 screen down for the blocks!',
-    '💡 Tip: Screeners stop just outside the lane with wide feet.',
-    'NEXT: POP TO WINGS →'
-  );
-  assignMoveOrDrag(moves, screens, onPhaseObjectivesComplete);
+phase = PHASE.SCREENS;
+showCallText = false;
+const moves = [
+{ key: 'p4', pos: POS.p4_screen, label: 'Screen Left' },
+{ key: 'p5', pos: POS.p5_screen, label: 'Screen Right' }
+];
+const screens = [
+{ x: cx(POS.p4_screen.x), y: cy(POS.p4_screen.y) - 22, angle: Math.PI },
+{ x: cx(POS.p5_screen.x), y: cy(POS.p5_screen.y) - 22, angle: Math.PI }
+];
+updateUI(
+mode === 'drag'
+? '🖐️ DRAG Player 4 & Player 5 down to set screens below the blocks!'
+: '📦 SCREEN DOWN — Player 4 & Player 5 screen down for the blocks!',
+'💡 Tip: Screeners stop just outside the lane with wide feet.',
+'NEXT: POP TO WINGS →'
+);
+assignMoveOrDrag(moves, screens, onPhaseObjectivesComplete);
 }
-
 function runPhase3() {
-  phase = PHASE.POP;
-  const moves = [
-    { key: 'p2', pos: POS.p2_wing,  label: 'Left Wing' },
-    { key: 'p3', pos: POS.p3_wing,  label: 'Right Wing' },
-    { key: 'p4', pos: POS.p4_block, label: 'Left Block' },
-    { key: 'p5', pos: POS.p5_block, label: 'Right Block' }
-  ];
-  updateUI(
-    mode === 'drag'
-      ? '🖐️ DRAG Player 2 & Player 3 out to the 3pt wings, and slide Player 4 & Player 5 to the blocks!'
-      : '🏃 POP WIDE! Player 2 & Player 3 cut to the 3-point wings!',
-    '💡 Tip: Stretch the defense all the way out to the 3-point line!',
-    'NEXT: CHOOSE PASS →'
-  );
-  assignMoveOrDrag(moves, [], onPhaseObjectivesComplete);
+phase = PHASE.POP;
+const moves = [
+{ key: 'p2', pos: POS.p2_wing,  label: 'Left Wing' },
+{ key: 'p3', pos: POS.p3_wing,  label: 'Right Wing' },
+{ key: 'p4', pos: POS.p4_block, label: 'Left Block' },
+{ key: 'p5', pos: POS.p5_block, label: 'Right Block' }
+];
+updateUI(
+mode === 'drag'
+? '🖐️ DRAG Player 2 & Player 3 out to the 3pt wings, and slide Player 4 & Player 5 to the blocks!'
+: '🏃 POP WIDE! Player 2 & Player 3 cut to the 3-point wings!',
+'💡 Tip: Stretch the defense all the way out to the 3-point line!',
+'NEXT: CHOOSE PASS →'
+);
+assignMoveOrDrag(moves, [], onPhaseObjectivesComplete);
 }
-
 function resetFullPlay() {
-  celebText.style.display = 'none';
-  celebText.classList.remove('turnover');
-  phase = PHASE.INTRO;
-  initGame();
-
-  if (mode === 'free') {
-    players.p1.snapTo(TOK_X / W, TOK_Y / H);
-    players.p2.snapTo(WING_X_L / W, WING_Y / H);
-    players.p3.snapTo(WING_X_R / W, WING_Y / H);
-    players.p4.snapTo(LEFT_BLOCK_X / W, BLOCK_Y / H);
-    players.p5.snapTo(RIGHT_BLOCK_X / W, BLOCK_Y / H);
-    ball.snapTo(TOK_X / W, (TOK_Y / H) - 0.05);
-    Object.values(defenders).forEach(d => { d.manualOverride = false; d.update(1000); });
-
-    updateUI(
-      '🏀 FREE PLAY — Drag any player anywhere! Make short, safe passes or shoot anytime.',
-      showDefense
-        ? '💡 Defense is ON: Long skip passes across the paint or midline will get picked off!'
-        : '💡 Tip: Toggle "SHOW DEFENSE" at the top right to see how defenders pick off risky skip passes!',
-      ''
-    );
-    return;
-  }
-
-  clearDynamicButtons();
-  btnNext.style.display = '';
-  updateUI(
-    'Ready! Press "LET\'S RUN IT!" to practice the play.',
-    mode === 'drag' ? '💡 Coach Mode active: Drag players to their target rings!' : '💡 Watch Mode active: Press Next to step through.',
-    '▶ LET\'S RUN IT!'
-  );
+celebText.style.display = 'none';
+celebText.classList.remove('turnover');
+phase = PHASE.INTRO;
+initGame();
+if (mode === 'free') {
+players.p1.snapTo(TOK_X / W, TOK_Y / H);
+players.p2.snapTo(WING_X_L / W, WING_Y / H);
+players.p3.snapTo(WING_X_R / W, WING_Y / H);
+players.p4.snapTo(LEFT_BLOCK_X / W, BLOCK_Y / H);
+players.p5.snapTo(RIGHT_BLOCK_X / W, BLOCK_Y / H);
+ball.snapTo(TOK_X / W, (TOK_Y / H) - 0.05);
+Object.values(defenders).forEach(d => { d.manualOverride = false; d.update(1000); });
+updateUI(
+'🏀 FREE PLAY — Drag any player anywhere! Make short, safe passes or shoot anytime.',
+showDefense
+? '💡 Defense is ON: Long skip passes across the paint or midline will get picked off!'
+: '💡 Tip: Toggle "SHOW DEFENSE" at the top right to see how defenders pick off risky skip passes!',
+''
+);
+return;
 }
-
+clearDynamicButtons();
+btnNext.style.display = '';
+updateUI(
+'Ready! Press "LET'S RUN IT!" to practice the play.',
+mode === 'drag' ? '💡 Coach Mode active: Drag players to their target rings!' : '💡 Watch Mode active: Press Next to step through.',
+'▶ LET'S RUN IT!'
+);
+}
 // ═══════════════════════════════════════════════════════════
 //  EVENT LISTENERS & INITIALIZATION
 // ═══════════════════════════════════════════════════════════
 btnDefense.addEventListener('click', () => {
-  showDefense = !showDefense;
-  btnDefense.classList.toggle('active', showDefense);
-  btnDefense.textContent = showDefense ? '🛡️ HIDE DEFENSE' : '🛡️ SHOW DEFENSE';
-  legendDef.style.display = showDefense ? 'flex' : 'none';
-  if (showDefense) {
-    Object.values(defenders).forEach(d => {
-      d.manualOverride = false;
-      d.update(1000);
-    });
-  }
-  if (mode === 'free' || phase === PHASE.DECISION_PASS) {
-    updateUI(actionLabel.textContent, tipLabel.textContent, btnNext.textContent, actionLabel.classList.contains('danger'));
-  }
+showDefense = !showDefense;
+btnDefense.classList.toggle('active', showDefense);
+btnDefense.textContent = showDefense ? '🛡️ HIDE DEFENSE' : '🛡️ SHOW DEFENSE';
+legendDef.style.display = showDefense ? 'flex' : 'none';
+if (showDefense) {
+Object.values(defenders).forEach(d => {
+d.manualOverride = false;
+d.update(1000);
 });
-
+}
+if (mode === 'free' || phase === PHASE.DECISION_PASS) {
+updateUI(actionLabel.textContent, tipLabel.textContent, btnNext.textContent, actionLabel.classList.contains('danger'));
+}
+});
 btnNext.addEventListener('click', () => {
-  if (animating || (mode === 'drag' && targets.length > 0)) return;
-  switch (phase) {
-    case PHASE.INTRO:            runPhase1(); break;
-    case PHASE.CALL:             runPhase2(); break;
-    case PHASE.SCREENS:          runPhase3(); break;
-    case PHASE.AWAY_SCREEN_STEP: enterPassChoiceState('👀 Screen-away complete! Who is open for the next pass?'); break;
-  }
+if (animating || (mode === 'drag' && targets.length > 0)) return;
+switch (phase) {
+case PHASE.INTRO:            runPhase1(); break;
+case PHASE.CALL:             runPhase2(); break;
+case PHASE.SCREENS:          runPhase3(); break;
+case PHASE.AWAY_SCREEN_STEP: enterPassChoiceState('👀 Screen-away complete! Who is open for the next pass?'); break;
+}
 });
-
 btnReset.addEventListener('click', resetFullPlay);
-
 const btnModeDrag = document.getElementById('btn-mode-drag');
 const btnModeFree = document.getElementById('btn-mode-free');
 const btnModeAuto = document.getElementById('btn-mode-auto');
-
 function setMode(newMode, activeBtn) {
-  mode = newMode;
-  [btnModeDrag, btnModeFree, btnModeAuto].forEach(b => b.classList.remove('active'));
-  activeBtn.classList.add('active');
-  resetFullPlay();
+mode = newMode;
+[btnModeDrag, btnModeFree, btnModeAuto].forEach(b => b.classList.remove('active'));
+activeBtn.classList.add('active');
+resetFullPlay();
 }
-
 btnModeDrag.addEventListener('click', () => setMode('drag', btnModeDrag));
 btnModeFree.addEventListener('click', () => setMode('free', btnModeFree));
 btnModeAuto.addEventListener('click', () => setMode('auto', btnModeAuto));
-
 document.getElementById('modal-close').addEventListener('click', () => {
-  document.getElementById('modal-overlay').style.display = 'none';
+document.getElementById('modal-overlay').style.display = 'none';
 });
-
 if (mode === 'free') {
-  document.getElementById('modal-overlay').style.display = 'none';
-  setMode('free', btnModeFree);
+document.getElementById('modal-overlay').style.display = 'none';
+setMode('free', btnModeFree);
 } else {
-  setMode('drag', btnModeDrag);
+setMode('drag', btnModeDrag);
 }
 </script>
 </body>
