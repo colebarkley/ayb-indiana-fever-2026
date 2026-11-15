@@ -2,11 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>AYB Indiana Fever | "Downtown" Interactive Playbook</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
 
   :root {
     --navy:   #002D62;
@@ -30,6 +36,7 @@
     padding: 0 0 40px;
     overflow-x: hidden;
     user-select: none;
+    -webkit-user-select: none;
   }
 
   /* ── HEADER ──────────────────────────────────── */
@@ -201,7 +208,7 @@
     font-size: clamp(0.7rem, 2.2vw, 0.86rem);
     font-weight: 700;
     letter-spacing: 1px;
-    padding: 11px 18px;
+    padding: 12px 18px;
     border: none;
     border-radius: 999px;
     cursor: pointer;
@@ -225,12 +232,6 @@
     color: #fff;
     border: 2px solid #fff;
     box-shadow: 0 0 18px rgba(255,107,0,.6);
-  }
-  .btn-screen {
-    background: linear-gradient(135deg, #0050b3, #0077ff);
-    color: #fff;
-    border: 1.5px solid var(--gold);
-    box-shadow: 0 0 14px rgba(0,119,255,.4);
   }
   .btn-reset {
     background: transparent;
@@ -361,8 +362,8 @@
 <div id="top-bar">
   <div id="play-name">PLAY: <span>"DOWNTOWN"</span></div>
   <div id="mode-toggle">
-    <button class="mode-btn active" id="btn-mode-drag">🖐️ COACH MODE</button>
     <button class="mode-btn" id="btn-mode-free">🏀 FREE PLAY</button>
+    <button class="mode-btn active" id="btn-mode-drag">🖐️ COACH MODE</button>
     <button class="mode-btn" id="btn-mode-auto">▶️ WATCH</button>
   </div>
 </div>
@@ -370,7 +371,7 @@
 <div id="phase-bar-wrap">
   <div id="phase-label">
     <span id="phase-name-txt">INTRO</span>
-    <span id="phase-num-txt">Step 0 / 5</span>
+    <span id="phase-num-txt">Step 0 / 6</span>
   </div>
   <div id="phase-track"><div id="phase-fill" style="width:0%"></div></div>
 </div>
@@ -382,12 +383,11 @@
 
 <div id="action-box">
   <div id="action-label">Welcome to Downtown! Press LET'S RUN IT to start.</div>
-  <div id="tip-label">💡 Tip: Once the play sets up, choose WHO to pass to — then decide whether to SHOOT or PASS & SCREEN AWAY!</div>
+  <div id="tip-label">💡 Tip: Drag any player anywhere on the floor, pass to any teammate, or shoot anytime!</div>
 </div>
 
 <div id="btn-row">
   <button class="btn btn-next" id="btn-next">▶ LET'S RUN IT!</button>
-  <button class="btn btn-screen" id="btn-away-screen" style="display:none;">🛡️ RUN SCREEN AWAY</button>
   <button class="btn btn-reset" id="btn-reset">⚠️ RESET COURT</button>
 </div>
 
@@ -404,15 +404,24 @@
     <h2>🏀 COACH'S PLAYBOOK</h2>
     <p>Run <strong>"Downtown"</strong> with real-game read-and-react choices:</p>
     <ul>
-      <li><strong>Choose Who to Pass To:</strong> Click any teammate on the court (or use the buttons) to pass the ball wherever the defense leaves an opening.</li>
-      <li><strong>Shoot or Pass?:</strong> Every time a player catches the ball, choose whether to <strong>SHOOT</strong> or <strong>PASS</strong>.</li>
-      <li><strong>Continuous Screen-Away Motion:</strong> Choosing to pass triggers off-ball screens away from the ball—and the opposite low block player cuts into the vacated low block!</li>
+      <li><strong>Free Play (Auto-opens on Mobile/Tablet):</strong> Drag <em>any</em> player anywhere on the floor, <strong>pass to any teammate</strong> at any time, or <strong>shoot</strong> whenever you're open!</li>
+      <li><strong>Coach Mode:</strong> Drag glowing players into their target circles step by step.</li>
+      <li><strong>Shoot or Pass?:</strong> In Coach/Watch mode, every catch asks whether to <strong>SHOOT</strong> or <strong>PASS & SCREEN AWAY</strong>.</li>
     </ul>
     <button id="modal-close">HIT THE COURT! 🔥</button>
   </div>
 </div>
 
 <script>
+// ═══════════════════════════════════════════════════════════
+//  DEVICE DETECTION (Auto-open Free Play on Mobile & Tablet)
+// ═══════════════════════════════════════════════════════════
+const isMobileOrTablet = () => {
+  const touchCapable = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  return mobileUA || (touchCapable && window.innerWidth <= 1024);
+};
+
 // ═══════════════════════════════════════════════════════════
 //  CONSTANTS & PROPORTIONAL HALF-COURT GEOMETRY (780 x 640)
 // ═══════════════════════════════════════════════════════════
@@ -494,11 +503,9 @@ const HOME = {
 };
 
 const POS = {
-  // Phase 2: #4 & #5 down-screen just below #2 & #3
   p4_screen: { x: (PAINT_X - 26)/W,           y: (BLOCK_Y + 34)/H },
   p5_screen: { x: (PAINT_X + PAINT_W + 26)/W, y: (BLOCK_Y + 34)/H },
 
-  // Phase 3: #2 & #3 pop wide to 3pt wings; #4 & #5 open to low blocks
   p2_wing:   { x: WING_X_L/W,      y: WING_Y/H },
   p3_wing:   { x: WING_X_R/W,      y: WING_Y/H },
   p4_block:  { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H },
@@ -513,14 +520,14 @@ const PHASE = {
   CALL: 1,
   SCREENS: 2,
   POP: 3,
-  DECISION_PASS: 4,     // Choose ANY teammate to pass to!
-  SHOOT_OR_PASS: 5,     // Receiver asks: Do you want to SHOOT or PASS?
-  AWAY_SCREEN_STEP: 6,  // Off-ball screen-away + opposite block replaces vacated block
+  DECISION_PASS: 4,
+  SHOOT_OR_PASS: 5,
+  AWAY_SCREEN_STEP: 6,
   SHOT_ANIM: 7,
   CELEBRATE: 8
 };
 
-let mode = 'drag'; // 'drag' (Coach Mode) | 'free' (Free Play) | 'auto' (Watch)
+let mode = isMobileOrTablet() ? 'free' : 'drag';
 let phase = PHASE.INTRO;
 let animating = false;
 let passCount = 0;
@@ -528,7 +535,7 @@ let passCount = 0;
 let targets = [];         // { playerKey, x, y, label, locked }
 let activeScreens = [];   // { x, y, angle }
 let draggingKey = null;
-let dragStartPos = { x: 0, y: 0 };
+let dragStartScreenPos = { x: 0, y: 0 };
 let dragMoved = false;
 let dragOffset = { x: 0, y: 0 };
 
@@ -563,7 +570,7 @@ class Player {
     this.elapsed = 0;
     this.hasBall = false;
     this.trail = [];
-    this.r = 21;
+    this.r = 22;
   }
   moveTo(px, py, dur = 800) {
     this.sx = this.x; this.sy = this.y;
@@ -593,7 +600,7 @@ class Player {
     this.x = lerp(this.sx, this.tx, e);
     this.y = lerp(this.sy, this.ty, e);
   }
-  draw(ctx, isDraggable, isLocked, isPassTarget) {
+  draw(ctx, isDraggable, isLocked, isPassTarget, isBeingDragged) {
     // Trail
     this.trail.forEach((p, i) => {
       const a = (i + 1) / this.trail.length * 0.25;
@@ -603,12 +610,22 @@ class Player {
       ctx.fill();
     });
 
-    // Halo for draggable or clickable pass-target teammate
-    if ((isDraggable && !isLocked) || isPassTarget) {
+    // Active drag ring when finger/mouse is holding the player
+    if (isBeingDragged) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r + 11, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 199, 44, 0.22)';
+      ctx.fill();
+      ctx.strokeStyle = GOLD;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.restore();
+    } else if ((isDraggable && !isLocked) || isPassTarget) {
       ctx.save();
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.r + 7, 0, Math.PI * 2);
-      ctx.strokeStyle = isPassTarget ? 'rgba(255,199,44,0.92)' : GREEN;
+      ctx.strokeStyle = isPassTarget ? 'rgba(255,199,44,0.88)' : GREEN;
       ctx.lineWidth = 2.5;
       ctx.setLineDash([5, 4]);
       ctx.stroke();
@@ -828,7 +845,7 @@ function drawCourt() {
   drawCourtLabel('CORNER', C3X_R + 6, CORNER_Y - 22, 'left');
 
   if (mode === 'free' || phase === PHASE.SHOOT_OR_PASS) {
-    drawCourtLabel('CLICK RIM TO SHOOT', HOOP_X, HOOP_Y + 26, 'center');
+    drawCourtLabel('TAP RIM TO SHOOT', HOOP_X, HOOP_Y + 26, 'center');
   }
 }
 
@@ -856,7 +873,7 @@ function drawTargetsAndGuides() {
   pulseAnim += 0.05;
   const pulse = Math.sin(pulseAnim) * 4;
 
-  // Draw active T-bar off-ball screens
+  // Draw active T-bar off-ball screens (Coach/Watch mode only)
   activeScreens.forEach(s => {
     ctx.save();
     ctx.translate(s.x, s.y);
@@ -920,7 +937,7 @@ function drawTargetsAndGuides() {
     ctx.restore();
   });
 
-  // Draw subtle pass lines from ball holder to all 4 teammates when choosing a pass
+  // Draw pass lines when choosing a pass in Coach/Watch mode
   if (phase === PHASE.DECISION_PASS && mode !== 'free') {
     const holder = Object.values(players).find(p => p.hasBall);
     if (holder) {
@@ -957,22 +974,29 @@ function drawArrow(x1, y1, x2, y2, color, dash = false, alpha = 1) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  POINTER INTERACTIONS (DRAG, CLICK TO PASS, CLICK TO SHOOT)
+//  TOUCH & MOUSE POINTER INTERACTIONS (DRAG ANYWHERE, TAP TO PASS/SHOOT)
 // ═══════════════════════════════════════════════════════════
+function getPointerClientPos(e) {
+  if (e.touches && e.touches.length > 0) {
+    return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }
+  if (e.changedTouches && e.changedTouches.length > 0) {
+    return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+  }
+  return { x: e.clientX, y: e.clientY };
+}
+
 function getCanvasCoords(e) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = W / rect.width;
   const scaleY = H / rect.height;
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  const client = getPointerClientPos(e);
   return {
-    x: (clientX - rect.left) * scaleX,
-    y: (clientY - rect.top) * scaleY
+    x: (client.x - rect.left) * scaleX,
+    y: (client.y - rect.top) * scaleY,
+    clientX: client.x,
+    clientY: client.y
   };
-}
-
-function canClickToPass() {
-  return mode === 'free' || phase === PHASE.DECISION_PASS;
 }
 
 function canClickToShoot() {
@@ -981,43 +1005,60 @@ function canClickToShoot() {
 
 function onPointerDown(e) {
   const pt = getCanvasCoords(e);
+  const touchBonus = e.type === 'touchstart' ? 22 : 12;
 
-  // Clicking the Hoop shoots the ball when shooting is allowed
-  if (canClickToShoot() && Math.hypot(pt.x - HOOP_X, pt.y - HOOP_Y) <= 34) {
+  // Tapping the Hoop shoots the ball
+  if (canClickToShoot() && Math.hypot(pt.x - HOOP_X, pt.y - HOOP_Y) <= 38) {
+    if (e.cancelable) e.preventDefault();
     shootFromCurrentHolder();
     return;
   }
 
+  // Find closest player within touch/click radius
+  let closestKey = null;
+  let closestDist = Infinity;
+
   for (const [key, p] of Object.entries(players)) {
     const dist = Math.hypot(pt.x - p.x, pt.y - p.y);
-    if (dist <= p.r + 12) {
-      // During pass decision, clicking any teammate passes directly to them
-      if (phase === PHASE.DECISION_PASS && mode !== 'free' && !p.hasBall) {
-        executePassTo(key);
-        return;
-      }
-
-      // Coach Mode dragging targets
-      if (mode === 'drag' && targets.length > 0) {
-        const target = targets.find(t => t.playerKey === key && !t.locked);
-        if (target) {
-          draggingKey = key;
-          dragStartPos = { x: p.x, y: p.y };
-          dragMoved = false;
-          dragOffset = { x: p.x - pt.x, y: p.y - pt.y };
-          canvas.style.cursor = 'grabbing';
-          e.preventDefault();
-        }
-      } else if (mode === 'free') {
-        draggingKey = key;
-        dragStartPos = { x: pt.x, y: pt.y };
-        dragMoved = false;
-        dragOffset = { x: p.x - pt.x, y: p.y - pt.y };
-        canvas.style.cursor = 'grabbing';
-        e.preventDefault();
-      }
-      break;
+    if (dist <= p.r + touchBonus && dist < closestDist) {
+      closestDist = dist;
+      closestKey = key;
     }
+  }
+
+  if (!closestKey) return;
+  const p = players[closestKey];
+
+  // During pass decision in Coach/Watch mode, tapping any teammate passes directly
+  if (phase === PHASE.DECISION_PASS && mode !== 'free' && !p.hasBall) {
+    if (e.cancelable) e.preventDefault();
+    executePassTo(closestKey);
+    return;
+  }
+
+  // Coach Mode dragging targets
+  if (mode === 'drag' && targets.length > 0) {
+    const target = targets.find(t => t.playerKey === closestKey && !t.locked);
+    if (target) {
+      if (e.cancelable) e.preventDefault();
+      draggingKey = closestKey;
+      dragStartScreenPos = { x: pt.clientX, y: pt.clientY };
+      dragMoved = false;
+      dragOffset = { x: p.x - pt.x, y: p.y - pt.y };
+      canvas.style.cursor = 'grabbing';
+    }
+    return;
+  }
+
+  // Free Play: drag ANY player anywhere on the court, or quick-tap to pass
+  if (mode === 'free') {
+    if (e.cancelable) e.preventDefault();
+    p.t = 1;
+    draggingKey = closestKey;
+    dragStartScreenPos = { x: pt.clientX, y: pt.clientY };
+    dragMoved = false;
+    dragOffset = { x: p.x - pt.x, y: p.y - pt.y };
+    canvas.style.cursor = 'grabbing';
   }
 }
 
@@ -1025,18 +1066,28 @@ function onPointerMove(e) {
   const pt = getCanvasCoords(e);
 
   if (draggingKey) {
-    e.preventDefault();
+    if (e.cancelable) e.preventDefault();
     const p = players[draggingKey];
-    if (Math.hypot(pt.x - dragStartPos.x, pt.y - dragStartPos.y) > 6) {
+
+    // Screen pixel movement threshold so small finger wobble doesn't block tap-to-pass
+    if (Math.hypot(pt.clientX - dragStartScreenPos.x, pt.clientY - dragStartScreenPos.y) > 12) {
       dragMoved = true;
     }
 
-    p.x = Math.max(COURT_L + 16, Math.min(COURT_R - 16, pt.x + dragOffset.x));
-    p.y = Math.max(BASELINE_Y + 16, Math.min(HALFCOURT_Y - 16, pt.y + dragOffset.y));
+    // In Free Play, let users drag players anywhere across the full canvas (including out of bounds for inbound plays)
+    const minX = mode === 'free' ? 22 : COURT_L + 16;
+    const maxX = mode === 'free' ? W - 22 : COURT_R - 16;
+    const minY = mode === 'free' ? 22 : BASELINE_Y + 16;
+    const maxY = mode === 'free' ? H - 22 : HALFCOURT_Y - 16;
+
+    p.x = Math.max(minX, Math.min(maxX, pt.x + dragOffset.x));
+    p.y = Math.max(minY, Math.min(maxY, pt.y + dragOffset.y));
+    p.tx = p.x;
+    p.ty = p.y;
 
     if (mode === 'drag') {
       const target = targets.find(t => t.playerKey === draggingKey && !t.locked);
-      if (target && Math.hypot(p.x - target.x, p.y - target.y) < 30) {
+      if (target && Math.hypot(p.x - target.x, p.y - target.y) < 32) {
         p.x = target.x;
         p.y = target.y;
         target.locked = true;
@@ -1048,7 +1099,7 @@ function onPointerMove(e) {
     return;
   }
 
-  // Hover cursor feedback
+  // Hover cursor feedback on desktop
   const hoveringPlayer = Object.entries(players).some(([key, p]) => {
     if (Math.hypot(pt.x - p.x, pt.y - p.y) > p.r + 12) return false;
     if (mode === 'free') return true;
@@ -1060,7 +1111,7 @@ function onPointerMove(e) {
   canvas.style.cursor = (hoveringPlayer || hoveringHoop) ? 'pointer' : 'default';
 }
 
-function onPointerUp() {
+function onPointerUp(e) {
   if (draggingKey) {
     if (mode === 'free' && !dragMoved) {
       executePassTo(draggingKey);
@@ -1077,6 +1128,7 @@ window.addEventListener('mouseup', onPointerUp);
 canvas.addEventListener('touchstart', onPointerDown, { passive: false });
 canvas.addEventListener('touchmove', onPointerMove, { passive: false });
 window.addEventListener('touchend', onPointerUp);
+window.addEventListener('touchcancel', onPointerUp);
 
 function checkAllTargetsLocked() {
   if (targets.every(t => t.locked)) {
@@ -1087,7 +1139,7 @@ function checkAllTargetsLocked() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  DYNAMIC SCREEN-AWAY & VACATED LOW-BLOCK REPLACEMENT ENGINE
+//  DYNAMIC SCREEN-AWAY ENGINE (COACH & WATCH MODES)
 // ═══════════════════════════════════════════════════════════
 function buildDynamicScreenAwayMoves() {
   const holderEntry = Object.entries(players).find(([_, p]) => p.hasBall);
@@ -1096,9 +1148,6 @@ function buildDynamicScreenAwayMoves() {
 
   const ballOnLeft = holder.x <= W / 2;
 
-  // Low block players (#4 Ava and #5 Lexi)
-  // Whoever is on the ball-side block screens away for the other block player,
-  // and the other block player cuts across to fill the vacated low block!
   const ballSidePostKey = ballOnLeft ? 'p4' : 'p5';
   const weakSidePostKey = ballOnLeft ? 'p5' : 'p4';
   const ballSidePost    = players[ballSidePostKey];
@@ -1113,7 +1162,6 @@ function buildDynamicScreenAwayMoves() {
   const moves = [];
   const screens = [];
 
-  // Only move the posts if neither of them currently holds the ball
   if (holderKey !== ballSidePostKey && holderKey !== weakSidePostKey) {
     moves.push({
       key: ballSidePostKey,
@@ -1131,7 +1179,6 @@ function buildDynamicScreenAwayMoves() {
       angle: ballOnLeft ? Math.PI / 2 : -Math.PI / 2
     });
   } else {
-    // If a post player has the ball, the other post flashes to opposite block while perimeter screens away
     const otherPostKey = holderKey === 'p4' ? 'p5' : 'p4';
     const targetBlockX = holder.x < W / 2 ? RIGHT_BLOCK_X : LEFT_BLOCK_X;
     moves.push({
@@ -1141,10 +1188,8 @@ function buildDynamicScreenAwayMoves() {
     });
   }
 
-  // Also have weak-side perimeter player screen away for another perimeter player
   const perimeterKeys = ['p1', 'p2', 'p3'].filter(k => k !== holderKey);
   if (perimeterKeys.length >= 2) {
-    // Pick the perimeter player furthest from the ball to receive an away screen
     const sortedPerim = perimeterKeys
       .map(k => ({ key: k, p: players[k], dist: Math.hypot(players[k].x - holder.x, players[k].y - holder.y) }))
       .sort((a, b) => b.dist - a.dist);
@@ -1162,7 +1207,6 @@ function buildDynamicScreenAwayMoves() {
       label: 'Screen Away'
     });
 
-    // Cutter curls toward open top-of-key / opposite wing space
     const cutX = ballOnLeft ? (TOK_X + 68) : (TOK_X - 68);
     const cutY = TOK_Y - 8;
     moves.push({
@@ -1183,22 +1227,6 @@ function buildDynamicScreenAwayMoves() {
     : `Weak-side players screen away and cut into open space!`;
 
   return { moves, screens, desc };
-}
-
-function triggerFreePlayScreenAway() {
-  const { moves, screens, desc } = buildDynamicScreenAwayMoves();
-  activeScreens = screens;
-  moves.forEach((m, idx) => {
-    setTimeout(() => {
-      players[m.key].moveTo(m.pos.x, m.pos.y, 700);
-    }, idx * 120);
-  });
-
-  updateUI(
-    `🛡️ SCREEN AWAY! ${desc}`,
-    '💡 Click any player to pass to them, or click the rim to shoot!',
-    ''
-  );
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1322,7 +1350,8 @@ function render(ts) {
     .sort((a, b) => a[1].y - b[1].y)
     .forEach(([key, p]) => {
       const isPassTarget = (mode === 'free' || phase === PHASE.DECISION_PASS) && !p.hasBall;
-      p.draw(ctx, mode === 'drag' && draggableKeys.has(key), lockedKeys.has(key), isPassTarget);
+      const isBeingDragged = draggingKey === key;
+      p.draw(ctx, mode === 'drag' && draggableKeys.has(key), lockedKeys.has(key), isPassTarget, isBeingDragged);
     });
 
   ball.draw(ctx);
@@ -1354,16 +1383,15 @@ requestAnimationFrame(render);
 // ═══════════════════════════════════════════════════════════
 //  PHASE FLOW & UI UPDATES
 // ═══════════════════════════════════════════════════════════
-const btnNext       = document.getElementById('btn-next');
-const btnAwayScreen = document.getElementById('btn-away-screen');
-const btnReset      = document.getElementById('btn-reset');
-const btnRow        = document.getElementById('btn-row');
-const actionLabel   = document.getElementById('action-label');
-const tipLabel      = document.getElementById('tip-label');
-const phaseFill     = document.getElementById('phase-fill');
-const phaseNameTxt  = document.getElementById('phase-name-txt');
-const phaseNumTxt   = document.getElementById('phase-num-txt');
-const celebText     = document.getElementById('celebrate-text');
+const btnNext     = document.getElementById('btn-next');
+const btnReset    = document.getElementById('btn-reset');
+const btnRow      = document.getElementById('btn-row');
+const actionLabel = document.getElementById('action-label');
+const tipLabel    = document.getElementById('tip-label');
+const phaseFill   = document.getElementById('phase-fill');
+const phaseNameTxt= document.getElementById('phase-name-txt');
+const phaseNumTxt = document.getElementById('phase-num-txt');
+const celebText   = document.getElementById('celebrate-text');
 
 const PHASE_INFO = {
   [PHASE.INTRO]:            { name: 'INTRO',           step: 0, total: 6 },
@@ -1381,21 +1409,44 @@ function clearDynamicButtons() {
   Array.from(btnRow.querySelectorAll('.btn-pass, .btn-shoot, .btn-again')).forEach(b => b.remove());
 }
 
+function renderFreePlayActionButtons() {
+  clearDynamicButtons();
+  const holder = Object.values(players).find(p => p.hasBall);
+
+  // Shoot button for current ball handler
+  const bShoot = document.createElement('button');
+  bShoot.className = 'btn btn-shoot';
+  bShoot.textContent = `🔥 SHOOT (${holder ? holder.name : ''})`;
+  bShoot.disabled = shotProgress >= 0;
+  bShoot.onclick = () => shootFromCurrentHolder();
+  btnRow.insertBefore(bShoot, btnReset);
+
+  // Pass buttons for all 4 other teammates at any time
+  Object.entries(players).forEach(([key, p]) => {
+    if (p !== holder) {
+      const bp = document.createElement('button');
+      bp.className = 'btn btn-pass';
+      bp.textContent = `🏀 PASS to #${p.id} ${p.name}`;
+      bp.disabled = shotProgress >= 0;
+      bp.onclick = () => executePassTo(key);
+      btnRow.insertBefore(bp, btnReset);
+    }
+  });
+}
+
 function updateUI(action, tip, nextLabel) {
   actionLabel.textContent = action;
   tipLabel.textContent = tip;
 
   if (mode === 'free') {
-    phaseNameTxt.textContent = 'FREE PLAY SANDBOX';
+    phaseNameTxt.textContent = 'FREE PLAY — OPEN COURT';
     phaseNumTxt.textContent  = `Passes: ${passCount}`;
     phaseFill.style.width    = '100%';
     btnNext.style.display    = 'none';
-    btnAwayScreen.style.display = '';
-    clearDynamicButtons();
+    renderFreePlayActionButtons();
     return;
   }
 
-  btnAwayScreen.style.display = 'none';
   const info = PHASE_INFO[phase] || { name: '', step: 0, total: 6 };
   phaseNameTxt.textContent = info.name;
   phaseNumTxt.textContent  = `Step ${info.step} / ${info.total}`;
@@ -1403,7 +1454,6 @@ function updateUI(action, tip, nextLabel) {
 
   clearDynamicButtons();
 
-  // Phase 4: Player chooses ANY teammate to pass to!
   if (phase === PHASE.DECISION_PASS) {
     btnNext.style.display = 'none';
     const holder = Object.values(players).find(p => p.hasBall);
@@ -1419,7 +1469,6 @@ function updateUI(action, tip, nextLabel) {
     return;
   }
 
-  // Phase 5: Receiver asks "Do you want to SHOOT or PASS?"
   if (phase === PHASE.SHOOT_OR_PASS) {
     btnNext.style.display = 'none';
     const holder = Object.values(players).find(p => p.hasBall);
@@ -1481,7 +1530,7 @@ function onPhaseObjectivesComplete() {
   } else if (phase === PHASE.POP) {
     activeScreens = [];
     enterPassChoiceState(
-      '👀 5-OUT SPACING SET! Who should Chloe pass to? Click any player on the court or choose below!'
+      '👀 5-OUT SPACING SET! Who should Chloe pass to? Tap any player on the court or choose below!'
     );
   } else if (phase === PHASE.AWAY_SCREEN_STEP) {
     enterPassChoiceState(
@@ -1494,7 +1543,7 @@ function enterPassChoiceState(promptText) {
   phase = PHASE.DECISION_PASS;
   updateUI(
     promptText,
-    '💡 Tip: Click any teammate directly on the floor (or tap their button) to pass the ball!',
+    '💡 Tip: Tap any teammate directly on the floor (or tap their button) to pass the ball!',
     ''
   );
 }
@@ -1514,14 +1563,13 @@ function executePassTo(targetKey) {
 
   if (mode === 'free') {
     updateUI(
-      `🏀 #${receiver.id} ${receiver.name} has the ball! Do you want to SHOOT or PASS?`,
-      '💡 Click the rim to SHOOT, click any teammate to PASS, or click "RUN SCREEN AWAY"!',
+      `🏀 #${receiver.id} ${receiver.name} has the ball! Shoot now or pass to any teammate.`,
+      '💡 Tip: Drag any player anywhere on the court, tap a teammate or button to pass, or hit SHOOT!',
       ''
     );
     return;
   }
 
-  // Ask "Do you want to SHOOT or PASS?"
   phase = PHASE.SHOOT_OR_PASS;
   updateUI(
     `🏀 #${receiver.id} ${receiver.name} catches the ball! Do you want to SHOOT or PASS?`,
@@ -1571,7 +1619,7 @@ function shootFromCurrentHolder() {
       ball.snapToXY(holder.x, holder.y - holder.r - ball.r);
       updateUI(
         `🔥 SWOOSH! Great bucket by ${holder.name}!`,
-        '💡 Drag players to new spots, pass the ball around, or shoot again!',
+        '💡 Drag players anywhere on the court, pass to any teammate, or shoot again!',
         ''
       );
       return;
@@ -1659,8 +1707,8 @@ function resetFullPlay() {
     ball.snapTo(TOK_X / W, (TOK_Y / H) - 0.05);
 
     updateUI(
-      '🏀 FREE PLAY — Click any player to pass to them, click the rim to shoot, or hit "RUN SCREEN AWAY"!',
-      '💡 Tip: Drag any player anywhere on the floor to test different reads!',
+      '🏀 FREE PLAY — Drag any player anywhere! Pass to any teammate or shoot at any time.',
+      '💡 Tip: Use the buttons below (or tap a player/rim on the court) to pass or shoot!',
       ''
     );
     return;
@@ -1676,7 +1724,7 @@ function resetFullPlay() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  EVENT LISTENERS
+//  EVENT LISTENERS & INITIALIZATION
 // ═══════════════════════════════════════════════════════════
 btnNext.addEventListener('click', () => {
   if (animating || (mode === 'drag' && targets.length > 0)) return;
@@ -1686,10 +1734,6 @@ btnNext.addEventListener('click', () => {
     case PHASE.SCREENS:          runPhase3(); break;
     case PHASE.AWAY_SCREEN_STEP: enterPassChoiceState('👀 Screen-away complete! Who is open for the next pass?'); break;
   }
-});
-
-btnAwayScreen.addEventListener('click', () => {
-  if (mode === 'free') triggerFreePlayScreenAway();
 });
 
 btnReset.addEventListener('click', resetFullPlay);
@@ -1712,6 +1756,14 @@ btnModeAuto.addEventListener('click', () => setMode('auto', btnModeAuto));
 document.getElementById('modal-close').addEventListener('click', () => {
   document.getElementById('modal-overlay').style.display = 'none';
 });
+
+// Boot directly into Free Play (without blocking modal) on Mobile & Tablet
+if (mode === 'free') {
+  document.getElementById('modal-overlay').style.display = 'none';
+  setMode('free', btnModeFree);
+} else {
+  setMode('drag', btnModeDrag);
+}
 </script>
 </body>
 </html>
