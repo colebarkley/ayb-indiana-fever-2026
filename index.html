@@ -435,38 +435,36 @@ canvas.height = H;
 const cx = p => p * W;
 const cy = p => p * H;
 
-// Out-of-bounds apron & court boundaries (50ft wide x 47ft half-court proportion)
+// Out-of-bounds apron & court boundaries
 const MARGIN_X    = 36;
 const MARGIN_TOP  = 24;
 const MARGIN_BOT  = 24;
 const COURT_L     = MARGIN_X;
 const COURT_R     = W - MARGIN_X;
-const COURT_W     = COURT_R - COURT_L;       // 708px (represents 50ft -> ~14.16px/ft)
+const COURT_W     = COURT_R - COURT_L;
 const BASELINE_Y  = MARGIN_TOP;
 const HALFCOURT_Y = H - MARGIN_BOT;
 
-// Key / Paint (12ft-16ft scaled cleanly)
+// Key / Paint
 const PAINT_W     = 176;
 const PAINT_X     = (W - PAINT_W) / 2;
 const FT_Y        = BASELINE_Y + 235;
 const PAINT_H     = FT_Y - BASELINE_Y;
 const FT_R        = PAINT_W / 2;
 
-// Hoop & Backboard (center of hoop is 5.25ft from baseline)
+// Hoop & Backboard
 const HOOP_X      = W / 2;
 const HOOP_Y      = BASELINE_Y + 52;
 const BLOCK_Y     = BASELINE_Y + 105;
 
-// 3-Point Line (High School / Youth 19'9" proportional arc)
-// Corner 3 sidelines are inset ~42px from the sidelines
+// 3-Point Line
 const C3X_L       = COURT_L + 44;
 const C3X_R       = COURT_R - 44;
-const ARC_R       = (C3X_R - C3X_L) / 2;     // Exact horizontal radius = 310px
-// Straight corner lines run from baseline down to HOOP_Y so the 180-deg semicircle connects seamlessly!
+const ARC_R       = (C3X_R - C3X_L) / 2;
 const CORNER3_END = HOOP_Y;
 
 // Key Perimeter Spots on the Court
-const WING_ANGLE  = Math.PI * 0.25;          // 45 degrees from horizontal
+const WING_ANGLE  = Math.PI * 0.25;
 const WING_X_L    = HOOP_X - (ARC_R + 22) * Math.cos(WING_ANGLE);
 const WING_Y      = HOOP_Y + (ARC_R + 22) * Math.sin(WING_ANGLE);
 const WING_X_R    = HOOP_X + (ARC_R + 22) * Math.cos(WING_ANGLE);
@@ -478,13 +476,17 @@ const CORNER_Y    = BASELINE_Y + 48;
 const TOK_X       = W / 2;
 const TOK_Y       = HOOP_Y + ARC_R + 28;
 
+// Low block coordinates
+const LEFT_BLOCK_X  = PAINT_X - 24;
+const RIGHT_BLOCK_X = PAINT_X + PAINT_W + 24;
+
 // ═══════════════════════════════════════════════════════════
 //  PLAYER STARTING & PLAY POSITIONS
 // ═══════════════════════════════════════════════════════════
 const HOME = {
   p1: { x: TOK_X/W,                    y: TOK_Y/H   }, // PG Top of Key
-  p2: { x: (PAINT_X - 24)/W,           y: BLOCK_Y/H }, // #2 Left Block
-  p3: { x: (PAINT_X + PAINT_W + 24)/W, y: BLOCK_Y/H }, // #3 Right Block
+  p2: { x: LEFT_BLOCK_X/W,             y: BLOCK_Y/H }, // #2 Left Block
+  p3: { x: RIGHT_BLOCK_X/W,            y: BLOCK_Y/H }, // #3 Right Block
   p4: { x: (PAINT_X - 22)/W,           y: FT_Y/H    }, // #4 Left Elbow
   p5: { x: (PAINT_X + PAINT_W + 22)/W, y: FT_Y/H    }, // #5 Right Elbow
 };
@@ -494,23 +496,27 @@ const POS = {
   p4_screen: { x: (PAINT_X - 26)/W,           y: (BLOCK_Y + 34)/H },
   p5_screen: { x: (PAINT_X + PAINT_W + 26)/W, y: (BLOCK_Y + 34)/H },
 
-  // Phase 3: #2 & #3 pop wide to 3pt wings; #4 & #5 open to blocks
-  p2_wing:   { x: WING_X_L/W,                 y: WING_Y/H },
-  p3_wing:   { x: WING_X_R/W,                 y: WING_Y/H },
-  p4_block:  { x: (PAINT_X - 22)/W,           y: BLOCK_Y/H },
-  p5_block:  { x: (PAINT_X + PAINT_W + 22)/W, y: BLOCK_Y/H },
+  // Phase 3: #2 & #3 pop wide to 3pt wings; #4 & #5 open to low blocks
+  p2_wing:   { x: WING_X_L/W,      y: WING_Y/H },
+  p3_wing:   { x: WING_X_R/W,      y: WING_Y/H },
+  p4_block:  { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H },
+  p5_block:  { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H },
 
-  // Branch A: Pass LEFT to #2 (Maya). PG screens away for #3; #4 cross-screens away for #5
-  p1_a2_screen: { x: (WING_X_R - 44)/W,       y: (WING_Y - 34)/H },
-  p4_a2_screen: { x: (PAINT_X + PAINT_W - 6)/W, y: (BLOCK_Y + 8)/H },
-  p3_a2_cut:    { x: (TOK_X + 70)/W,          y: (TOK_Y - 8)/H },
-  p5_a2_cut:    { x: (PAINT_X - 22)/W,        y: (FT_Y + 8)/H },
+  // Branch A: Pass LEFT to #2 (Maya).
+  // PG screens away for #3 (Zoe).
+  // #4 (Ava, left low block) screens away for #5 (Lexi), and #5 (Lexi) replaces #4 on the LEFT low block!
+  p1_a2_screen: { x: (WING_X_R - 44)/W,        y: (WING_Y - 34)/H },
+  p4_a2_screen: { x: (PAINT_X + PAINT_W - 10)/W, y: (BLOCK_Y + 6)/H },
+  p3_a2_cut:    { x: (TOK_X + 70)/W,           y: (TOK_Y - 8)/H },
+  p5_a2_cut:    { x: LEFT_BLOCK_X/W,           y: BLOCK_Y/H },
 
-  // Branch B: Pass RIGHT to #3 (Zoe). PG screens away for #2; #5 cross-screens away for #4
-  p1_b2_screen: { x: (WING_X_L + 44)/W,       y: (WING_Y - 34)/H },
-  p5_b2_screen: { x: (PAINT_X + 6)/W,         y: (BLOCK_Y + 8)/H },
-  p2_b2_cut:    { x: (TOK_X - 70)/W,          y: (TOK_Y - 8)/H },
-  p4_b2_cut:    { x: (PAINT_X + PAINT_W + 22)/W, y: (FT_Y + 8)/H },
+  // Branch B: Pass RIGHT to #3 (Zoe).
+  // PG screens away for #2 (Maya).
+  // #5 (Lexi, right low block) screens away for #4 (Ava), and #4 (Ava) replaces #5 on the RIGHT low block!
+  p1_b2_screen: { x: (WING_X_L + 44)/W,        y: (WING_Y - 34)/H },
+  p5_b2_screen: { x: (PAINT_X + 10)/W,         y: (BLOCK_Y + 6)/H },
+  p2_b2_cut:    { x: (TOK_X - 70)/W,           y: (TOK_Y - 8)/H },
+  p4_b2_cut:    { x: RIGHT_BLOCK_X/W,          y: BLOCK_Y/H },
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -792,12 +798,9 @@ function drawCourt() {
   ctx.strokeStyle = CL;
   ctx.lineWidth = 2.8;
   ctx.beginPath();
-  // Left corner sideline down to HOOP_Y
   ctx.moveTo(C3X_L, BASELINE_Y);
   ctx.lineTo(C3X_L, CORNER3_END);
-  // Full 180-degree arc from left corner (angle PI) around bottom of key to right corner (angle 0)
   ctx.arc(HOOP_X, HOOP_Y, ARC_R, Math.PI, 0, true);
-  // Right corner sideline back up to baseline
   ctx.lineTo(C3X_R, BASELINE_Y);
   ctx.stroke();
 
@@ -806,13 +809,11 @@ function drawCourt() {
   ctx.fillStyle = '#222';
   ctx.fillRect(W / 2 - boardW / 2, BASELINE_Y + 34, boardW, 5);
 
-  // Restricted area arc
   ctx.beginPath();
   ctx.arc(HOOP_X, HOOP_Y, 44, 0, Math.PI);
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  // Rim
   ctx.beginPath();
   ctx.arc(HOOP_X, HOOP_Y, 15, 0, Math.PI * 2);
   ctx.strokeStyle = '#d32f2f';
@@ -1010,7 +1011,6 @@ function shootFromCurrentHolder() {
     spawnConfetti();
     celebText.style.display = 'block';
     setTimeout(() => { celebText.style.display = 'none'; }, 2400);
-    // Reset ball back to PG or keep with shooter
     holder.hasBall = true;
     ball.visible = true;
     ball.snapToXY(holder.x, holder.y - holder.r - ball.r);
@@ -1027,17 +1027,14 @@ function shootFromCurrentHolder() {
 function onPointerDown(e) {
   const pt = getCanvasCoords(e);
 
-  // In Free Play, clicking the Hoop shoots the ball
   if (mode === 'free' && Math.hypot(pt.x - HOOP_X, pt.y - HOOP_Y) <= 34) {
     shootFromCurrentHolder();
     return;
   }
 
-  // Check if user pressed on a player
   for (const [key, p] of Object.entries(players)) {
     const dist = Math.hypot(pt.x - p.x, pt.y - p.y);
     if (dist <= p.r + 12) {
-      // Coach Mode: only drag players with unlocked targets
       if (mode === 'drag') {
         const target = targets.find(t => t.playerKey === key && !t.locked);
         if (target) {
@@ -1049,7 +1046,6 @@ function onPointerDown(e) {
           e.preventDefault();
         }
       } else if (mode === 'free') {
-        // Free Play: drag any player OR click to pass
         draggingKey = key;
         dragStartPos = { x: pt.x, y: pt.y };
         dragMoved = false;
@@ -1089,7 +1085,6 @@ function onPointerMove(e) {
     return;
   }
 
-  // Hover cursor hints
   const hoveringPlayer = Object.entries(players).some(([key, p]) => {
     if (Math.hypot(pt.x - p.x, pt.y - p.y) > p.r + 12) return false;
     if (mode === 'free') return true;
@@ -1102,7 +1097,6 @@ function onPointerMove(e) {
 
 function onPointerUp() {
   if (draggingKey) {
-    // In Free Play, a quick click without dragging passes the ball to that player!
     if (mode === 'free' && !dragMoved) {
       passBallTo(draggingKey);
     }
@@ -1128,45 +1122,41 @@ function checkAllTargetsLocked() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  FREE PLAY: DYNAMIC SCREEN-AWAY ENGINE
+//  FREE PLAY: DYNAMIC SCREEN-AWAY & BLOCK REPLACEMENT ENGINE
 // ═══════════════════════════════════════════════════════════
 function triggerFreePlayScreenAway() {
   const holderEntry = Object.entries(players).find(([_, p]) => p.hasBall);
   if (!holderEntry) return;
   const [holderKey, holder] = holderEntry;
 
-  // Find the two teammates furthest from the ball (weak side)
-  const others = Object.entries(players)
-    .filter(([k]) => k !== holderKey)
-    .map(([k, p]) => ({ key: k, p, dist: Math.hypot(p.x - holder.x, p.y - holder.y) }))
-    .sort((a, b) => b.dist - a.dist);
+  // Identify low-block post players (#4 and #5) vs perimeter players
+  const ballOnLeft = holder.x < W / 2;
+  const ballSidePost = ballOnLeft ? players.p4 : players.p5;
+  const weakSidePost = ballOnLeft ? players.p5 : players.p4;
 
-  if (others.length < 2) return;
-  const screener = others[0]; // Furthest weak-side player sets the screen
-  const cutter   = others[1]; // Next weak-side player uses the screen to cut
+  // Save the exact low block spot the screener is leaving
+  const vacatedBlockX = ballOnLeft ? LEFT_BLOCK_X : RIGHT_BLOCK_X;
+  const vacatedBlockY = BLOCK_Y;
 
-  // Position screener near cutter on the ball-side shoulder
-  const dirX = holder.x > cutter.p.x ? 1 : -1;
-  const screenX = Math.max(COURT_L + 35, Math.min(COURT_R - 35, cutter.p.x + dirX * 36));
-  const screenY = Math.max(BASELINE_Y + 35, Math.min(HALFCOURT_Y - 35, cutter.p.y - 14));
+  // Ball-side low block player goes across the lane to screen away for the other low block player
+  const screenX = ballOnLeft ? (PAINT_X + PAINT_W - 10) : (PAINT_X + 10);
+  const screenY = BLOCK_Y + 6;
+  ballSidePost.moveToXY(screenX, screenY, 650);
 
-  screener.p.moveToXY(screenX, screenY, 650);
   activeScreens = [{
-    x: screenX + dirX * 14,
+    x: screenX + (ballOnLeft ? 20 : -20),
     y: screenY,
-    angle: dirX > 0 ? Math.PI / 2 : -Math.PI / 2
+    angle: ballOnLeft ? Math.PI / 2 : -Math.PI / 2
   }];
 
-  // Cutter curls toward open space at the top of the key / opposite elbow
+  // The other low block player uses the screen and cuts across to take the vacated low block
   setTimeout(() => {
-    const cutX = W / 2 + (holder.x < W / 2 ? 45 : -45);
-    const cutY = FT_Y + 35;
-    cutter.p.moveToXY(cutX, cutY, 750);
-  }, 320);
+    weakSidePost.moveToXY(vacatedBlockX, vacatedBlockY, 750);
+  }, 300);
 
   updateUI(
-    `🛡️ SCREEN AWAY! #${screener.p.id} ${screener.p.name} screens for #${cutter.p.id} ${cutter.p.name}!`,
-    `💡 Click #${cutter.p.id} ${cutter.p.name} to pass to the cutter, or click the rim to shoot!`,
+    `🛡️ SCREEN AWAY! #${ballSidePost.id} ${ballSidePost.name} screens away — #${weakSidePost.id} ${weakSidePost.name} fills the vacated low block!`,
+    `💡 Click #${weakSidePost.id} ${weakSidePost.name} on the low block to feed the post, or click the rim to shoot!`,
     ''
   );
 }
@@ -1437,13 +1427,13 @@ function onPhaseObjectivesComplete() {
     );
   } else if (phase === PHASE.A_AWAY) {
     updateUI(
-      '✅ Away screens & cuts complete! Zoe is wide open at the top!',
+      '✅ Away screens complete! Lexi replaced Ava on the left low block & Zoe is open at the top!',
       '💡 Tip: Maya hits Zoe in rhythm for the open jumper!',
       'PASS & SHOOT! 🏀→🏆'
     );
   } else if (phase === PHASE.B_AWAY) {
     updateUI(
-      '✅ Away screens & cuts complete! Maya is wide open at the top!',
+      '✅ Away screens complete! Ava replaced Lexi on the right low block & Maya is open at the top!',
       '💡 Tip: Zoe hits Maya in rhythm for the open jumper!',
       'PASS & SHOOT! 🏀→🏆'
     );
@@ -1512,8 +1502,8 @@ function runBranch(b) {
     players.p2.hasBall = true;
     ball.moveToXY(players.p2.x, players.p2.y - players.p2.r - ball.r, 450, 30);
     updateUI(
-      '🏀 PASS LEFT TO MAYA! Now Chloe & Ava screen away on the weak side.',
-      '💡 Tip: Pass and screen away! Never stand still after passing.',
+      '🏀 PASS LEFT TO MAYA! Now Ava leaves the left block to screen away while Lexi fills the left block.',
+      '💡 Tip: Screen away and replace! Lexi takes the exact low block spot Ava just left.',
       'RUN AWAY SCREENS →'
     );
   } else {
@@ -1522,8 +1512,8 @@ function runBranch(b) {
     players.p3.hasBall = true;
     ball.moveToXY(players.p3.x, players.p3.y - players.p3.r - ball.r, 450, 30);
     updateUI(
-      '🏀 PASS RIGHT TO ZOE! Now Chloe & Lexi screen away on the weak side.',
-      '💡 Tip: Pass and screen away! Create movement off the ball.',
+      '🏀 PASS RIGHT TO ZOE! Now Lexi leaves the right block to screen away while Ava fills the right block.',
+      '💡 Tip: Screen away and replace! Ava takes the exact low block spot Lexi just left.',
       'RUN AWAY SCREENS →'
     );
   }
@@ -1534,9 +1524,9 @@ function runAwayScreen() {
     phase = PHASE.A_AWAY;
     const moves = [
       { key: 'p1', pos: POS.p1_a2_screen, label: 'Screen Wing' },
-      { key: 'p4', pos: POS.p4_a2_screen, label: 'Cross Screen' },
+      { key: 'p4', pos: POS.p4_a2_screen, label: 'Screen Away' },
       { key: 'p3', pos: POS.p3_a2_cut,    label: 'Curl Cut' },
-      { key: 'p5', pos: POS.p5_a2_cut,    label: 'Flash Elbow' }
+      { key: 'p5', pos: POS.p5_a2_cut,    label: 'Fill Left Block' }
     ];
     const screens = [
       { x: cx(POS.p1_a2_screen.x) + 22, y: cy(POS.p1_a2_screen.y), angle: Math.PI / 2 },
@@ -1544,9 +1534,9 @@ function runAwayScreen() {
     ];
     updateUI(
       mode === 'drag'
-        ? '🖐️ DRAG Chloe & Ava to set away screens, and cut Zoe & Lexi into open space!'
-        : '📦 AWAY SCREENS — Chloe screens for Zoe while Ava screens across for Lexi!',
-      '💡 Tip: Cutters wait for the screener to get set, then explode into space!',
+        ? '🖐️ DRAG Ava to screen away, and move #5 Lexi onto the LEFT LOW BLOCK Ava just vacated!'
+        : '📦 AWAY SCREENS — Ava screens away for Lexi, and Lexi cuts into the vacated LEFT LOW BLOCK!',
+      '💡 Tip: Watch how Lexi takes the exact low block spot Ava just left!',
       'PASS & SHOOT! 🏀→🏆'
     );
     assignMoveOrDrag(moves, screens, onPhaseObjectivesComplete);
@@ -1554,9 +1544,9 @@ function runAwayScreen() {
     phase = PHASE.B_AWAY;
     const moves = [
       { key: 'p1', pos: POS.p1_b2_screen, label: 'Screen Wing' },
-      { key: 'p5', pos: POS.p5_b2_screen, label: 'Cross Screen' },
+      { key: 'p5', pos: POS.p5_b2_screen, label: 'Screen Away' },
       { key: 'p2', pos: POS.p2_b2_cut,    label: 'Curl Cut' },
-      { key: 'p4', pos: POS.p4_b2_cut,    label: 'Flash Elbow' }
+      { key: 'p4', pos: POS.p4_b2_cut,    label: 'Fill Right Block' }
     ];
     const screens = [
       { x: cx(POS.p1_b2_screen.x) - 22, y: cy(POS.p1_b2_screen.y), angle: -Math.PI / 2 },
@@ -1564,9 +1554,9 @@ function runAwayScreen() {
     ];
     updateUI(
       mode === 'drag'
-        ? '🖐️ DRAG Chloe & Lexi to set away screens, and cut Maya & Ava into open space!'
-        : '📦 AWAY SCREENS — Chloe screens for Maya while Lexi screens across for Ava!',
-      '💡 Tip: Cutters wait for the screener to get set, then explode into space!',
+        ? '🖐️ DRAG Lexi to screen away, and move #4 Ava onto the RIGHT LOW BLOCK Lexi just vacated!'
+        : '📦 AWAY SCREENS — Lexi screens away for Ava, and Ava cuts into the vacated RIGHT LOW BLOCK!',
+      '💡 Tip: Watch how Ava takes the exact low block spot Lexi just left!',
       'PASS & SHOOT! 🏀→🏆'
     );
     assignMoveOrDrag(moves, screens, onPhaseObjectivesComplete);
@@ -1623,17 +1613,17 @@ function resetFullPlay() {
   initGame();
 
   if (mode === 'free') {
-    // Space players into a clean 5-Out formation for Free Play
+    // Space players with wings & low blocks ready for Free Play
     players.p1.snapTo(TOK_X / W, TOK_Y / H);
     players.p2.snapTo(WING_X_L / W, WING_Y / H);
     players.p3.snapTo(WING_X_R / W, WING_Y / H);
-    players.p4.snapTo(CORNER_X_L / W, CORNER_Y / H);
-    players.p5.snapTo(CORNER_X_R / W, CORNER_Y / H);
+    players.p4.snapTo(LEFT_BLOCK_X / W, BLOCK_Y / H);
+    players.p5.snapTo(RIGHT_BLOCK_X / W, BLOCK_Y / H);
     ball.snapTo(TOK_X / W, (TOK_Y / H) - 0.05);
 
     updateUI(
-      '🏀 FREE PLAY (5-OUT) — Drag any player to move, click any player to pass, or click the rim to shoot!',
-      '💡 Tip: Pass to a wing, then hit "RUN SCREEN AWAY" to practice weak-side screening!',
+      '🏀 FREE PLAY — Pass to a wing, then click "RUN SCREEN AWAY" to see the opposite block fill the vacated block!',
+      '💡 Tip: Drag any player to move, click any player to pass, or click the rim to shoot!',
       ''
     );
     return;
