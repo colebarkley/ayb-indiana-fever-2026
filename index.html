@@ -198,18 +198,18 @@
 
   .btn {
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(0.7rem, 2.3vw, 0.88rem);
+    font-size: clamp(0.7rem, 2.2vw, 0.86rem);
     font-weight: 700;
     letter-spacing: 1px;
-    padding: 11px 20px;
+    padding: 11px 18px;
     border: none;
     border-radius: 999px;
     cursor: pointer;
     transition: transform .15s, box-shadow .15s, opacity .15s;
     white-space: nowrap;
     flex: 1 1 auto;
-    min-width: 145px;
-    max-width: 260px;
+    min-width: 135px;
+    max-width: 250px;
   }
   .btn:hover:not(:disabled) { transform: scale(1.04); }
   .btn:active:not(:disabled) { transform: scale(0.97); }
@@ -219,6 +219,12 @@
     background: linear-gradient(135deg, var(--gold), var(--gold2));
     color: var(--navy);
     box-shadow: 0 0 16px rgba(255,199,44,.5);
+  }
+  .btn-shoot {
+    background: linear-gradient(135deg, #ff5722, #ff9800);
+    color: #fff;
+    border: 2px solid #fff;
+    box-shadow: 0 0 18px rgba(255,107,0,.6);
   }
   .btn-screen {
     background: linear-gradient(135deg, #0050b3, #0077ff);
@@ -230,18 +236,14 @@
     background: transparent;
     color: rgba(255,100,100,1);
     border: 2px solid rgba(255,100,100,.6);
-    max-width: 190px;
+    max-width: 185px;
   }
   .btn-pass {
     background: linear-gradient(135deg, var(--navy), #0040a0);
     color: var(--gold);
     border: 2px solid var(--gold);
-    animation: pulse-btn 1.4s ease-in-out infinite;
-    max-width: 270px;
-  }
-  @keyframes pulse-btn {
-    0%,100% { box-shadow: 0 0 16px rgba(255,199,44,.4); }
-    50%      { box-shadow: 0 0 30px rgba(255,199,44,.9); }
+    box-shadow: 0 0 14px rgba(255,199,44,.35);
+    max-width: 240px;
   }
   .btn-again {
     background: linear-gradient(135deg,#28a745,#52d470);
@@ -295,7 +297,7 @@
     background: var(--panel);
     border: 2px solid var(--gold);
     border-radius: 16px;
-    max-width: 480px;
+    max-width: 490px;
     width: 100%;
     padding: 26px 24px 22px;
     text-align: center;
@@ -380,7 +382,7 @@
 
 <div id="action-box">
   <div id="action-label">Welcome to Downtown! Press LET'S RUN IT to start.</div>
-  <div id="tip-label">💡 Tip: Switch to FREE PLAY anytime to drag any player, pass to any spot, and run away-screens!</div>
+  <div id="tip-label">💡 Tip: Once the play sets up, choose WHO to pass to — then decide whether to SHOOT or PASS & SCREEN AWAY!</div>
 </div>
 
 <div id="btn-row">
@@ -400,11 +402,11 @@
 <div id="modal-overlay">
   <div id="modal">
     <h2>🏀 COACH'S PLAYBOOK</h2>
-    <p>Run <strong>"Downtown"</strong> step-by-step or take full control of the floor:</p>
+    <p>Run <strong>"Downtown"</strong> with real-game read-and-react choices:</p>
     <ul>
-      <li><strong>Coach Mode:</strong> Drag glowing players into their target circles to execute each step of the play.</li>
-      <li><strong>Free Play (Sandbox):</strong> Drag <em>any</em> player anywhere on the floor, <strong>click any player</strong> to pass the ball to them, click <strong>Run Screen Away</strong> for weak-side screens, or <strong>click the hoop</strong> to shoot!</li>
-      <li><strong>Watch Mode:</strong> Auto-animate the entire play from start to finish.</li>
+      <li><strong>Choose Who to Pass To:</strong> Click any teammate on the court (or use the buttons) to pass the ball wherever the defense leaves an opening.</li>
+      <li><strong>Shoot or Pass?:</strong> Every time a player catches the ball, choose whether to <strong>SHOOT</strong> or <strong>PASS</strong>.</li>
+      <li><strong>Continuous Screen-Away Motion:</strong> Choosing to pass triggers off-ball screens away from the ball—and the opposite low block player cuts into the vacated low block!</li>
     </ul>
     <button id="modal-close">HIT THE COURT! 🔥</button>
   </div>
@@ -435,7 +437,7 @@ canvas.height = H;
 const cx = p => p * W;
 const cy = p => p * H;
 
-// Out-of-bounds apron & court boundaries
+// Court boundaries
 const MARGIN_X    = 36;
 const MARGIN_TOP  = 24;
 const MARGIN_BOT  = 24;
@@ -501,41 +503,30 @@ const POS = {
   p3_wing:   { x: WING_X_R/W,      y: WING_Y/H },
   p4_block:  { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H },
   p5_block:  { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H },
-
-  // Branch A: Pass LEFT to #2 (Maya).
-  // PG screens away for #3 (Zoe).
-  // #4 (Ava, left low block) screens away for #5 (Lexi), and #5 (Lexi) replaces #4 on the LEFT low block!
-  p1_a2_screen: { x: (WING_X_R - 44)/W,        y: (WING_Y - 34)/H },
-  p4_a2_screen: { x: (PAINT_X + PAINT_W - 10)/W, y: (BLOCK_Y + 6)/H },
-  p3_a2_cut:    { x: (TOK_X + 70)/W,           y: (TOK_Y - 8)/H },
-  p5_a2_cut:    { x: LEFT_BLOCK_X/W,           y: BLOCK_Y/H },
-
-  // Branch B: Pass RIGHT to #3 (Zoe).
-  // PG screens away for #2 (Maya).
-  // #5 (Lexi, right low block) screens away for #4 (Ava), and #4 (Ava) replaces #5 on the RIGHT low block!
-  p1_b2_screen: { x: (WING_X_L + 44)/W,        y: (WING_Y - 34)/H },
-  p5_b2_screen: { x: (PAINT_X + 10)/W,         y: (BLOCK_Y + 6)/H },
-  p2_b2_cut:    { x: (TOK_X - 70)/W,           y: (TOK_Y - 8)/H },
-  p4_b2_cut:    { x: RIGHT_BLOCK_X/W,          y: BLOCK_Y/H },
 };
 
 // ═══════════════════════════════════════════════════════════
 //  GAME STATE
 // ═══════════════════════════════════════════════════════════
 const PHASE = {
-  INTRO: 0, CALL: 1, SCREENS: 2, POP: 3, DECISION: 4,
-  A_PASS: 5, A_AWAY: 6, A_SHOT: 7,
-  B_PASS: 8, B_AWAY: 9, B_SHOT: 10,
-  CELEBRATE: 12
+  INTRO: 0,
+  CALL: 1,
+  SCREENS: 2,
+  POP: 3,
+  DECISION_PASS: 4,     // Choose ANY teammate to pass to!
+  SHOOT_OR_PASS: 5,     // Receiver asks: Do you want to SHOOT or PASS?
+  AWAY_SCREEN_STEP: 6,  // Off-ball screen-away + opposite block replaces vacated block
+  SHOT_ANIM: 7,
+  CELEBRATE: 8
 };
 
 let mode = 'drag'; // 'drag' (Coach Mode) | 'free' (Free Play) | 'auto' (Watch)
 let phase = PHASE.INTRO;
-let branch = null;
 let animating = false;
+let passCount = 0;
 
 let targets = [];         // { playerKey, x, y, label, locked }
-let activeScreens = [];   // { x, y, angle } visual T-screens on court
+let activeScreens = [];   // { x, y, angle }
 let draggingKey = null;
 let dragStartPos = { x: 0, y: 0 };
 let dragMoved = false;
@@ -612,12 +603,12 @@ class Player {
       ctx.fill();
     });
 
-    // Halo for draggable or pass-ready teammate
+    // Halo for draggable or clickable pass-target teammate
     if ((isDraggable && !isLocked) || isPassTarget) {
       ctx.save();
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.r + 7, 0, Math.PI * 2);
-      ctx.strokeStyle = isPassTarget ? 'rgba(255,199,44,0.85)' : GREEN;
+      ctx.strokeStyle = isPassTarget ? 'rgba(255,199,44,0.92)' : GREEN;
       ctx.lineWidth = 2.5;
       ctx.setLineDash([5, 4]);
       ctx.stroke();
@@ -735,7 +726,7 @@ function initGame() {
   shotProgress = -1;
   confettiParticles = [];
   animating = false;
-  branch = null;
+  passCount = 0;
 }
 
 initGame();
@@ -744,15 +735,12 @@ initGame();
 //  DRAW COMPLETE REGULATION HALF-COURT
 // ═══════════════════════════════════════════════════════════
 function drawCourt() {
-  // Out-of-bounds dark navy apron
   ctx.fillStyle = APRON_COLOR;
   ctx.fillRect(0, 0, W, H);
 
-  // Hardwood floor inside boundary
   ctx.fillStyle = COURT_WOOD;
   ctx.fillRect(COURT_L, BASELINE_Y, COURT_W, HALFCOURT_Y - BASELINE_Y);
 
-  // Wood plank lines
   ctx.strokeStyle = 'rgba(139,105,20,0.12)';
   ctx.lineWidth = 1;
   for (let y = BASELINE_Y; y < HALFCOURT_Y; y += 14) {
@@ -762,17 +750,15 @@ function drawCourt() {
   const CL = '#1e1e1e';
   ctx.strokeStyle = CL;
   ctx.lineWidth = 3;
-
-  // Outer court boundary (Baseline, Sidelines, Half-court line)
   ctx.strokeRect(COURT_L, BASELINE_Y, COURT_W, HALFCOURT_Y - BASELINE_Y);
 
-  // ── Key / Paint ──
+  // Key / Paint
   ctx.fillStyle = 'rgba(185, 28, 28, 0.52)';
   ctx.fillRect(PAINT_X, BASELINE_Y, PAINT_W, PAINT_H);
   ctx.lineWidth = 2.5;
   ctx.strokeRect(PAINT_X, BASELINE_Y, PAINT_W, PAINT_H);
 
-  // Lane hash marks (Blocks & Neutral Zones)
+  // Lane hash marks
   const laneMarks = [BASELINE_Y + 85, BLOCK_Y, BASELINE_Y + 148, BASELINE_Y + 188];
   laneMarks.forEach((my, idx) => {
     const tickW = idx === 1 ? 10 : 7;
@@ -784,7 +770,7 @@ function drawCourt() {
   });
   ctx.lineWidth = 2.5;
 
-  // Free-throw circle (Solid bottom half, dashed top half inside paint)
+  // Free-throw circle
   ctx.beginPath();
   ctx.arc(W / 2, FT_Y, FT_R, 0, Math.PI);
   ctx.stroke();
@@ -794,7 +780,7 @@ function drawCourt() {
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // ── Complete 3-Point Line (Straight corners + Full 180° Semicircle) ──
+  // Complete 3-Point Line
   ctx.strokeStyle = CL;
   ctx.lineWidth = 2.8;
   ctx.beginPath();
@@ -804,7 +790,7 @@ function drawCourt() {
   ctx.lineTo(C3X_R, BASELINE_Y);
   ctx.stroke();
 
-  // ── Backboard, Restricted Arc & Rim ──
+  // Backboard, Restricted Arc & Rim
   const boardW = 76;
   ctx.fillStyle = '#222';
   ctx.fillRect(W / 2 - boardW / 2, BASELINE_Y + 34, boardW, 5);
@@ -820,7 +806,7 @@ function drawCourt() {
   ctx.lineWidth = 3.5;
   ctx.stroke();
 
-  // ── Half-Court Center Circle (Inner & Outer) ──
+  // Half-Court Center Circle
   ctx.strokeStyle = CL;
   ctx.lineWidth = 2.5;
   ctx.beginPath();
@@ -830,7 +816,7 @@ function drawCourt() {
   ctx.arc(W / 2, HALFCOURT_Y, 24, Math.PI, Math.PI * 2);
   ctx.stroke();
 
-  // ── Court Spot Labels ──
+  // Court Spot Labels
   drawCourtLabel('BLOCK', PAINT_X - 10, BLOCK_Y - 18, 'right');
   drawCourtLabel('BLOCK', PAINT_X + PAINT_W + 10, BLOCK_Y - 18, 'left');
   drawCourtLabel('ELBOW', PAINT_X - 10, FT_Y - 18, 'right');
@@ -841,7 +827,7 @@ function drawCourt() {
   drawCourtLabel('CORNER', C3X_L - 6, CORNER_Y - 22, 'right');
   drawCourtLabel('CORNER', C3X_R + 6, CORNER_Y - 22, 'left');
 
-  if (mode === 'free') {
+  if (mode === 'free' || phase === PHASE.SHOOT_OR_PASS) {
     drawCourtLabel('CLICK RIM TO SHOOT', HOOP_X, HOOP_Y + 26, 'center');
   }
 }
@@ -934,11 +920,17 @@ function drawTargetsAndGuides() {
     ctx.restore();
   });
 
-  // Decision Phase pulsing pass arrows
-  if (phase === PHASE.DECISION && mode !== 'free') {
-    const a = 0.5 + 0.5 * Math.sin(pulseAnim);
-    drawArrow(players.p1.x, players.p1.y, players.p2.x, players.p2.y, GOLD, true, a);
-    drawArrow(players.p1.x, players.p1.y, players.p3.x, players.p3.y, GOLD, true, 1.3 - a);
+  // Draw subtle pass lines from ball holder to all 4 teammates when choosing a pass
+  if (phase === PHASE.DECISION_PASS && mode !== 'free') {
+    const holder = Object.values(players).find(p => p.hasBall);
+    if (holder) {
+      const a = 0.45 + 0.45 * Math.sin(pulseAnim);
+      Object.values(players).forEach(teammate => {
+        if (teammate !== holder) {
+          drawArrow(holder.x, holder.y, teammate.x, teammate.y, GOLD, true, a);
+        }
+      });
+    }
   }
 }
 
@@ -947,7 +939,7 @@ function drawArrow(x1, y1, x2, y2, color, dash = false, alpha = 1) {
   ctx.globalAlpha = alpha;
   if (dash) ctx.setLineDash([8, 6]);
   ctx.strokeStyle = color;
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 2.5;
   ctx.beginPath();
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
@@ -957,15 +949,15 @@ function drawArrow(x1, y1, x2, y2, color, dash = false, alpha = 1) {
   ctx.fillStyle = color;
   ctx.beginPath();
   ctx.moveTo(x2, y2);
-  ctx.lineTo(x2 - 14 * Math.cos(angle - 0.4), y2 - 14 * Math.sin(angle - 0.4));
-  ctx.lineTo(x2 - 14 * Math.cos(angle + 0.4), y2 - 14 * Math.sin(angle + 0.4));
+  ctx.lineTo(x2 - 13 * Math.cos(angle - 0.4), y2 - 13 * Math.sin(angle - 0.4));
+  ctx.lineTo(x2 - 13 * Math.cos(angle + 0.4), y2 - 13 * Math.sin(angle + 0.4));
   ctx.closePath();
   ctx.fill();
   ctx.restore();
 }
 
 // ═══════════════════════════════════════════════════════════
-//  POINTER INTERACTIONS (DRAG, PASS TO ANYONE, SHOOT)
+//  POINTER INTERACTIONS (DRAG, CLICK TO PASS, CLICK TO SHOOT)
 // ═══════════════════════════════════════════════════════════
 function getCanvasCoords(e) {
   const rect = canvas.getBoundingClientRect();
@@ -979,55 +971,19 @@ function getCanvasCoords(e) {
   };
 }
 
-function passBallTo(targetKey) {
-  const currentHolder = Object.entries(players).find(([_, p]) => p.hasBall);
-  const receiver = players[targetKey];
-  if (!receiver || receiver.hasBall || shotProgress >= 0) return;
-
-  if (currentHolder) currentHolder[1].hasBall = false;
-  receiver.hasBall = true;
-  ball.visible = true;
-  ball.moveToXY(receiver.x, receiver.y - receiver.r - ball.r, 420, 28);
-
-  if (mode === 'free') {
-    updateUI(
-      `🏀 ${currentHolder ? currentHolder[1].name : 'Pass'} passes to #${receiver.id} ${receiver.name}!`,
-      '💡 Click "RUN SCREEN AWAY" to set weak-side screens, click another player to pass, or click the rim to shoot!',
-      ''
-    );
-  }
+function canClickToPass() {
+  return mode === 'free' || phase === PHASE.DECISION_PASS;
 }
 
-function shootFromCurrentHolder() {
-  const holder = Object.values(players).find(p => p.hasBall);
-  if (!holder || shotProgress >= 0) return;
-
-  holder.hasBall = false;
-  ball.visible = false;
-  updateUI(`🏀 #${holder.id} ${holder.name} puts up the shot!`, '🔊 Eyes on the rim...', '');
-  startShot(holder.x, holder.y - holder.r, () => {
-    flashAlpha = 0.5;
-    flashTimer = 400;
-    spawnConfetti();
-    celebText.style.display = 'block';
-    setTimeout(() => { celebText.style.display = 'none'; }, 2400);
-    holder.hasBall = true;
-    ball.visible = true;
-    ball.snapToXY(holder.x, holder.y - holder.r - ball.r);
-    if (mode === 'free') {
-      updateUI(
-        `🔥 SWOOSH! Great bucket by ${holder.name}!`,
-        '💡 Drag players to new spots or pass the ball around to keep practicing!',
-        ''
-      );
-    }
-  });
+function canClickToShoot() {
+  return mode === 'free' || phase === PHASE.SHOOT_OR_PASS;
 }
 
 function onPointerDown(e) {
   const pt = getCanvasCoords(e);
 
-  if (mode === 'free' && Math.hypot(pt.x - HOOP_X, pt.y - HOOP_Y) <= 34) {
+  // Clicking the Hoop shoots the ball when shooting is allowed
+  if (canClickToShoot() && Math.hypot(pt.x - HOOP_X, pt.y - HOOP_Y) <= 34) {
     shootFromCurrentHolder();
     return;
   }
@@ -1035,7 +991,14 @@ function onPointerDown(e) {
   for (const [key, p] of Object.entries(players)) {
     const dist = Math.hypot(pt.x - p.x, pt.y - p.y);
     if (dist <= p.r + 12) {
-      if (mode === 'drag') {
+      // During pass decision, clicking any teammate passes directly to them
+      if (phase === PHASE.DECISION_PASS && mode !== 'free' && !p.hasBall) {
+        executePassTo(key);
+        return;
+      }
+
+      // Coach Mode dragging targets
+      if (mode === 'drag' && targets.length > 0) {
         const target = targets.find(t => t.playerKey === key && !t.locked);
         if (target) {
           draggingKey = key;
@@ -1085,20 +1048,22 @@ function onPointerMove(e) {
     return;
   }
 
+  // Hover cursor feedback
   const hoveringPlayer = Object.entries(players).some(([key, p]) => {
     if (Math.hypot(pt.x - p.x, pt.y - p.y) > p.r + 12) return false;
     if (mode === 'free') return true;
+    if (phase === PHASE.DECISION_PASS && !p.hasBall) return true;
     if (mode === 'drag') return targets.some(t => t.playerKey === key && !t.locked);
     return false;
   });
-  const hoveringHoop = mode === 'free' && Math.hypot(pt.x - HOOP_X, pt.y - HOOP_Y) <= 34;
+  const hoveringHoop = canClickToShoot() && Math.hypot(pt.x - HOOP_X, pt.y - HOOP_Y) <= 34;
   canvas.style.cursor = (hoveringPlayer || hoveringHoop) ? 'pointer' : 'default';
 }
 
 function onPointerUp() {
   if (draggingKey) {
     if (mode === 'free' && !dragMoved) {
-      passBallTo(draggingKey);
+      executePassTo(draggingKey);
     }
     draggingKey = null;
     canvas.style.cursor = 'default';
@@ -1122,41 +1087,116 @@ function checkAllTargetsLocked() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  FREE PLAY: DYNAMIC SCREEN-AWAY & BLOCK REPLACEMENT ENGINE
+//  DYNAMIC SCREEN-AWAY & VACATED LOW-BLOCK REPLACEMENT ENGINE
 // ═══════════════════════════════════════════════════════════
-function triggerFreePlayScreenAway() {
+function buildDynamicScreenAwayMoves() {
   const holderEntry = Object.entries(players).find(([_, p]) => p.hasBall);
-  if (!holderEntry) return;
+  if (!holderEntry) return { moves: [], screens: [], desc: '' };
   const [holderKey, holder] = holderEntry;
 
-  // Identify low-block post players (#4 and #5) vs perimeter players
-  const ballOnLeft = holder.x < W / 2;
-  const ballSidePost = ballOnLeft ? players.p4 : players.p5;
-  const weakSidePost = ballOnLeft ? players.p5 : players.p4;
+  const ballOnLeft = holder.x <= W / 2;
 
-  // Save the exact low block spot the screener is leaving
+  // Low block players (#4 Ava and #5 Lexi)
+  // Whoever is on the ball-side block screens away for the other block player,
+  // and the other block player cuts across to fill the vacated low block!
+  const ballSidePostKey = ballOnLeft ? 'p4' : 'p5';
+  const weakSidePostKey = ballOnLeft ? 'p5' : 'p4';
+  const ballSidePost    = players[ballSidePostKey];
+  const weakSidePost    = players[weakSidePostKey];
+
   const vacatedBlockX = ballOnLeft ? LEFT_BLOCK_X : RIGHT_BLOCK_X;
   const vacatedBlockY = BLOCK_Y;
 
-  // Ball-side low block player goes across the lane to screen away for the other low block player
-  const screenX = ballOnLeft ? (PAINT_X + PAINT_W - 10) : (PAINT_X + 10);
-  const screenY = BLOCK_Y + 6;
-  ballSidePost.moveToXY(screenX, screenY, 650);
+  const postScreenX = ballOnLeft ? (PAINT_X + PAINT_W - 10) : (PAINT_X + 10);
+  const postScreenY = BLOCK_Y + 6;
 
-  activeScreens = [{
-    x: screenX + (ballOnLeft ? 20 : -20),
-    y: screenY,
-    angle: ballOnLeft ? Math.PI / 2 : -Math.PI / 2
-  }];
+  const moves = [];
+  const screens = [];
 
-  // The other low block player uses the screen and cuts across to take the vacated low block
-  setTimeout(() => {
-    weakSidePost.moveToXY(vacatedBlockX, vacatedBlockY, 750);
-  }, 300);
+  // Only move the posts if neither of them currently holds the ball
+  if (holderKey !== ballSidePostKey && holderKey !== weakSidePostKey) {
+    moves.push({
+      key: ballSidePostKey,
+      pos: { x: postScreenX / W, y: postScreenY / H },
+      label: 'Screen Away'
+    });
+    moves.push({
+      key: weakSidePostKey,
+      pos: { x: vacatedBlockX / W, y: vacatedBlockY / H },
+      label: ballOnLeft ? 'Fill Left Block' : 'Fill Right Block'
+    });
+    screens.push({
+      x: postScreenX + (ballOnLeft ? 20 : -20),
+      y: postScreenY,
+      angle: ballOnLeft ? Math.PI / 2 : -Math.PI / 2
+    });
+  } else {
+    // If a post player has the ball, the other post flashes to opposite block while perimeter screens away
+    const otherPostKey = holderKey === 'p4' ? 'p5' : 'p4';
+    const targetBlockX = holder.x < W / 2 ? RIGHT_BLOCK_X : LEFT_BLOCK_X;
+    moves.push({
+      key: otherPostKey,
+      pos: { x: targetBlockX / W, y: BLOCK_Y / H },
+      label: 'Seal Opposite Block'
+    });
+  }
+
+  // Also have weak-side perimeter player screen away for another perimeter player
+  const perimeterKeys = ['p1', 'p2', 'p3'].filter(k => k !== holderKey);
+  if (perimeterKeys.length >= 2) {
+    // Pick the perimeter player furthest from the ball to receive an away screen
+    const sortedPerim = perimeterKeys
+      .map(k => ({ key: k, p: players[k], dist: Math.hypot(players[k].x - holder.x, players[k].y - holder.y) }))
+      .sort((a, b) => b.dist - a.dist);
+
+    const perimCutter   = sortedPerim[0];
+    const perimScreener = sortedPerim[1];
+
+    const dirX = holder.x > perimCutter.p.x ? 1 : -1;
+    const pScreenX = Math.max(COURT_L + 45, Math.min(COURT_R - 45, perimCutter.p.x + dirX * 36));
+    const pScreenY = Math.max(BASELINE_Y + 45, Math.min(HALFCOURT_Y - 45, perimCutter.p.y - 26));
+
+    moves.push({
+      key: perimScreener.key,
+      pos: { x: pScreenX / W, y: pScreenY / H },
+      label: 'Screen Away'
+    });
+
+    // Cutter curls toward open top-of-key / opposite wing space
+    const cutX = ballOnLeft ? (TOK_X + 68) : (TOK_X - 68);
+    const cutY = TOK_Y - 8;
+    moves.push({
+      key: perimCutter.key,
+      pos: { x: cutX / W, y: cutY / H },
+      label: 'Curl Cut'
+    });
+
+    screens.push({
+      x: pScreenX + dirX * 18,
+      y: pScreenY,
+      angle: dirX > 0 ? Math.PI / 2 : -Math.PI / 2
+    });
+  }
+
+  const desc = (holderKey !== ballSidePostKey && holderKey !== weakSidePostKey)
+    ? `#${ballSidePost.id} ${ballSidePost.name} screens away while #${weakSidePost.id} ${weakSidePost.name} fills the vacated ${ballOnLeft ? 'LEFT' : 'RIGHT'} low block!`
+    : `Weak-side players screen away and cut into open space!`;
+
+  return { moves, screens, desc };
+}
+
+function triggerFreePlayScreenAway() {
+  const { moves, screens, desc } = buildDynamicScreenAwayMoves();
+  activeScreens = screens;
+  moves.forEach((m, idx) => {
+    setTimeout(() => {
+      players[m.key].moveTo(m.pos.x, m.pos.y, 700);
+    }, idx * 120);
+  });
 
   updateUI(
-    `🛡️ SCREEN AWAY! #${ballSidePost.id} ${ballSidePost.name} screens away — #${weakSidePost.id} ${weakSidePost.name} fills the vacated low block!`,
-    `💡 Click #${weakSidePost.id} ${weakSidePost.name} on the low block to feed the post, or click the rim to shoot!`,
+    `🛡️ SCREEN AWAY! ${desc}`,
+    '💡 Click any player to pass to them, or click the rim to shoot!',
     ''
   );
 }
@@ -1281,7 +1321,7 @@ function render(ts) {
   Object.entries(players)
     .sort((a, b) => a[1].y - b[1].y)
     .forEach(([key, p]) => {
-      const isPassTarget = mode === 'free' && !p.hasBall;
+      const isPassTarget = (mode === 'free' || phase === PHASE.DECISION_PASS) && !p.hasBall;
       p.draw(ctx, mode === 'drag' && draggableKeys.has(key), lockedKeys.has(key), isPassTarget);
     });
 
@@ -1326,59 +1366,81 @@ const phaseNumTxt   = document.getElementById('phase-num-txt');
 const celebText     = document.getElementById('celebrate-text');
 
 const PHASE_INFO = {
-  [PHASE.INTRO]:     { name: 'INTRO',          step: 0, total: 5 },
-  [PHASE.CALL]:      { name: 'THE CALL',       step: 1, total: 5 },
-  [PHASE.SCREENS]:   { name: 'DOWN SCREENS',   step: 2, total: 5 },
-  [PHASE.POP]:       { name: 'POP TO WINGS',   step: 3, total: 5 },
-  [PHASE.DECISION]:  { name: 'DECISION POINT', step: 4, total: 5 },
-  [PHASE.A_PASS]:    { name: 'PASS LEFT',      step: 5, total: 7 },
-  [PHASE.A_AWAY]:    { name: 'AWAY SCREENS',   step: 6, total: 7 },
-  [PHASE.A_SHOT]:    { name: 'FIND THE SHOT',  step: 7, total: 7 },
-  [PHASE.B_PASS]:    { name: 'PASS RIGHT',     step: 5, total: 7 },
-  [PHASE.B_AWAY]:    { name: 'AWAY SCREENS',   step: 6, total: 7 },
-  [PHASE.B_SHOT]:    { name: 'FIND THE SHOT',  step: 7, total: 7 },
-  [PHASE.CELEBRATE]: { name: 'SCORE!',         step: 7, total: 7 },
+  [PHASE.INTRO]:            { name: 'INTRO',           step: 0, total: 6 },
+  [PHASE.CALL]:             { name: 'THE CALL',        step: 1, total: 6 },
+  [PHASE.SCREENS]:          { name: 'DOWN SCREENS',    step: 2, total: 6 },
+  [PHASE.POP]:              { name: 'POP TO WINGS',    step: 3, total: 6 },
+  [PHASE.DECISION_PASS]:    { name: 'CHOOSE PASS',     step: 4, total: 6 },
+  [PHASE.SHOOT_OR_PASS]:    { name: 'SHOOT OR PASS?',  step: 5, total: 6 },
+  [PHASE.AWAY_SCREEN_STEP]: { name: 'SCREEN AWAY',     step: 5, total: 6 },
+  [PHASE.SHOT_ANIM]:        { name: 'SHOT UP!',        step: 6, total: 6 },
+  [PHASE.CELEBRATE]:        { name: 'SCORE!',          step: 6, total: 6 },
 };
 
-function updateUI(action, tip, nextLabel, showPassBtns = false) {
+function clearDynamicButtons() {
+  Array.from(btnRow.querySelectorAll('.btn-pass, .btn-shoot, .btn-again')).forEach(b => b.remove());
+}
+
+function updateUI(action, tip, nextLabel) {
   actionLabel.textContent = action;
   tipLabel.textContent = tip;
 
   if (mode === 'free') {
     phaseNameTxt.textContent = 'FREE PLAY SANDBOX';
-    phaseNumTxt.textContent  = '5-Out Motion';
+    phaseNumTxt.textContent  = `Passes: ${passCount}`;
     phaseFill.style.width    = '100%';
     btnNext.style.display    = 'none';
     btnAwayScreen.style.display = '';
-    Array.from(btnRow.querySelectorAll('.btn-pass, .btn-again')).forEach(b => b.remove());
+    clearDynamicButtons();
     return;
   }
 
   btnAwayScreen.style.display = 'none';
-  const info = PHASE_INFO[phase] || { name: '', step: 0, total: 5 };
+  const info = PHASE_INFO[phase] || { name: '', step: 0, total: 6 };
   phaseNameTxt.textContent = info.name;
   phaseNumTxt.textContent  = `Step ${info.step} / ${info.total}`;
   phaseFill.style.width    = `${(info.step / info.total) * 100}%`;
 
-  Array.from(btnRow.querySelectorAll('.btn-pass, .btn-again')).forEach(b => b.remove());
+  clearDynamicButtons();
+
+  // Phase 4: Player chooses ANY teammate to pass to!
+  if (phase === PHASE.DECISION_PASS) {
+    btnNext.style.display = 'none';
+    const holder = Object.values(players).find(p => p.hasBall);
+    Object.entries(players).forEach(([key, p]) => {
+      if (p !== holder) {
+        const bp = document.createElement('button');
+        bp.className = 'btn btn-pass';
+        bp.textContent = `🏀 PASS to #${p.id} ${p.name}`;
+        bp.onclick = () => executePassTo(key);
+        btnRow.insertBefore(bp, btnReset);
+      }
+    });
+    return;
+  }
+
+  // Phase 5: Receiver asks "Do you want to SHOOT or PASS?"
+  if (phase === PHASE.SHOOT_OR_PASS) {
+    btnNext.style.display = 'none';
+    const holder = Object.values(players).find(p => p.hasBall);
+
+    const bShoot = document.createElement('button');
+    bShoot.className = 'btn btn-shoot';
+    bShoot.textContent = `🔥 SHOOT (${holder ? holder.name : ''})`;
+    bShoot.onclick = () => shootFromCurrentHolder();
+    btnRow.insertBefore(bShoot, btnReset);
+
+    const bPass = document.createElement('button');
+    bPass.className = 'btn btn-pass';
+    bPass.textContent = '🔄 NOT OPEN → PASS & SCREEN AWAY';
+    bPass.onclick = () => triggerScreenAwayAndPassChoice();
+    btnRow.insertBefore(bPass, btnReset);
+    return;
+  }
 
   btnNext.textContent = nextLabel || '▶ NEXT';
-  btnNext.style.display = showPassBtns ? 'none' : '';
+  btnNext.style.display = '';
   btnNext.disabled = animating || (mode === 'drag' && targets.length > 0);
-
-  if (showPassBtns) {
-    const ba = document.createElement('button');
-    ba.className = 'btn btn-pass';
-    ba.textContent = '🏀 PASS LEFT to Maya';
-    ba.onclick = () => runBranch('A');
-    btnRow.insertBefore(ba, btnReset);
-
-    const bb = document.createElement('button');
-    bb.className = 'btn btn-pass';
-    bb.textContent = '🏀 PASS RIGHT to Zoe';
-    bb.onclick = () => runBranch('B');
-    btnRow.insertBefore(bb, btnReset);
-  }
 }
 
 function assignMoveOrDrag(moves, screenIndicators, onComplete) {
@@ -1418,26 +1480,118 @@ function onPhaseObjectivesComplete() {
     );
   } else if (phase === PHASE.POP) {
     activeScreens = [];
-    phase = PHASE.DECISION;
-    updateUI(
-      '👀 5-OUT SPACING SET! Who is open? Choose which wing Chloe passes to!',
-      '💡 Tip: Look at all that floor space! Pass to either wing to trigger the away action.',
-      '',
-      true
+    enterPassChoiceState(
+      '👀 5-OUT SPACING SET! Who should Chloe pass to? Click any player on the court or choose below!'
     );
-  } else if (phase === PHASE.A_AWAY) {
-    updateUI(
-      '✅ Away screens complete! Lexi replaced Ava on the left low block & Zoe is open at the top!',
-      '💡 Tip: Maya hits Zoe in rhythm for the open jumper!',
-      'PASS & SHOOT! 🏀→🏆'
-    );
-  } else if (phase === PHASE.B_AWAY) {
-    updateUI(
-      '✅ Away screens complete! Ava replaced Lexi on the right low block & Maya is open at the top!',
-      '💡 Tip: Zoe hits Maya in rhythm for the open jumper!',
-      'PASS & SHOOT! 🏀→🏆'
+  } else if (phase === PHASE.AWAY_SCREEN_STEP) {
+    enterPassChoiceState(
+      '✅ Screen-away & low-block replacement complete! Who is open for the next pass?'
     );
   }
+}
+
+function enterPassChoiceState(promptText) {
+  phase = PHASE.DECISION_PASS;
+  updateUI(
+    promptText,
+    '💡 Tip: Click any teammate directly on the floor (or tap their button) to pass the ball!',
+    ''
+  );
+}
+
+function executePassTo(targetKey) {
+  const currentHolderEntry = Object.entries(players).find(([_, p]) => p.hasBall);
+  const receiver = players[targetKey];
+  if (!receiver || receiver.hasBall || shotProgress >= 0) return;
+
+  if (currentHolderEntry) currentHolderEntry[1].hasBall = false;
+  receiver.hasBall = true;
+  passCount++;
+  activeScreens = [];
+
+  ball.visible = true;
+  ball.moveToXY(receiver.x, receiver.y - receiver.r - ball.r, 420, 28);
+
+  if (mode === 'free') {
+    updateUI(
+      `🏀 #${receiver.id} ${receiver.name} has the ball! Do you want to SHOOT or PASS?`,
+      '💡 Click the rim to SHOOT, click any teammate to PASS, or click "RUN SCREEN AWAY"!',
+      ''
+    );
+    return;
+  }
+
+  // Ask "Do you want to SHOOT or PASS?"
+  phase = PHASE.SHOOT_OR_PASS;
+  updateUI(
+    `🏀 #${receiver.id} ${receiver.name} catches the ball! Do you want to SHOOT or PASS?`,
+    '💡 If the defense is tight and she is not open, choose PASS to trigger off-ball screens away!',
+    ''
+  );
+}
+
+function triggerScreenAwayAndPassChoice() {
+  phase = PHASE.AWAY_SCREEN_STEP;
+  const { moves, screens, desc } = buildDynamicScreenAwayMoves();
+
+  updateUI(
+    mode === 'drag'
+      ? `🖐️ DRAG players to screen away & fill the vacated low block! (${desc})`
+      : `🛡️ SCREEN AWAY! ${desc}`,
+    '💡 Tip: Watch the opposite low block player cut across to fill the exact low block the screener just left!',
+    'NEXT: CHOOSE NEXT PASS →'
+  );
+
+  assignMoveOrDrag(moves, screens, onPhaseObjectivesComplete);
+}
+
+function shootFromCurrentHolder() {
+  const holder = Object.values(players).find(p => p.hasBall);
+  if (!holder || shotProgress >= 0) return;
+
+  animating = true;
+  activeScreens = [];
+  holder.hasBall = false;
+  ball.visible = false;
+
+  if (mode !== 'free') phase = PHASE.SHOT_ANIM;
+  updateUI(`🏀 #${holder.id} ${holder.name} puts up the shot!`, '🔊 Eyes on the rim...', '');
+
+  startShot(holder.x, holder.y - holder.r, () => {
+    animating = false;
+    flashAlpha = 0.55;
+    flashTimer = 450;
+    spawnConfetti();
+    celebText.style.display = 'block';
+
+    if (mode === 'free') {
+      setTimeout(() => { celebText.style.display = 'none'; }, 2400);
+      holder.hasBall = true;
+      ball.visible = true;
+      ball.snapToXY(holder.x, holder.y - holder.r - ball.r);
+      updateUI(
+        `🔥 SWOOSH! Great bucket by ${holder.name}!`,
+        '💡 Drag players to new spots, pass the ball around, or shoot again!',
+        ''
+      );
+      return;
+    }
+
+    phase = PHASE.CELEBRATE;
+    updateUI(
+      `🔥 SWOOSH! +2 FOR #${holder.id} ${holder.name} AFTER ${passCount} PASS${passCount === 1 ? '' : 'ES'}!`,
+      '🏆 Great ball movement, off-ball screens, and shot selection!',
+      ''
+    );
+
+    btnNext.style.display = 'none';
+    clearDynamicButtons();
+    const ba = document.createElement('button');
+    ba.className = 'btn btn-again';
+    ba.textContent = '🔄 RUN IT AGAIN!';
+    ba.onclick = resetFullPlay;
+    btnRow.insertBefore(ba, btnReset);
+  });
 }
 
 function runPhase1() {
@@ -1486,125 +1640,9 @@ function runPhase3() {
       ? '🖐️ DRAG Maya & Zoe out to the 3pt wings, and slide Ava & Lexi to the blocks!'
       : '🏃 POP WIDE! Maya & Zoe cut to the 3-point wings!',
     '💡 Tip: Stretch the defense all the way out to the 3-point line!',
-    'MAKE YOUR DECISION →'
+    'NEXT: CHOOSE PASS →'
   );
   assignMoveOrDrag(moves, [], onPhaseObjectivesComplete);
-}
-
-function runBranch(b) {
-  branch = b;
-  Array.from(btnRow.querySelectorAll('.btn-pass')).forEach(el => el.remove());
-  btnNext.style.display = '';
-
-  if (b === 'A') {
-    phase = PHASE.A_PASS;
-    players.p1.hasBall = false;
-    players.p2.hasBall = true;
-    ball.moveToXY(players.p2.x, players.p2.y - players.p2.r - ball.r, 450, 30);
-    updateUI(
-      '🏀 PASS LEFT TO MAYA! Now Ava leaves the left block to screen away while Lexi fills the left block.',
-      '💡 Tip: Screen away and replace! Lexi takes the exact low block spot Ava just left.',
-      'RUN AWAY SCREENS →'
-    );
-  } else {
-    phase = PHASE.B_PASS;
-    players.p1.hasBall = false;
-    players.p3.hasBall = true;
-    ball.moveToXY(players.p3.x, players.p3.y - players.p3.r - ball.r, 450, 30);
-    updateUI(
-      '🏀 PASS RIGHT TO ZOE! Now Lexi leaves the right block to screen away while Ava fills the right block.',
-      '💡 Tip: Screen away and replace! Ava takes the exact low block spot Lexi just left.',
-      'RUN AWAY SCREENS →'
-    );
-  }
-}
-
-function runAwayScreen() {
-  if (branch === 'A') {
-    phase = PHASE.A_AWAY;
-    const moves = [
-      { key: 'p1', pos: POS.p1_a2_screen, label: 'Screen Wing' },
-      { key: 'p4', pos: POS.p4_a2_screen, label: 'Screen Away' },
-      { key: 'p3', pos: POS.p3_a2_cut,    label: 'Curl Cut' },
-      { key: 'p5', pos: POS.p5_a2_cut,    label: 'Fill Left Block' }
-    ];
-    const screens = [
-      { x: cx(POS.p1_a2_screen.x) + 22, y: cy(POS.p1_a2_screen.y), angle: Math.PI / 2 },
-      { x: cx(POS.p4_a2_screen.x) + 22, y: cy(POS.p4_a2_screen.y), angle: Math.PI / 2 }
-    ];
-    updateUI(
-      mode === 'drag'
-        ? '🖐️ DRAG Ava to screen away, and move #5 Lexi onto the LEFT LOW BLOCK Ava just vacated!'
-        : '📦 AWAY SCREENS — Ava screens away for Lexi, and Lexi cuts into the vacated LEFT LOW BLOCK!',
-      '💡 Tip: Watch how Lexi takes the exact low block spot Ava just left!',
-      'PASS & SHOOT! 🏀→🏆'
-    );
-    assignMoveOrDrag(moves, screens, onPhaseObjectivesComplete);
-  } else {
-    phase = PHASE.B_AWAY;
-    const moves = [
-      { key: 'p1', pos: POS.p1_b2_screen, label: 'Screen Wing' },
-      { key: 'p5', pos: POS.p5_b2_screen, label: 'Screen Away' },
-      { key: 'p2', pos: POS.p2_b2_cut,    label: 'Curl Cut' },
-      { key: 'p4', pos: POS.p4_b2_cut,    label: 'Fill Right Block' }
-    ];
-    const screens = [
-      { x: cx(POS.p1_b2_screen.x) - 22, y: cy(POS.p1_b2_screen.y), angle: -Math.PI / 2 },
-      { x: cx(POS.p5_b2_screen.x) - 22, y: cy(POS.p5_b2_screen.y), angle: -Math.PI / 2 }
-    ];
-    updateUI(
-      mode === 'drag'
-        ? '🖐️ DRAG Lexi to screen away, and move #4 Ava onto the RIGHT LOW BLOCK Lexi just vacated!'
-        : '📦 AWAY SCREENS — Lexi screens away for Ava, and Ava cuts into the vacated RIGHT LOW BLOCK!',
-      '💡 Tip: Watch how Ava takes the exact low block spot Lexi just left!',
-      'PASS & SHOOT! 🏀→🏆'
-    );
-    assignMoveOrDrag(moves, screens, onPhaseObjectivesComplete);
-  }
-}
-
-function runShot() {
-  animating = true;
-  btnNext.disabled = true;
-  activeScreens = [];
-
-  const passer = branch === 'A' ? players.p2 : players.p3;
-  const shooter = branch === 'A' ? players.p3 : players.p2;
-  phase = branch === 'A' ? PHASE.A_SHOT : PHASE.B_SHOT;
-
-  passer.hasBall = false;
-  shooter.hasBall = true;
-  ball.moveToXY(shooter.x, shooter.y - shooter.r - ball.r, 400, 25);
-
-  updateUI('🏀 CRISP PASS TO THE CUTTER — AND SHE SHOOTS!', '🔊 Eyes on the rim...', '');
-
-  setTimeout(() => {
-    shooter.hasBall = false;
-    ball.visible = false;
-    startShot(shooter.x, shooter.y - shooter.r, celebrate);
-  }, 480);
-}
-
-function celebrate() {
-  phase = PHASE.CELEBRATE;
-  flashAlpha = 0.55;
-  flashTimer = 450;
-  spawnConfetti();
-  celebText.style.display = 'block';
-  animating = false;
-
-  updateUI(
-    '🔥 SWOOSH! +2 — GREAT SPACING AND EXECUTION!',
-    '🏆 That is how you stretch the floor and score in "Downtown"!',
-    ''
-  );
-
-  btnNext.style.display = 'none';
-  const ba = document.createElement('button');
-  ba.className = 'btn btn-again';
-  ba.textContent = '🔄 RUN IT AGAIN!';
-  ba.onclick = resetFullPlay;
-  btnRow.insertBefore(ba, btnReset);
 }
 
 function resetFullPlay() {
@@ -1613,7 +1651,6 @@ function resetFullPlay() {
   initGame();
 
   if (mode === 'free') {
-    // Space players with wings & low blocks ready for Free Play
     players.p1.snapTo(TOK_X / W, TOK_Y / H);
     players.p2.snapTo(WING_X_L / W, WING_Y / H);
     players.p3.snapTo(WING_X_R / W, WING_Y / H);
@@ -1622,14 +1659,14 @@ function resetFullPlay() {
     ball.snapTo(TOK_X / W, (TOK_Y / H) - 0.05);
 
     updateUI(
-      '🏀 FREE PLAY — Pass to a wing, then click "RUN SCREEN AWAY" to see the opposite block fill the vacated block!',
-      '💡 Tip: Drag any player to move, click any player to pass, or click the rim to shoot!',
+      '🏀 FREE PLAY — Click any player to pass to them, click the rim to shoot, or hit "RUN SCREEN AWAY"!',
+      '💡 Tip: Drag any player anywhere on the floor to test different reads!',
       ''
     );
     return;
   }
 
-  Array.from(btnRow.querySelectorAll('.btn-pass, .btn-again')).forEach(b => b.remove());
+  clearDynamicButtons();
   btnNext.style.display = '';
   updateUI(
     'Ready! Press "LET\'S RUN IT!" to practice the play.',
@@ -1644,13 +1681,10 @@ function resetFullPlay() {
 btnNext.addEventListener('click', () => {
   if (animating || (mode === 'drag' && targets.length > 0)) return;
   switch (phase) {
-    case PHASE.INTRO:   runPhase1(); break;
-    case PHASE.CALL:    runPhase2(); break;
-    case PHASE.SCREENS: runPhase3(); break;
-    case PHASE.A_PASS:
-    case PHASE.B_PASS:  runAwayScreen(); break;
-    case PHASE.A_AWAY:
-    case PHASE.B_AWAY:  runShot(); break;
+    case PHASE.INTRO:            runPhase1(); break;
+    case PHASE.CALL:             runPhase2(); break;
+    case PHASE.SCREENS:          runPhase3(); break;
+    case PHASE.AWAY_SCREEN_STEP: enterPassChoiceState('👀 Screen-away complete! Who is open for the next pass?'); break;
   }
 });
 
