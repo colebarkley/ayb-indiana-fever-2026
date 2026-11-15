@@ -449,7 +449,7 @@
   <div class="legend-item"><div class="legend-dot">3</div> Zoe (Right)</div>
   <div class="legend-item"><div class="legend-dot">4</div> Ava (Forward)</div>
   <div class="legend-item"><div class="legend-dot">5</div> Lexi (Post)</div>
-  <div class="legend-item" id="legend-def" style="display:none;"><div class="legend-dot def">X</div> Defenders (Steal risky passes)</div>
+  <div class="legend-item" id="legend-def" style="display:none;"><div class="legend-dot def">X</div> Defenders (1-on-1 Assignments)</div>
 </div>
 
 <div id="modal-overlay">
@@ -457,8 +457,8 @@
     <h2>🏀 COACH'S PLAYBOOK</h2>
     <p>Run <strong>"Downtown"</strong> with smart passing & spacing:</p>
     <ul>
-      <li><strong>⚠️ Avoid Long Cross-Court Passes:</strong> Throwing skip passes all the way across the court or through traffic is dangerous—when <strong>Show Defense</strong> is ON, defenders will pick it off!</li>
-      <li><strong>🛡️ Show Defense:</strong> Toggle defenders on/off to see help-side defense and passing lanes.</li>
+      <li><strong>⚠️ No Long Cross-Court Passes:</strong> Throwing skip passes all the way across the court is dangerous—when <strong>Show Defense</strong> is ON, the defender will pick it off!</li>
+      <li><strong>🛡️ Show Defense:</strong> Toggle defenders on/off to see 1-on-1 assignments and help-side spacing.</li>
       <li><strong>Shoot or Pass & Screen Away:</strong> Make short, crisp passes and screen away when guarded.</li>
     </ul>
     <button id="modal-close">HIT THE COURT! 🔥</button>
@@ -613,61 +613,36 @@ let interceptLock = false;
 let bannerTimeout = null;
 
 // ═══════════════════════════════════════════════════════════
-//  PASS RISK & INTERCEPTION GEOMETRY ENGINE
+//  LONG CROSS-COURT PASS DETECTION (ONLY CROSS-COURT SKIPS)
 // ═══════════════════════════════════════════════════════════
-function distPointToSegment(px, py, x1, y1, x2, y2) {
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const lenSq = dx * dx + dy * dy;
-  if (lenSq === 0) return { dist: Math.hypot(px - x1, py - y1), t: 0, projX: x1, projY: y1 };
-  let t = ((px - x1) * dx + (py - y1) * dy) / lenSq;
-  t = Math.max(0.08, Math.min(0.92, t));
-  const projX = x1 + t * dx;
-  const projY = y1 + t * dy;
-  return { dist: Math.hypot(px - projX, py - projY), t, projX, projY };
-}
-
 function evaluatePassRisk(passer, receiver) {
-  const passDist = Math.hypot(receiver.x - passer.x, receiver.y - passer.y);
   const horizSpan = Math.abs(receiver.x - passer.x);
-  const crossesPaint = (passer.x < W / 2 - 40 && receiver.x > W / 2 + 40) ||
-                       (passer.x > W / 2 + 40 && receiver.x < W / 2 - 40);
+  // Strictly check if the pass goes from one side of the court all the way across the paint to the opposite side
+  const crossesFullCourt =
+    (passer.x < W / 2 - 45 && receiver.x > W / 2 + 45 && horizSpan > 260) ||
+    (passer.x > W / 2 + 45 && receiver.x < W / 2 - 45 && horizSpan > 260);
 
-  // Long cross-court skip pass threshold (e.g., wing-to-wing or corner-to-corner)
-  const isLongCrossCourt = (crossesPaint && horizSpan > 265) || passDist > 335;
-
-  // Check if any defender is in or near the passing lane
-  let closestInterceptor = null;
-  let minLaneDist = Infinity;
-  let interceptPoint = null;
-
-  Object.entries(defenders).forEach(([dKey, d]) => {
-    const seg = distPointToSegment(d.x, d.y, passer.x, passer.y, receiver.x, receiver.y);
-    if (seg.dist < minLaneDist) {
-      minLaneDist = seg.dist;
-      closestInterceptor = { key: dKey, defender: d };
-      interceptPoint = { x: seg.projX, y: seg.projY };
-    }
-  });
-
-  const defenderInLane = minLaneDist < 42;
-  const isDangerous = isLongCrossCourt || defenderInLane;
-
-  let reason = '';
-  if (isLongCrossCourt && defenderInLane) {
-    reason = `Long cross-court skip pass right through ${closestInterceptor.defender.id}!`;
-  } else if (isLongCrossCourt) {
-    reason = 'Long cross-court skip pass hangs in the air too long!';
-  } else if (defenderInLane) {
-    reason = `${closestInterceptor.defender.id} is sitting right in the passing lane!`;
+  if (!crossesFullCourt) {
+    return {
+      isDangerous: false,
+      reason: '',
+      interceptor: null,
+      interceptPoint: null
+    };
   }
 
+  // Strictly 1-to-1: the single defender guarding the receiver jumps the cross-court skip pass
+  const receiverDefKey = 'd' + receiver.id;
+  const def = defenders[receiverDefKey];
+  const interceptPoint = {
+    x: lerp(passer.x, receiver.x, 0.58),
+    y: lerp(passer.y, receiver.y, 0.58)
+  };
+
   return {
-    isDangerous,
-    isLongCrossCourt,
-    defenderInLane,
-    reason,
-    interceptor: closestInterceptor,
+    isDangerous: true,
+    reason: 'Long cross-court skip pass hangs in the air all the way across the court!',
+    interceptor: def ? { key: receiverDefKey, defender: def } : null,
     interceptPoint
   };
 }
@@ -686,7 +661,7 @@ function showBannerAlert(text, isTurnover = false, duration = 2200) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  PLAYER, DEFENDER & BALL CLASSES
+//  PLAYER, DEFENDER & BALL CLASSES (1-ON-1 ASSIGNMENTS)
 // ═══════════════════════════════════════════════════════════
 class Player {
   constructor(id, name, px, py) {
@@ -734,7 +709,6 @@ class Player {
     this.y = lerp(this.sy, this.ty, e);
   }
   draw(ctx, isDraggable, isLocked, isPassTarget, isBeingDragged, isOpenLook, isRiskyTarget) {
-    // Trail
     this.trail.forEach((p, i) => {
       const a = (i + 1) / this.trail.length * 0.25;
       ctx.beginPath();
@@ -743,7 +717,6 @@ class Player {
       ctx.fill();
     });
 
-    // Active drag ring
     if (isBeingDragged) {
       ctx.save();
       ctx.beginPath();
@@ -765,13 +738,11 @@ class Player {
       ctx.restore();
     }
 
-    // Shadow
     ctx.beginPath();
     ctx.ellipse(this.x, this.y + this.r * 0.85, this.r * 0.9, this.r * 0.3, 0, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(0,0,0,0.28)';
     ctx.fill();
 
-    // Jersey Circle
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
     ctx.fillStyle = isLocked ? '#004d26' : NAVY;
@@ -780,14 +751,12 @@ class Player {
     ctx.strokeStyle = this.hasBall ? ORANGE : (isLocked ? GREEN : GOLD);
     ctx.stroke();
 
-    // Number
     ctx.fillStyle = this.hasBall ? ORANGE : (isLocked ? GREEN : GOLD);
     ctx.font = `bold 17px Orbitron, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(this.id, this.x, this.y - 1);
 
-    // Name tag pill
     ctx.font = `bold 11px Rajdhani, sans-serif`;
     const nw = ctx.measureText(this.name).width + 10;
     ctx.fillStyle = 'rgba(10,10,26,0.84)';
@@ -797,7 +766,6 @@ class Player {
     ctx.fillStyle = '#fff';
     ctx.fillText(this.name, this.x, this.y + this.r + 10.5);
 
-    // Visual "OPEN!" badge when defense is toggled on and player has clean space
     if (showDefense && isOpenLook && !this.hasBall) {
       ctx.save();
       const label = 'OPEN!';
@@ -816,13 +784,13 @@ class Player {
 
 class Defender {
   constructor(id, assignmentKey) {
-    this.id = id; // 'X1'..'X5'
+    this.id = id; // 'X1'..'X5' strictly 1-on-1 with 'p1'..'p5'
     this.assignmentKey = assignmentKey;
     this.x = W / 2;
     this.y = H / 2;
     this.r = 19;
     this.manualOverride = false;
-    this.stealDash = null; // { x, y, timer }
+    this.stealDash = null;
   }
 
   update(dt) {
@@ -862,7 +830,7 @@ class Defender {
       targetX = mark.x + uxHoop * 34 + uxBall * 22;
       targetY = mark.y + uyHoop * 34 + uyBall * 22;
     } else {
-      // Weak-side help defense sags into the paint/midline — ready to jump long cross-court skip passes!
+      // Weak-side 1-on-1 defender sags into help position toward the midline
       targetX = lerp(mark.x, HOOP_X, 0.36);
       targetY = lerp(mark.y, HOOP_Y + 75, 0.32);
     }
@@ -885,12 +853,13 @@ class Defender {
 
     const mark = players[this.assignmentKey];
 
+    // 1-on-1 assignment line connecting strictly one defender to one offensive player
     if (mark) {
       ctx.save();
       ctx.beginPath();
       ctx.moveTo(this.x, this.y);
       ctx.lineTo(mark.x, mark.y);
-      ctx.strokeStyle = 'rgba(211, 47, 47, 0.25)';
+      ctx.strokeStyle = 'rgba(211, 47, 47, 0.28)';
       ctx.lineWidth = 1.5;
       ctx.setLineDash([4, 4]);
       ctx.stroke();
@@ -995,6 +964,7 @@ function initGame() {
     p4: new Player('4', 'Ava',   HOME.p4.x, HOME.p4.y),
     p5: new Player('5', 'Lexi',  HOME.p5.x, HOME.p5.y),
   };
+  // Strictly 1 defender per offensive player (X1 -> 1, X2 -> 2, X3 -> 3, X4 -> 4, X5 -> 5)
   defenders = {
     d1: new Defender('X1', 'p1'),
     d2: new Defender('X2', 'p2'),
@@ -1042,13 +1012,11 @@ function drawCourt() {
   ctx.lineWidth = 3;
   ctx.strokeRect(COURT_L, BASELINE_Y, COURT_W, HALFCOURT_Y - BASELINE_Y);
 
-  // Key / Paint
   ctx.fillStyle = 'rgba(185, 28, 28, 0.52)';
   ctx.fillRect(PAINT_X, BASELINE_Y, PAINT_W, PAINT_H);
   ctx.lineWidth = 2.5;
   ctx.strokeRect(PAINT_X, BASELINE_Y, PAINT_W, PAINT_H);
 
-  // Lane hash marks
   const laneMarks = [BASELINE_Y + 85, BLOCK_Y, BASELINE_Y + 148, BASELINE_Y + 188];
   laneMarks.forEach((my, idx) => {
     const tickW = idx === 1 ? 10 : 7;
@@ -1060,7 +1028,6 @@ function drawCourt() {
   });
   ctx.lineWidth = 2.5;
 
-  // Free-throw circle
   ctx.beginPath();
   ctx.arc(W / 2, FT_Y, FT_R, 0, Math.PI);
   ctx.stroke();
@@ -1070,7 +1037,6 @@ function drawCourt() {
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // Complete 3-Point Line
   ctx.strokeStyle = CL;
   ctx.lineWidth = 2.8;
   ctx.beginPath();
@@ -1080,7 +1046,6 @@ function drawCourt() {
   ctx.lineTo(C3X_R, BASELINE_Y);
   ctx.stroke();
 
-  // Backboard, Restricted Arc & Rim
   const boardW = 76;
   ctx.fillStyle = '#222';
   ctx.fillRect(W / 2 - boardW / 2, BASELINE_Y + 34, boardW, 5);
@@ -1096,7 +1061,6 @@ function drawCourt() {
   ctx.lineWidth = 3.5;
   ctx.stroke();
 
-  // Half-Court Center Circle
   ctx.strokeStyle = CL;
   ctx.lineWidth = 2.5;
   ctx.beginPath();
@@ -1106,7 +1070,6 @@ function drawCourt() {
   ctx.arc(W / 2, HALFCOURT_Y, 24, Math.PI, Math.PI * 2);
   ctx.stroke();
 
-  // Court Spot Labels
   drawCourtLabel('BLOCK', PAINT_X - 10, BLOCK_Y - 18, 'right');
   drawCourtLabel('BLOCK', PAINT_X + PAINT_W + 10, BLOCK_Y - 18, 'left');
   drawCourtLabel('ELBOW', PAINT_X - 10, FT_Y - 18, 'right');
@@ -1139,14 +1102,13 @@ function drawCourtLabel(text, x, y, align) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  DRAW TARGETS, SCREENS & PASSING LANES (SAFE VS. RISKY)
+//  DRAW TARGETS, SCREENS & PASSING LANES (SAFE VS. SKIP PASS)
 // ═══════════════════════════════════════════════════════════
 let pulseAnim = 0;
 function drawTargetsAndGuides() {
   pulseAnim += 0.05;
   const pulse = Math.sin(pulseAnim) * 4;
 
-  // Draw active T-bar off-ball screens (Coach/Watch mode only)
   activeScreens.forEach(s => {
     ctx.save();
     ctx.translate(s.x, s.y);
@@ -1166,7 +1128,6 @@ function drawTargetsAndGuides() {
     ctx.restore();
   });
 
-  // Draw active Coach Mode drag targets
   targets.forEach(t => {
     const p = players[t.playerKey];
     ctx.save();
@@ -1210,7 +1171,6 @@ function drawTargetsAndGuides() {
     ctx.restore();
   });
 
-  // Draw pass lines when choosing a pass in Coach/Watch mode (color-coding risky skip passes!)
   if (phase === PHASE.DECISION_PASS && mode !== 'free') {
     const holder = Object.values(players).find(p => p.hasBall);
     if (holder) {
@@ -1225,7 +1185,7 @@ function drawTargetsAndGuides() {
             const mx = (holder.x + teammate.x) / 2;
             const my = (holder.y + teammate.y) / 2;
             ctx.save();
-            const warnTxt = risk.isLongCrossCourt ? '⚠️ RISKY SKIP!' : '⚠️ CONTESTED!';
+            const warnTxt = '⚠️ RISKY SKIP!';
             ctx.font = 'bold 10px Orbitron, sans-serif';
             const ww = ctx.measureText(warnTxt).width + 10;
             ctx.fillStyle = 'rgba(183, 28, 28, 0.94)';
@@ -1654,7 +1614,6 @@ function render(ts) {
     flashAlpha = Math.max(0, flashAlpha - dt * 0.002);
   }
 
-  // Sync ball to ball handler when not mid-pass or mid-interception
   if (ball.t >= 1 && shotProgress < 0 && ball.visible && !interceptLock) {
     const holder = Object.values(players).find(p => p.hasBall);
     if (holder) ball.snapToXY(holder.x, holder.y - holder.r - ball.r);
@@ -1751,7 +1710,7 @@ function renderPassChoiceButtons() {
       const bp = document.createElement('button');
       bp.className = risk.isDangerous ? 'btn btn-pass risky' : 'btn btn-pass';
       bp.textContent = risk.isDangerous
-        ? `⚠️ RISKY PASS: #${p.id} ${p.name}`
+        ? `⚠️ RISKY SKIP: #${p.id} ${p.name}`
         : `🏀 PASS to #${p.id} ${p.name}`;
       bp.disabled = shotProgress >= 0 || interceptLock;
       bp.onclick = () => executePassTo(key);
@@ -1875,7 +1834,7 @@ function enterPassChoiceState(promptText) {
   phase = PHASE.DECISION_PASS;
   updateUI(
     promptText,
-    '💡 Tip: Make a short, safe pass! Long cross-court skip passes are risky and will get stolen if Defense is ON.',
+    '💡 Tip: Make a short, safe pass! Long cross-court skip passes are risky and will get picked off if Defense is ON.',
     ''
   );
 }
@@ -1888,7 +1847,7 @@ function executePassTo(targetKey) {
   const passer = currentHolderEntry ? currentHolderEntry[1] : null;
   const risk = passer ? evaluatePassRisk(passer, receiver) : { isDangerous: false };
 
-  // When Defense is ON and the pass is a long cross-court skip pass or thrown through a defender -> INTERCEPTION!
+  // When Defense is ON and the pass goes completely across the court -> single assigned defender steals it!
   if (showDefense && risk.isDangerous && risk.interceptor && risk.interceptPoint) {
     interceptLock = true;
     turnoverCount++;
@@ -1906,13 +1865,12 @@ function executePassTo(targetKey) {
     showBannerAlert('🚨 PICKED OFF! TURNOVER! 🚨', true, 1750);
 
     updateUI(
-      `🚨 INTERCEPTED BY ${def.id}! Bad pass — ${risk.reason}`,
+      `🚨 PICKED OFF BY ${def.id}! Bad pass — ${risk.reason}`,
       '💡 Coaching Point: Never throw long cross-court passes across the middle! Swing it one pass at a time.',
       '',
       true
     );
 
-    // Return ball to passer after showing the interception so they can make a smarter pass
     setTimeout(() => {
       interceptLock = false;
       if (passer) {
@@ -1949,7 +1907,7 @@ function executePassTo(targetKey) {
         ? '💡 Coaching Point: Long skip passes hang in the air—swing the ball with quick, short passes!'
         : (showDefense
             ? '💡 Good crisp pass! Notice how weak-side defenders sag into help position.'
-            : '💡 Tip: Toggle "SHOW DEFENSE" to test whether your passes can get through defenders!'),
+            : '💡 Tip: Toggle "SHOW DEFENSE" to test whether long cross-court passes get picked off!'),
       '',
       risk.isDangerous
     );
@@ -1962,7 +1920,7 @@ function executePassTo(targetKey) {
       ? `⚠️ RISKY PASS caught by #${receiver.id} ${receiver.name}! (${risk.reason}) Do you want to SHOOT or PASS?`
       : `🏀 #${receiver.id} ${receiver.name} catches the ball! Do you want to SHOOT or PASS?`,
     risk.isDangerous
-      ? '💡 Coaching Point: With Defense ON, that long cross-court pass gets stolen! Choose SHOOT or PASS & SCREEN AWAY.'
+      ? '💡 Coaching Point: With Defense ON, that long cross-court pass gets picked off! Choose SHOOT or PASS & SCREEN AWAY.'
       : '💡 If she is guarded, choose PASS to trigger off-ball screens away!',
     '',
     risk.isDangerous
@@ -2103,7 +2061,7 @@ function resetFullPlay() {
       '🏀 FREE PLAY — Drag any player anywhere! Make short, safe passes or shoot anytime.',
       showDefense
         ? '💡 Defense is ON: Long cross-court passes will get picked off! Swing the ball safely.'
-        : '💡 Tip: Toggle "SHOW DEFENSE" at the top right to see how defenders steal risky skip passes!',
+        : '💡 Tip: Toggle "SHOW DEFENSE" at the top right to see how defenders pick off cross-court skip passes!',
       ''
     );
     return;
@@ -2132,7 +2090,6 @@ btnDefense.addEventListener('click', () => {
       d.update(1000);
     });
   }
-  // Refresh pass button warning states immediately
   if (mode === 'free' || phase === PHASE.DECISION_PASS) {
     updateUI(actionLabel.textContent, tipLabel.textContent, btnNext.textContent, actionLabel.classList.contains('danger'));
   }
