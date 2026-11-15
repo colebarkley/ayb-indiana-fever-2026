@@ -15,6 +15,7 @@
     --bg:     #0a0a1a;
     --panel:  #0d1a2e;
     --green:  #00e676;
+    --orange: #FF6B00;
     --radius: 12px;
   }
 
@@ -36,14 +37,12 @@
     width: 100%;
     background: linear-gradient(135deg, var(--navy) 60%, #003a80);
     border-bottom: 3px solid var(--gold);
-    padding: 14px 20px 10px;
+    padding: 12px 20px 10px;
     text-align: center;
-    position: relative;
-    overflow: hidden;
   }
   #header h1 {
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(1.1rem, 4vw, 1.9rem);
+    font-size: clamp(1.1rem, 4vw, 1.85rem);
     color: var(--gold);
     letter-spacing: 3px;
     background: linear-gradient(90deg, #FFD966 0%, #fff 40%, #FFC72C 60%, #FFD966 100%);
@@ -55,8 +54,8 @@
   }
   @keyframes shimmer { to { background-position: 200% center; } }
   #header p {
-    font-size: clamp(0.75rem, 2.5vw, 1rem);
-    color: rgba(255,255,255,.7);
+    font-size: clamp(0.75rem, 2.5vw, 0.95rem);
+    color: rgba(255,255,255,.72);
     letter-spacing: 2px;
     margin-top: 2px;
   }
@@ -64,19 +63,19 @@
   /* ── TOP CONTROLS & PLAY NAME ────────────────── */
   #top-bar {
     width: 100%;
-    max-width: 780px;
+    max-width: 800px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    padding: 14px 16px 0;
+    padding: 14px 14px 0;
   }
   #play-name {
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(1.2rem, 4vw, 2rem);
+    font-size: clamp(1.1rem, 3.6vw, 1.75rem);
     color: #fff;
-    letter-spacing: 4px;
+    letter-spacing: 3px;
   }
   #play-name span { color: var(--gold); }
 
@@ -90,12 +89,12 @@
   }
   .mode-btn {
     font-family: 'Orbitron', sans-serif;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 700;
-    padding: 8px 14px;
+    padding: 8px 12px;
     border: none;
     background: transparent;
-    color: rgba(255,255,255,0.65);
+    color: rgba(255,255,255,0.68);
     cursor: pointer;
     transition: all 0.2s;
   }
@@ -107,9 +106,9 @@
   /* ── PHASE BAR ───────────────────────────────── */
   #phase-bar-wrap {
     width: 100%;
-    max-width: 780px;
+    max-width: 800px;
     margin: 10px auto 0;
-    padding: 0 16px;
+    padding: 0 14px;
   }
   #phase-label {
     font-size: 0.85rem;
@@ -139,7 +138,7 @@
     position: relative;
     margin: 12px auto 0;
     width: 100%;
-    max-width: 780px;
+    max-width: 800px;
     padding: 0 12px;
   }
   canvas#court {
@@ -155,7 +154,7 @@
   /* ── ACTION LABEL ────────────────────────────── */
   #action-box {
     width: 100%;
-    max-width: 780px;
+    max-width: 800px;
     margin: 10px auto 0;
     padding: 0 12px;
   }
@@ -164,22 +163,22 @@
     border: 1px solid rgba(255,199,44,.35);
     border-radius: var(--radius);
     padding: 10px 16px;
-    font-size: clamp(0.95rem, 2.8vw, 1.15rem);
+    font-size: clamp(0.95rem, 2.8vw, 1.12rem);
     font-weight: 700;
     color: #fff;
     text-align: center;
-    min-height: 48px;
+    min-height: 46px;
     display: flex;
     align-items: center;
     justify-content: center;
-    line-height: 1.4;
+    line-height: 1.35;
   }
   #tip-label {
     background: rgba(0,45,98,.5);
     border-left: 3px solid var(--gold);
     border-radius: 0 var(--radius) var(--radius) 0;
     padding: 7px 14px;
-    font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+    font-size: clamp(0.8rem, 2.2vw, 0.94rem);
     color: var(--gold2);
     margin-top: 6px;
     font-style: italic;
@@ -192,24 +191,24 @@
     gap: 10px;
     justify-content: center;
     width: 100%;
-    max-width: 780px;
+    max-width: 800px;
     margin: 14px auto 0;
     padding: 0 12px;
   }
 
   .btn {
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(0.72rem, 2.4vw, 0.92rem);
+    font-size: clamp(0.7rem, 2.3vw, 0.88rem);
     font-weight: 700;
     letter-spacing: 1px;
-    padding: 12px 22px;
+    padding: 11px 20px;
     border: none;
     border-radius: 999px;
     cursor: pointer;
     transition: transform .15s, box-shadow .15s, opacity .15s;
     white-space: nowrap;
     flex: 1 1 auto;
-    min-width: 150px;
+    min-width: 145px;
     max-width: 260px;
   }
   .btn:hover:not(:disabled) { transform: scale(1.04); }
@@ -221,11 +220,17 @@
     color: var(--navy);
     box-shadow: 0 0 16px rgba(255,199,44,.5);
   }
+  .btn-screen {
+    background: linear-gradient(135deg, #0050b3, #0077ff);
+    color: #fff;
+    border: 1.5px solid var(--gold);
+    box-shadow: 0 0 14px rgba(0,119,255,.4);
+  }
   .btn-reset {
     background: transparent;
     color: rgba(255,100,100,1);
     border: 2px solid rgba(255,100,100,.6);
-    max-width: 200px;
+    max-width: 190px;
   }
   .btn-pass {
     background: linear-gradient(135deg, var(--navy), #0040a0);
@@ -247,7 +252,7 @@
   /* ── LEGEND ──────────────────────────────────── */
   #legend {
     width: 100%;
-    max-width: 780px;
+    max-width: 800px;
     margin: 14px auto 0;
     padding: 0 12px;
     display: flex;
@@ -263,7 +268,7 @@
     border: 1px solid rgba(255,199,44,.2);
     border-radius: 999px;
     padding: 5px 12px;
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     font-weight: 700;
   }
   .legend-dot {
@@ -290,9 +295,9 @@
     background: var(--panel);
     border: 2px solid var(--gold);
     border-radius: 16px;
-    max-width: 460px;
+    max-width: 480px;
     width: 100%;
-    padding: 28px 24px 22px;
+    padding: 26px 24px 22px;
     text-align: center;
     box-shadow: 0 0 40px rgba(255,199,44,.3);
   }
@@ -300,10 +305,10 @@
     font-family: 'Orbitron', sans-serif;
     color: var(--gold);
     font-size: 1.3rem;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
   #modal p {
-    font-size: 0.98rem;
+    font-size: 0.96rem;
     color: rgba(255,255,255,.88);
     line-height: 1.5;
     margin-bottom: 12px;
@@ -311,8 +316,8 @@
   #modal ul {
     text-align: left;
     color: rgba(255,255,255,.85);
-    font-size: 0.92rem;
-    line-height: 1.7;
+    font-size: 0.9rem;
+    line-height: 1.65;
     padding-left: 20px;
     margin-bottom: 18px;
   }
@@ -348,14 +353,15 @@
 
 <div id="header">
   <h1>⚡ AYB INDIANA FEVER ⚡</h1>
-  <p>5TH / 6TH GRADE · INTERACTIVE SPACING PLAYBOOK</p>
+  <p>5TH / 6TH GRADE · INTERACTIVE SPACING & MOTION PLAYBOOK</p>
 </div>
 
 <div id="top-bar">
   <div id="play-name">PLAY: <span>"DOWNTOWN"</span></div>
   <div id="mode-toggle">
-    <button class="mode-btn active" id="btn-mode-drag">🖐️ COACH MODE (DRAG)</button>
-    <button class="mode-btn" id="btn-mode-auto">▶️ WATCH MODE</button>
+    <button class="mode-btn active" id="btn-mode-drag">🖐️ COACH MODE</button>
+    <button class="mode-btn" id="btn-mode-free">🏀 FREE PLAY</button>
+    <button class="mode-btn" id="btn-mode-auto">▶️ WATCH</button>
   </div>
 </div>
 
@@ -368,36 +374,37 @@
 </div>
 
 <div id="canvas-wrap">
-  <canvas id="court" width="760" height="620"></canvas>
+  <canvas id="court" width="780" height="640"></canvas>
   <div id="celebrate-text">🔥 FEVER UP! +2 🔥</div>
 </div>
 
 <div id="action-box">
   <div id="action-label">Welcome to Downtown! Press LET'S RUN IT to start.</div>
-  <div id="tip-label">💡 Tip: In Coach Mode, drag each player to their glowing target circle on the floor!</div>
+  <div id="tip-label">💡 Tip: Switch to FREE PLAY anytime to drag any player, pass to any spot, and run away-screens!</div>
 </div>
 
 <div id="btn-row">
   <button class="btn btn-next" id="btn-next">▶ LET'S RUN IT!</button>
-  <button class="btn btn-reset" id="btn-reset">⚠️ RESET PLAY</button>
+  <button class="btn btn-screen" id="btn-away-screen" style="display:none;">🛡️ RUN SCREEN AWAY</button>
+  <button class="btn btn-reset" id="btn-reset">⚠️ RESET COURT</button>
 </div>
 
 <div id="legend">
-  <div class="legend-item"><div class="legend-dot">1</div> Chloe (PG — Top)</div>
-  <div class="legend-item"><div class="legend-dot">2</div> Maya (Left Block → Wing)</div>
-  <div class="legend-item"><div class="legend-dot">3</div> Zoe (Right Block → Wing)</div>
-  <div class="legend-item"><div class="legend-dot">4</div> Ava (Left Elbow)</div>
-  <div class="legend-item"><div class="legend-dot">5</div> Lexi (Right Elbow)</div>
+  <div class="legend-item"><div class="legend-dot">1</div> Chloe (PG)</div>
+  <div class="legend-item"><div class="legend-dot">2</div> Maya (Left)</div>
+  <div class="legend-item"><div class="legend-dot">3</div> Zoe (Right)</div>
+  <div class="legend-item"><div class="legend-dot">4</div> Ava (Forward)</div>
+  <div class="legend-item"><div class="legend-dot">5</div> Lexi (Post)</div>
 </div>
 
 <div id="modal-overlay">
   <div id="modal">
     <h2>🏀 COACH'S PLAYBOOK</h2>
-    <p>Teach your team proper <strong>5-Out Spacing</strong> with interactive floor spots!</p>
+    <p>Run <strong>"Downtown"</strong> step-by-step or take full control of the floor:</p>
     <ul>
-      <li><strong>Coach Mode (Default):</strong> Drag each glowing player into their green target circle on the court to complete the step.</li>
-      <li><strong>Watch Mode:</strong> Sit back and watch the play run automatically.</li>
-      <li><strong>Decision Point:</strong> Choose which wing Chloe passes to, then run the away-side screen and cut!</li>
+      <li><strong>Coach Mode:</strong> Drag glowing players into their target circles to execute each step of the play.</li>
+      <li><strong>Free Play (Sandbox):</strong> Drag <em>any</em> player anywhere on the floor, <strong>click any player</strong> to pass the ball to them, click <strong>Run Screen Away</strong> for weak-side screens, or <strong>click the hoop</strong> to shoot!</li>
+      <li><strong>Watch Mode:</strong> Auto-animate the entire play from start to finish.</li>
     </ul>
     <button id="modal-close">HIT THE COURT! 🔥</button>
   </div>
@@ -405,14 +412,15 @@
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  CONSTANTS & COURT GEOMETRY (Expanded 760x620)
+//  CONSTANTS & PROPORTIONAL HALF-COURT GEOMETRY (780 x 640)
 // ═══════════════════════════════════════════════════════════
 const NAVY   = '#002D62';
 const GOLD   = '#FFC72C';
 const GOLD2  = '#FFD966';
 const ORANGE = '#FF6B00';
 const GREEN  = '#00e676';
-const COURT_WOOD = '#E2C08D';
+const COURT_WOOD = '#E3C28F';
+const APRON_COLOR = '#16243d';
 
 const easeInOut = t => t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
 const easeOut   = t => 1 - (1-t)*(1-t);
@@ -420,95 +428,111 @@ const lerp      = (a,b,t) => a + (b-a)*t;
 
 const canvas = document.getElementById('court');
 const ctx    = canvas.getContext('2d');
-const W = 760, H = 620;
+const W = 780, H = 640;
 canvas.width  = W;
 canvas.height = H;
 
 const cx = p => p * W;
 const cy = p => p * H;
 
-// Proportioned Half-Court Geometry (More room on wings & corners)
-const PAD         = 16;
-const PAINT_W     = cx(0.28);             // Realistic lane width
+// Out-of-bounds apron & court boundaries (50ft wide x 47ft half-court proportion)
+const MARGIN_X    = 36;
+const MARGIN_TOP  = 24;
+const MARGIN_BOT  = 24;
+const COURT_L     = MARGIN_X;
+const COURT_R     = W - MARGIN_X;
+const COURT_W     = COURT_R - COURT_L;       // 708px (represents 50ft -> ~14.16px/ft)
+const BASELINE_Y  = MARGIN_TOP;
+const HALFCOURT_Y = H - MARGIN_BOT;
+
+// Key / Paint (12ft-16ft scaled cleanly)
+const PAINT_W     = 176;
 const PAINT_X     = (W - PAINT_W) / 2;
-const PAINT_Y     = PAD;
-const PAINT_BOT   = cy(0.46);
-const PAINT_H     = PAINT_BOT - PAINT_Y;
-const FT_Y        = PAINT_BOT;
+const FT_Y        = BASELINE_Y + 235;
+const PAINT_H     = FT_Y - BASELINE_Y;
 const FT_R        = PAINT_W / 2;
+
+// Hoop & Backboard (center of hoop is 5.25ft from baseline)
 const HOOP_X      = W / 2;
-const HOOP_Y      = PAINT_Y + cy(0.06);
-const BLOCK_Y     = PAINT_Y + PAINT_H * 0.42;
+const HOOP_Y      = BASELINE_Y + 52;
+const BLOCK_Y     = BASELINE_Y + 105;
 
-// Wide 3-point arc for authentic spacing
-const ARC_R       = cx(0.44);
-const CORNER3_BOT = PAINT_Y + cy(0.32);
-const C3_ANGLE    = Math.asin((CORNER3_BOT - HOOP_Y) / ARC_R);
-const C3X_L       = HOOP_X - ARC_R * Math.cos(C3_ANGLE);
-const C3X_R       = HOOP_X + ARC_R * Math.cos(C3_ANGLE);
+// 3-Point Line (High School / Youth 19'9" proportional arc)
+// Corner 3 sidelines are inset ~42px from the sidelines
+const C3X_L       = COURT_L + 44;
+const C3X_R       = COURT_R - 44;
+const ARC_R       = (C3X_R - C3X_L) / 2;     // Exact horizontal radius = 310px
+// Straight corner lines run from baseline down to HOOP_Y so the 180-deg semicircle connects seamlessly!
+const CORNER3_END = HOOP_Y;
 
-// Wing spots pushed wide outside the 3pt line
-const WING_ANGLE  = Math.PI * 0.76;
-const WING_X_L    = HOOP_X + (ARC_R + 18) * Math.cos(WING_ANGLE);
-const WING_Y      = HOOP_Y + (ARC_R + 18) * Math.sin(WING_ANGLE);
-const WING_X_R    = HOOP_X - (ARC_R + 18) * Math.cos(WING_ANGLE);
+// Key Perimeter Spots on the Court
+const WING_ANGLE  = Math.PI * 0.25;          // 45 degrees from horizontal
+const WING_X_L    = HOOP_X - (ARC_R + 22) * Math.cos(WING_ANGLE);
+const WING_Y      = HOOP_Y + (ARC_R + 22) * Math.sin(WING_ANGLE);
+const WING_X_R    = HOOP_X + (ARC_R + 22) * Math.cos(WING_ANGLE);
 
-// Top of key pushed out above the 3-pt arc
+const CORNER_X_L  = C3X_L - 22;
+const CORNER_X_R  = C3X_R + 22;
+const CORNER_Y    = BASELINE_Y + 48;
+
 const TOK_X       = W / 2;
-const TOK_Y       = HOOP_Y + ARC_R + 26;
+const TOK_Y       = HOOP_Y + ARC_R + 28;
 
 // ═══════════════════════════════════════════════════════════
-//  SPACED OUT PLAYER COORDINATES (Fractions of W, H)
+//  PLAYER STARTING & PLAY POSITIONS
 // ═══════════════════════════════════════════════════════════
 const HOME = {
-  p1: { x: TOK_X/W,                         y: TOK_Y/H   }, // PG Top of Key
-  p2: { x: (PAINT_X - 26)/W,                y: BLOCK_Y/H }, // #2 Left Block
-  p3: { x: (PAINT_X + PAINT_W + 26)/W,      y: BLOCK_Y/H }, // #3 Right Block
-  p4: { x: (PAINT_X - 24)/W,                y: FT_Y/H    }, // #4 Left Elbow
-  p5: { x: (PAINT_X + PAINT_W + 24)/W,      y: FT_Y/H    }, // #5 Right Elbow
+  p1: { x: TOK_X/W,                    y: TOK_Y/H   }, // PG Top of Key
+  p2: { x: (PAINT_X - 24)/W,           y: BLOCK_Y/H }, // #2 Left Block
+  p3: { x: (PAINT_X + PAINT_W + 24)/W, y: BLOCK_Y/H }, // #3 Right Block
+  p4: { x: (PAINT_X - 22)/W,           y: FT_Y/H    }, // #4 Left Elbow
+  p5: { x: (PAINT_X + PAINT_W + 22)/W, y: FT_Y/H    }, // #5 Right Elbow
 };
 
 const POS = {
-  // Phase 2: #4 & #5 set down-screens just below #2 & #3
-  p4_screen: { x: (PAINT_X - 28)/W,           y: (BLOCK_Y + 34)/H },
-  p5_screen: { x: (PAINT_X + PAINT_W + 28)/W, y: (BLOCK_Y + 34)/H },
+  // Phase 2: #4 & #5 down-screen just below #2 & #3
+  p4_screen: { x: (PAINT_X - 26)/W,           y: (BLOCK_Y + 34)/H },
+  p5_screen: { x: (PAINT_X + PAINT_W + 26)/W, y: (BLOCK_Y + 34)/H },
 
-  // Phase 3: #2 & #3 pop wide to 3pt wings; #4 & #5 open up to blocks
+  // Phase 3: #2 & #3 pop wide to 3pt wings; #4 & #5 open to blocks
   p2_wing:   { x: WING_X_L/W,                 y: WING_Y/H },
   p3_wing:   { x: WING_X_R/W,                 y: WING_Y/H },
-  p4_block:  { x: (PAINT_X - 24)/W,           y: BLOCK_Y/H },
-  p5_block:  { x: (PAINT_X + PAINT_W + 24)/W, y: BLOCK_Y/H },
+  p4_block:  { x: (PAINT_X - 22)/W,           y: BLOCK_Y/H },
+  p5_block:  { x: (PAINT_X + PAINT_W + 22)/W, y: BLOCK_Y/H },
 
-  // Branch A: Pass LEFT to #2 (Maya). PG screens away for #3 (Zoe); #4 screens across for #5
-  p1_a2_screen: { x: (WING_X_R - 46)/W,       y: (WING_Y - 36)/H },
-  p4_a2_screen: { x: (PAINT_X + PAINT_W - 8)/W, y: (BLOCK_Y + 12)/H },
-  p3_a2_cut:    { x: (TOK_X + 65)/W,          y: (TOK_Y - 10)/H },
-  p5_a2_cut:    { x: (PAINT_X - 24)/W,        y: (FT_Y + 10)/H },
+  // Branch A: Pass LEFT to #2 (Maya). PG screens away for #3; #4 cross-screens away for #5
+  p1_a2_screen: { x: (WING_X_R - 44)/W,       y: (WING_Y - 34)/H },
+  p4_a2_screen: { x: (PAINT_X + PAINT_W - 6)/W, y: (BLOCK_Y + 8)/H },
+  p3_a2_cut:    { x: (TOK_X + 70)/W,          y: (TOK_Y - 8)/H },
+  p5_a2_cut:    { x: (PAINT_X - 22)/W,        y: (FT_Y + 8)/H },
 
-  // Branch B: Pass RIGHT to #3 (Zoe). PG screens away for #2 (Maya); #5 screens across for #4
-  p1_b2_screen: { x: (WING_X_L + 46)/W,       y: (WING_Y - 36)/H },
-  p5_b2_screen: { x: (PAINT_X + 8)/W,         y: (BLOCK_Y + 12)/H },
-  p2_b2_cut:    { x: (TOK_X - 65)/W,          y: (TOK_Y - 10)/H },
-  p4_b2_cut:    { x: (PAINT_X + PAINT_W + 24)/W, y: (FT_Y + 10)/H },
+  // Branch B: Pass RIGHT to #3 (Zoe). PG screens away for #2; #5 cross-screens away for #4
+  p1_b2_screen: { x: (WING_X_L + 44)/W,       y: (WING_Y - 34)/H },
+  p5_b2_screen: { x: (PAINT_X + 6)/W,         y: (BLOCK_Y + 8)/H },
+  p2_b2_cut:    { x: (TOK_X - 70)/W,          y: (TOK_Y - 8)/H },
+  p4_b2_cut:    { x: (PAINT_X + PAINT_W + 22)/W, y: (FT_Y + 8)/H },
 };
 
 // ═══════════════════════════════════════════════════════════
-//  GAME & INTERACTION STATE
+//  GAME STATE
 // ═══════════════════════════════════════════════════════════
 const PHASE = {
   INTRO: 0, CALL: 1, SCREENS: 2, POP: 3, DECISION: 4,
   A_PASS: 5, A_AWAY: 6, A_SHOT: 7,
   B_PASS: 8, B_AWAY: 9, B_SHOT: 10,
-  RESET_ANIM: 11, CELEBRATE: 12
+  CELEBRATE: 12
 };
 
-let coachMode = true; // true = drag players to spots, false = auto animate
+let mode = 'drag'; // 'drag' (Coach Mode) | 'free' (Free Play) | 'auto' (Watch)
 let phase = PHASE.INTRO;
 let branch = null;
 let animating = false;
 
-let targets = []; // { playerKey, x, y, r, label, locked }
-let draggingPlayer = null;
+let targets = [];         // { playerKey, x, y, label, locked }
+let activeScreens = [];   // { x, y, angle } visual T-screens on court
+let draggingKey = null;
+let dragStartPos = { x: 0, y: 0 };
+let dragMoved = false;
 let dragOffset = { x: 0, y: 0 };
 
 let players = {};
@@ -550,6 +574,12 @@ class Player {
     this.t = 0; this.elapsed = 0; this.dur = dur;
     this.trail = [];
   }
+  moveToXY(x, y, dur = 800) {
+    this.sx = this.x; this.sy = this.y;
+    this.tx = x; this.ty = y;
+    this.t = 0; this.elapsed = 0; this.dur = dur;
+    this.trail = [];
+  }
   snapTo(px, py) {
     this.x = cx(px); this.y = cy(py);
     this.tx = this.x; this.ty = this.y;
@@ -566,7 +596,7 @@ class Player {
     this.x = lerp(this.sx, this.tx, e);
     this.y = lerp(this.sy, this.ty, e);
   }
-  draw(ctx, isDraggable, isLocked) {
+  draw(ctx, isDraggable, isLocked, isPassTarget) {
     // Trail
     this.trail.forEach((p, i) => {
       const a = (i + 1) / this.trail.length * 0.25;
@@ -576,12 +606,12 @@ class Player {
       ctx.fill();
     });
 
-    // Draggable highlight halo
-    if (isDraggable && !isLocked) {
+    // Halo for draggable or pass-ready teammate
+    if ((isDraggable && !isLocked) || isPassTarget) {
       ctx.save();
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.r + 7, 0, Math.PI * 2);
-      ctx.strokeStyle = GREEN;
+      ctx.strokeStyle = isPassTarget ? 'rgba(255,199,44,0.85)' : GREEN;
       ctx.lineWidth = 2.5;
       ctx.setLineDash([5, 4]);
       ctx.stroke();
@@ -610,10 +640,10 @@ class Player {
     ctx.textBaseline = 'middle';
     ctx.fillText(this.id, this.x, this.y - 1);
 
-    // Name tag pill underneath
+    // Name tag pill
     ctx.font = `bold 11px Rajdhani, sans-serif`;
     const nw = ctx.measureText(this.name).width + 10;
-    ctx.fillStyle = 'rgba(10,10,26,0.82)';
+    ctx.fillStyle = 'rgba(10,10,26,0.84)';
     ctx.beginPath();
     ctx.roundRect(this.x - nw / 2, this.y + this.r + 3, nw, 15, 4);
     ctx.fill();
@@ -627,13 +657,13 @@ class Ball {
     this.x = cx(px); this.y = cy(py);
     this.tx = this.x; this.ty = this.y;
     this.sx = this.x; this.sy = this.y;
-    this.t = 1; this.elapsed = 0; this.dur = 500;
+    this.t = 1; this.elapsed = 0; this.dur = 450;
     this.arcH = 0;
     this.r = 10;
     this.visible = true;
     this.bouncePhase = 0;
   }
-  moveToXY(x, y, dur = 500, arcH = 25) {
+  moveToXY(x, y, dur = 450, arcH = 26) {
     this.sx = this.x; this.sy = this.y;
     this.tx = x; this.ty = y;
     this.t = 0; this.elapsed = 0; this.dur = dur;
@@ -672,7 +702,6 @@ class Ball {
     ctx.lineWidth = 1.3;
     ctx.stroke();
 
-    // Seams
     ctx.beginPath();
     ctx.moveTo(bx - this.r, by);
     ctx.lineTo(bx + this.r, by);
@@ -693,7 +722,8 @@ function initGame() {
   players.p1.hasBall = true;
   ball = new Ball(HOME.p1.x, HOME.p1.y - 0.05);
   targets = [];
-  draggingPlayer = null;
+  activeScreens = [];
+  draggingKey = null;
   showCallText = false;
   flashAlpha = 0;
   shotProgress = -1;
@@ -705,92 +735,114 @@ function initGame() {
 initGame();
 
 // ═══════════════════════════════════════════════════════════
-//  DRAW EXPANDED COURT
+//  DRAW COMPLETE REGULATION HALF-COURT
 // ═══════════════════════════════════════════════════════════
 function drawCourt() {
-  ctx.fillStyle = COURT_WOOD;
+  // Out-of-bounds dark navy apron
+  ctx.fillStyle = APRON_COLOR;
   ctx.fillRect(0, 0, W, H);
 
-  // Subtle wood planks
+  // Hardwood floor inside boundary
+  ctx.fillStyle = COURT_WOOD;
+  ctx.fillRect(COURT_L, BASELINE_Y, COURT_W, HALFCOURT_Y - BASELINE_Y);
+
+  // Wood plank lines
   ctx.strokeStyle = 'rgba(139,105,20,0.12)';
   ctx.lineWidth = 1;
-  for (let i = 0; i < H; i += 14) {
-    ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(W, i); ctx.stroke();
+  for (let y = BASELINE_Y; y < HALFCOURT_Y; y += 14) {
+    ctx.beginPath(); ctx.moveTo(COURT_L, y); ctx.lineTo(COURT_R, y); ctx.stroke();
   }
 
   const CL = '#1e1e1e';
   ctx.strokeStyle = CL;
+  ctx.lineWidth = 3;
+
+  // Outer court boundary (Baseline, Sidelines, Half-court line)
+  ctx.strokeRect(COURT_L, BASELINE_Y, COURT_W, HALFCOURT_Y - BASELINE_Y);
+
+  // ── Key / Paint ──
+  ctx.fillStyle = 'rgba(185, 28, 28, 0.52)';
+  ctx.fillRect(PAINT_X, BASELINE_Y, PAINT_W, PAINT_H);
+  ctx.lineWidth = 2.5;
+  ctx.strokeRect(PAINT_X, BASELINE_Y, PAINT_W, PAINT_H);
+
+  // Lane hash marks (Blocks & Neutral Zones)
+  const laneMarks = [BASELINE_Y + 85, BLOCK_Y, BASELINE_Y + 148, BASELINE_Y + 188];
+  laneMarks.forEach((my, idx) => {
+    const tickW = idx === 1 ? 10 : 7;
+    ctx.lineWidth = idx === 1 ? 3.5 : 2;
+    ctx.beginPath();
+    ctx.moveTo(PAINT_X - tickW, my); ctx.lineTo(PAINT_X, my);
+    ctx.moveTo(PAINT_X + PAINT_W, my); ctx.lineTo(PAINT_X + PAINT_W + tickW, my);
+    ctx.stroke();
+  });
   ctx.lineWidth = 2.5;
 
-  // Outer boundary
-  ctx.strokeRect(PAD, PAD, W - PAD * 2, H - PAD * 2);
-
-  // Paint (Indiana Fever Red)
-  ctx.fillStyle = 'rgba(185, 28, 28, 0.55)';
-  ctx.fillRect(PAINT_X, PAINT_Y, PAINT_W, PAINT_H);
-  ctx.strokeRect(PAINT_X, PAINT_Y, PAINT_W, PAINT_H);
-
-  // Free-throw circle
-  ctx.beginPath();
-  ctx.arc(W / 2, FT_Y, FT_R, Math.PI, 0);
-  ctx.stroke();
+  // Free-throw circle (Solid bottom half, dashed top half inside paint)
   ctx.beginPath();
   ctx.arc(W / 2, FT_Y, FT_R, 0, Math.PI);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(W / 2, FT_Y, FT_R, Math.PI, Math.PI * 2);
   ctx.setLineDash([7, 7]);
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // Block hash marks
-  const hashLen = 10;
-  ctx.beginPath();
-  ctx.moveTo(PAINT_X - hashLen, BLOCK_Y); ctx.lineTo(PAINT_X, BLOCK_Y);
-  ctx.moveTo(PAINT_X + PAINT_W, BLOCK_Y); ctx.lineTo(PAINT_X + PAINT_W + hashLen, BLOCK_Y);
-  ctx.stroke();
-
-  // Backboard & Hoop
-  const boardW = cx(0.11);
-  ctx.fillStyle = '#222';
-  ctx.fillRect(W / 2 - boardW / 2, PAINT_Y + 4, boardW, 5);
-  ctx.beginPath();
-  ctx.arc(HOOP_X, HOOP_Y, 15, 0, Math.PI * 2);
-  ctx.strokeStyle = '#cc2200';
-  ctx.lineWidth = 3.5;
-  ctx.stroke();
-
-  // Restricted arc
-  ctx.beginPath();
-  ctx.arc(HOOP_X, HOOP_Y, 36, 0, Math.PI);
+  // ── Complete 3-Point Line (Straight corners + Full 180° Semicircle) ──
   ctx.strokeStyle = CL;
+  ctx.lineWidth = 2.8;
+  ctx.beginPath();
+  // Left corner sideline down to HOOP_Y
+  ctx.moveTo(C3X_L, BASELINE_Y);
+  ctx.lineTo(C3X_L, CORNER3_END);
+  // Full 180-degree arc from left corner (angle PI) around bottom of key to right corner (angle 0)
+  ctx.arc(HOOP_X, HOOP_Y, ARC_R, Math.PI, 0, true);
+  // Right corner sideline back up to baseline
+  ctx.lineTo(C3X_R, BASELINE_Y);
+  ctx.stroke();
+
+  // ── Backboard, Restricted Arc & Rim ──
+  const boardW = 76;
+  ctx.fillStyle = '#222';
+  ctx.fillRect(W / 2 - boardW / 2, BASELINE_Y + 34, boardW, 5);
+
+  // Restricted area arc
+  ctx.beginPath();
+  ctx.arc(HOOP_X, HOOP_Y, 44, 0, Math.PI);
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  // 3-Point Line
+  // Rim
+  ctx.beginPath();
+  ctx.arc(HOOP_X, HOOP_Y, 15, 0, Math.PI * 2);
+  ctx.strokeStyle = '#d32f2f';
+  ctx.lineWidth = 3.5;
+  ctx.stroke();
+
+  // ── Half-Court Center Circle (Inner & Outer) ──
   ctx.strokeStyle = CL;
   ctx.lineWidth = 2.5;
   ctx.beginPath();
-  ctx.moveTo(C3X_L, PAINT_Y); ctx.lineTo(C3X_L, CORNER3_BOT);
-  ctx.moveTo(C3X_R, PAINT_Y); ctx.lineTo(C3X_R, CORNER3_BOT);
+  ctx.arc(W / 2, HALFCOURT_Y, 68, Math.PI, Math.PI * 2);
   ctx.stroke();
-
   ctx.beginPath();
-  ctx.arc(HOOP_X, HOOP_Y, ARC_R, Math.PI / 2 + C3_ANGLE, Math.PI / 2 - C3_ANGLE + Math.PI);
+  ctx.arc(W / 2, HALFCOURT_Y, 24, Math.PI, Math.PI * 2);
   ctx.stroke();
 
-  // Half-court center circle
-  ctx.beginPath();
-  ctx.arc(W / 2, H - PAD, cx(0.08), Math.PI, 0);
-  ctx.stroke();
-
-  // Court Spot Labels
-  drawCourtLabel('BLOCK', PAINT_X - 8, BLOCK_Y - 18, 'right');
-  drawCourtLabel('BLOCK', PAINT_X + PAINT_W + 8, BLOCK_Y - 18, 'left');
-  drawCourtLabel('ELBOW', PAINT_X - 8, FT_Y - 18, 'right');
-  drawCourtLabel('ELBOW', PAINT_X + PAINT_W + 8, FT_Y - 18, 'left');
+  // ── Court Spot Labels ──
+  drawCourtLabel('BLOCK', PAINT_X - 10, BLOCK_Y - 18, 'right');
+  drawCourtLabel('BLOCK', PAINT_X + PAINT_W + 10, BLOCK_Y - 18, 'left');
+  drawCourtLabel('ELBOW', PAINT_X - 10, FT_Y - 18, 'right');
+  drawCourtLabel('ELBOW', PAINT_X + PAINT_W + 10, FT_Y - 18, 'left');
   drawCourtLabel('TOP OF KEY', TOK_X, TOK_Y + 34, 'center');
-  drawCourtLabel('LEFT WING', WING_X_L - 10, WING_Y - 26, 'right');
-  drawCourtLabel('RIGHT WING', WING_X_R + 10, WING_Y - 26, 'left');
-  drawCourtLabel('CORNER', C3X_L - 8, PAINT_Y + 35, 'right');
-  drawCourtLabel('CORNER', C3X_R + 8, PAINT_Y + 35, 'left');
+  drawCourtLabel('LEFT WING', WING_X_L - 12, WING_Y - 26, 'right');
+  drawCourtLabel('RIGHT WING', WING_X_R + 12, WING_Y - 26, 'left');
+  drawCourtLabel('CORNER', C3X_L - 6, CORNER_Y - 22, 'right');
+  drawCourtLabel('CORNER', C3X_R + 6, CORNER_Y - 22, 'left');
+
+  if (mode === 'free') {
+    drawCourtLabel('CLICK RIM TO SHOOT', HOOP_X, HOOP_Y + 26, 'center');
+  }
 }
 
 function drawCourtLabel(text, x, y, align) {
@@ -800,7 +852,7 @@ function drawCourtLabel(text, x, y, align) {
   ctx.textBaseline = 'middle';
   const w = ctx.measureText(text).width + 10;
   const bx = align === 'center' ? x - w / 2 : align === 'right' ? x - w : x;
-  ctx.fillStyle = 'rgba(255,255,255,0.72)';
+  ctx.fillStyle = 'rgba(255,255,255,0.75)';
   ctx.beginPath();
   ctx.roundRect(bx, y - 8, w, 16, 4);
   ctx.fill();
@@ -810,40 +862,57 @@ function drawCourtLabel(text, x, y, align) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  DRAW TARGET ZONES & ARROWS (Coach Mode & Annotations)
+//  DRAW TARGETS, SCREENS & GUIDES
 // ═══════════════════════════════════════════════════════════
 let pulseAnim = 0;
 function drawTargetsAndGuides() {
   pulseAnim += 0.05;
   const pulse = Math.sin(pulseAnim) * 4;
 
-  // Draw active drag targets
+  // Draw active T-bar off-ball screens
+  activeScreens.forEach(s => {
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    ctx.rotate(s.angle);
+    ctx.strokeStyle = NAVY;
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, 26);
+    ctx.moveTo(-18, 0);
+    ctx.lineTo(18, 0);
+    ctx.stroke();
+
+    ctx.strokeStyle = GOLD;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+    ctx.restore();
+  });
+
+  // Draw active Coach Mode drag targets
   targets.forEach(t => {
     const p = players[t.playerKey];
     ctx.save();
 
-    // Guide line from player to target
     if (!t.locked) {
       ctx.beginPath();
       ctx.moveTo(p.x, p.y);
       ctx.lineTo(t.x, t.y);
-      ctx.strokeStyle = 'rgba(0, 230, 118, 0.55)';
+      ctx.strokeStyle = 'rgba(0, 230, 118, 0.6)';
       ctx.lineWidth = 2.5;
       ctx.setLineDash([6, 6]);
       ctx.stroke();
       ctx.setLineDash([]);
     }
 
-    // Target Ring
     ctx.beginPath();
     ctx.arc(t.x, t.y, t.locked ? 24 : 26 + pulse, 0, Math.PI * 2);
-    ctx.fillStyle = t.locked ? 'rgba(0, 230, 118, 0.25)' : 'rgba(0, 230, 118, 0.14)';
+    ctx.fillStyle = t.locked ? 'rgba(0, 230, 118, 0.28)' : 'rgba(0, 230, 118, 0.14)';
     ctx.fill();
     ctx.lineWidth = 3;
     ctx.strokeStyle = t.locked ? GREEN : '#00c853';
     ctx.stroke();
 
-    // Target Label
     ctx.font = 'bold 11px Orbitron, sans-serif';
     ctx.fillStyle = '#003314';
     ctx.textAlign = 'center';
@@ -865,7 +934,7 @@ function drawTargetsAndGuides() {
   });
 
   // Decision Phase pulsing pass arrows
-  if (phase === PHASE.DECISION) {
+  if (phase === PHASE.DECISION && mode !== 'free') {
     const a = 0.5 + 0.5 * Math.sin(pulseAnim);
     drawArrow(players.p1.x, players.p1.y, players.p2.x, players.p2.y, GOLD, true, a);
     drawArrow(players.p1.x, players.p1.y, players.p3.x, players.p3.y, GOLD, true, 1.3 - a);
@@ -895,7 +964,7 @@ function drawArrow(x1, y1, x2, y2, color, dash = false, alpha = 1) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  POINTER / DRAG & DROP HANDLING
+//  POINTER INTERACTIONS (DRAG, PASS TO ANYONE, SHOOT)
 // ═══════════════════════════════════════════════════════════
 function getCanvasCoords(e) {
   const rect = canvas.getBoundingClientRect();
@@ -909,21 +978,85 @@ function getCanvasCoords(e) {
   };
 }
 
+function passBallTo(targetKey) {
+  const currentHolder = Object.entries(players).find(([_, p]) => p.hasBall);
+  const receiver = players[targetKey];
+  if (!receiver || receiver.hasBall || shotProgress >= 0) return;
+
+  if (currentHolder) currentHolder[1].hasBall = false;
+  receiver.hasBall = true;
+  ball.visible = true;
+  ball.moveToXY(receiver.x, receiver.y - receiver.r - ball.r, 420, 28);
+
+  if (mode === 'free') {
+    updateUI(
+      `🏀 ${currentHolder ? currentHolder[1].name : 'Pass'} passes to #${receiver.id} ${receiver.name}!`,
+      '💡 Click "RUN SCREEN AWAY" to set weak-side screens, click another player to pass, or click the rim to shoot!',
+      ''
+    );
+  }
+}
+
+function shootFromCurrentHolder() {
+  const holder = Object.values(players).find(p => p.hasBall);
+  if (!holder || shotProgress >= 0) return;
+
+  holder.hasBall = false;
+  ball.visible = false;
+  updateUI(`🏀 #${holder.id} ${holder.name} puts up the shot!`, '🔊 Eyes on the rim...', '');
+  startShot(holder.x, holder.y - holder.r, () => {
+    flashAlpha = 0.5;
+    flashTimer = 400;
+    spawnConfetti();
+    celebText.style.display = 'block';
+    setTimeout(() => { celebText.style.display = 'none'; }, 2400);
+    // Reset ball back to PG or keep with shooter
+    holder.hasBall = true;
+    ball.visible = true;
+    ball.snapToXY(holder.x, holder.y - holder.r - ball.r);
+    if (mode === 'free') {
+      updateUI(
+        `🔥 SWOOSH! Great bucket by ${holder.name}!`,
+        '💡 Drag players to new spots or pass the ball around to keep practicing!',
+        ''
+      );
+    }
+  });
+}
+
 function onPointerDown(e) {
-  if (!coachMode || targets.length === 0) return;
   const pt = getCanvasCoords(e);
 
-  // Check if user clicked a player with an unlocked target
-  for (const t of targets) {
-    if (t.locked) continue;
-    const p = players[t.playerKey];
+  // In Free Play, clicking the Hoop shoots the ball
+  if (mode === 'free' && Math.hypot(pt.x - HOOP_X, pt.y - HOOP_Y) <= 34) {
+    shootFromCurrentHolder();
+    return;
+  }
+
+  // Check if user pressed on a player
+  for (const [key, p] of Object.entries(players)) {
     const dist = Math.hypot(pt.x - p.x, pt.y - p.y);
-    if (dist <= p.r + 14) {
-      draggingPlayer = t;
-      dragOffset.x = p.x - pt.x;
-      dragOffset.y = p.y - pt.y;
-      canvas.style.cursor = 'grabbing';
-      e.preventDefault();
+    if (dist <= p.r + 12) {
+      // Coach Mode: only drag players with unlocked targets
+      if (mode === 'drag') {
+        const target = targets.find(t => t.playerKey === key && !t.locked);
+        if (target) {
+          draggingKey = key;
+          dragStartPos = { x: p.x, y: p.y };
+          dragMoved = false;
+          dragOffset = { x: p.x - pt.x, y: p.y - pt.y };
+          canvas.style.cursor = 'grabbing';
+          e.preventDefault();
+        }
+      } else if (mode === 'free') {
+        // Free Play: drag any player OR click to pass
+        draggingKey = key;
+        dragStartPos = { x: pt.x, y: pt.y };
+        dragMoved = false;
+        dragOffset = { x: p.x - pt.x, y: p.y - pt.y };
+        canvas.style.cursor = 'grabbing';
+        e.preventDefault();
+      }
       break;
     }
   }
@@ -932,35 +1065,48 @@ function onPointerDown(e) {
 function onPointerMove(e) {
   const pt = getCanvasCoords(e);
 
-  if (draggingPlayer) {
+  if (draggingKey) {
     e.preventDefault();
-    const p = players[draggingPlayer.playerKey];
-    p.x = Math.max(25, Math.min(W - 25, pt.x + dragOffset.x));
-    p.y = Math.max(25, Math.min(H - 25, pt.y + dragOffset.y));
+    const p = players[draggingKey];
+    if (Math.hypot(pt.x - dragStartPos.x, pt.y - dragStartPos.y) > 6) {
+      dragMoved = true;
+    }
 
-    // Check snap proximity to target
-    const distToTarget = Math.hypot(p.x - draggingPlayer.x, p.y - draggingPlayer.y);
-    if (distToTarget < 28) {
-      p.x = draggingPlayer.x;
-      p.y = draggingPlayer.y;
-      draggingPlayer.locked = true;
-      draggingPlayer = null;
-      canvas.style.cursor = 'default';
-      checkAllTargetsLocked();
+    p.x = Math.max(COURT_L + 16, Math.min(COURT_R - 16, pt.x + dragOffset.x));
+    p.y = Math.max(BASELINE_Y + 16, Math.min(HALFCOURT_Y - 16, pt.y + dragOffset.y));
+
+    if (mode === 'drag') {
+      const target = targets.find(t => t.playerKey === draggingKey && !t.locked);
+      if (target && Math.hypot(p.x - target.x, p.y - target.y) < 30) {
+        p.x = target.x;
+        p.y = target.y;
+        target.locked = true;
+        draggingKey = null;
+        canvas.style.cursor = 'default';
+        checkAllTargetsLocked();
+      }
     }
     return;
   }
 
-  // Hover cursor feedback
-  if (coachMode && targets.length > 0) {
-    const hovering = targets.some(t => !t.locked && Math.hypot(pt.x - players[t.playerKey].x, pt.y - players[t.playerKey].y) <= 32);
-    canvas.style.cursor = hovering ? 'grab' : 'default';
-  }
+  // Hover cursor hints
+  const hoveringPlayer = Object.entries(players).some(([key, p]) => {
+    if (Math.hypot(pt.x - p.x, pt.y - p.y) > p.r + 12) return false;
+    if (mode === 'free') return true;
+    if (mode === 'drag') return targets.some(t => t.playerKey === key && !t.locked);
+    return false;
+  });
+  const hoveringHoop = mode === 'free' && Math.hypot(pt.x - HOOP_X, pt.y - HOOP_Y) <= 34;
+  canvas.style.cursor = (hoveringPlayer || hoveringHoop) ? 'pointer' : 'default';
 }
 
 function onPointerUp() {
-  if (draggingPlayer) {
-    draggingPlayer = null;
+  if (draggingKey) {
+    // In Free Play, a quick click without dragging passes the ball to that player!
+    if (mode === 'free' && !dragMoved) {
+      passBallTo(draggingKey);
+    }
+    draggingKey = null;
     canvas.style.cursor = 'default';
   }
 }
@@ -982,6 +1128,50 @@ function checkAllTargetsLocked() {
 }
 
 // ═══════════════════════════════════════════════════════════
+//  FREE PLAY: DYNAMIC SCREEN-AWAY ENGINE
+// ═══════════════════════════════════════════════════════════
+function triggerFreePlayScreenAway() {
+  const holderEntry = Object.entries(players).find(([_, p]) => p.hasBall);
+  if (!holderEntry) return;
+  const [holderKey, holder] = holderEntry;
+
+  // Find the two teammates furthest from the ball (weak side)
+  const others = Object.entries(players)
+    .filter(([k]) => k !== holderKey)
+    .map(([k, p]) => ({ key: k, p, dist: Math.hypot(p.x - holder.x, p.y - holder.y) }))
+    .sort((a, b) => b.dist - a.dist);
+
+  if (others.length < 2) return;
+  const screener = others[0]; // Furthest weak-side player sets the screen
+  const cutter   = others[1]; // Next weak-side player uses the screen to cut
+
+  // Position screener near cutter on the ball-side shoulder
+  const dirX = holder.x > cutter.p.x ? 1 : -1;
+  const screenX = Math.max(COURT_L + 35, Math.min(COURT_R - 35, cutter.p.x + dirX * 36));
+  const screenY = Math.max(BASELINE_Y + 35, Math.min(HALFCOURT_Y - 35, cutter.p.y - 14));
+
+  screener.p.moveToXY(screenX, screenY, 650);
+  activeScreens = [{
+    x: screenX + dirX * 14,
+    y: screenY,
+    angle: dirX > 0 ? Math.PI / 2 : -Math.PI / 2
+  }];
+
+  // Cutter curls toward open space at the top of the key / opposite elbow
+  setTimeout(() => {
+    const cutX = W / 2 + (holder.x < W / 2 ? 45 : -45);
+    const cutY = FT_Y + 35;
+    cutter.p.moveToXY(cutX, cutY, 750);
+  }, 320);
+
+  updateUI(
+    `🛡️ SCREEN AWAY! #${screener.p.id} ${screener.p.name} screens for #${cutter.p.id} ${cutter.p.name}!`,
+    `💡 Click #${cutter.p.id} ${cutter.p.name} to pass to the cutter, or click the rim to shoot!`,
+    ''
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
 //  CALL TEXT, SHOT & CONFETTI
 // ═══════════════════════════════════════════════════════════
 function drawCallText() {
@@ -989,9 +1179,9 @@ function drawCallText() {
   const p1 = players.p1;
   ctx.save();
   ctx.globalAlpha = Math.max(0, callTextAlpha);
-  ctx.font = `bold 24px Orbitron, sans-serif`;
+  ctx.font = `bold 22px Orbitron, sans-serif`;
   const tw = ctx.measureText(callTextStr).width + 28;
-  const th = 42;
+  const th = 40;
   const tx = p1.x;
   const ty = p1.y - 48;
 
@@ -1101,7 +1291,8 @@ function render(ts) {
   Object.entries(players)
     .sort((a, b) => a[1].y - b[1].y)
     .forEach(([key, p]) => {
-      p.draw(ctx, coachMode && draggableKeys.has(key), lockedKeys.has(key));
+      const isPassTarget = mode === 'free' && !p.hasBall;
+      p.draw(ctx, mode === 'drag' && draggableKeys.has(key), lockedKeys.has(key), isPassTarget);
     });
 
   ball.draw(ctx);
@@ -1133,15 +1324,16 @@ requestAnimationFrame(render);
 // ═══════════════════════════════════════════════════════════
 //  PHASE FLOW & UI UPDATES
 // ═══════════════════════════════════════════════════════════
-const btnNext      = document.getElementById('btn-next');
-const btnReset     = document.getElementById('btn-reset');
-const btnRow       = document.getElementById('btn-row');
-const actionLabel  = document.getElementById('action-label');
-const tipLabel     = document.getElementById('tip-label');
-const phaseFill    = document.getElementById('phase-fill');
-const phaseNameTxt = document.getElementById('phase-name-txt');
-const phaseNumTxt  = document.getElementById('phase-num-txt');
-const celebText    = document.getElementById('celebrate-text');
+const btnNext       = document.getElementById('btn-next');
+const btnAwayScreen = document.getElementById('btn-away-screen');
+const btnReset      = document.getElementById('btn-reset');
+const btnRow        = document.getElementById('btn-row');
+const actionLabel   = document.getElementById('action-label');
+const tipLabel      = document.getElementById('tip-label');
+const phaseFill     = document.getElementById('phase-fill');
+const phaseNameTxt  = document.getElementById('phase-name-txt');
+const phaseNumTxt   = document.getElementById('phase-num-txt');
+const celebText     = document.getElementById('celebrate-text');
 
 const PHASE_INFO = {
   [PHASE.INTRO]:     { name: 'INTRO',          step: 0, total: 5 },
@@ -1162,6 +1354,17 @@ function updateUI(action, tip, nextLabel, showPassBtns = false) {
   actionLabel.textContent = action;
   tipLabel.textContent = tip;
 
+  if (mode === 'free') {
+    phaseNameTxt.textContent = 'FREE PLAY SANDBOX';
+    phaseNumTxt.textContent  = '5-Out Motion';
+    phaseFill.style.width    = '100%';
+    btnNext.style.display    = 'none';
+    btnAwayScreen.style.display = '';
+    Array.from(btnRow.querySelectorAll('.btn-pass, .btn-again')).forEach(b => b.remove());
+    return;
+  }
+
+  btnAwayScreen.style.display = 'none';
   const info = PHASE_INFO[phase] || { name: '', step: 0, total: 5 };
   phaseNameTxt.textContent = info.name;
   phaseNumTxt.textContent  = `Step ${info.step} / ${info.total}`;
@@ -1171,7 +1374,7 @@ function updateUI(action, tip, nextLabel, showPassBtns = false) {
 
   btnNext.textContent = nextLabel || '▶ NEXT';
   btnNext.style.display = showPassBtns ? 'none' : '';
-  btnNext.disabled = animating || (coachMode && targets.length > 0);
+  btnNext.disabled = animating || (mode === 'drag' && targets.length > 0);
 
   if (showPassBtns) {
     const ba = document.createElement('button');
@@ -1188,8 +1391,9 @@ function updateUI(action, tip, nextLabel, showPassBtns = false) {
   }
 }
 
-function assignMoveOrDrag(moves, onComplete) {
-  if (coachMode) {
+function assignMoveOrDrag(moves, screenIndicators, onComplete) {
+  activeScreens = screenIndicators || [];
+  if (mode === 'drag') {
     targets = moves.map(m => ({
       playerKey: m.key,
       x: cx(m.pos.x),
@@ -1223,6 +1427,7 @@ function onPhaseObjectivesComplete() {
       'NEXT: POP TO WINGS →'
     );
   } else if (phase === PHASE.POP) {
+    activeScreens = [];
     phase = PHASE.DECISION;
     updateUI(
       '👀 5-OUT SPACING SET! Who is open? Choose which wing Chloe passes to!',
@@ -1264,14 +1469,18 @@ function runPhase2() {
     { key: 'p4', pos: POS.p4_screen, label: 'Screen Left' },
     { key: 'p5', pos: POS.p5_screen, label: 'Screen Right' }
   ];
+  const screens = [
+    { x: cx(POS.p4_screen.x), y: cy(POS.p4_screen.y) - 22, angle: Math.PI },
+    { x: cx(POS.p5_screen.x), y: cy(POS.p5_screen.y) - 22, angle: Math.PI }
+  ];
   updateUI(
-    coachMode
+    mode === 'drag'
       ? '🖐️ DRAG #4 Ava & #5 Lexi down to set screens below the blocks!'
       : '📦 SCREEN DOWN — #4 Ava & #5 Lexi screen down for the blocks!',
     '💡 Tip: Screeners stop just outside the lane with wide feet.',
     'NEXT: POP TO WINGS →'
   );
-  assignMoveOrDrag(moves, onPhaseObjectivesComplete);
+  assignMoveOrDrag(moves, screens, onPhaseObjectivesComplete);
 }
 
 function runPhase3() {
@@ -1283,13 +1492,13 @@ function runPhase3() {
     { key: 'p5', pos: POS.p5_block, label: 'Right Block' }
   ];
   updateUI(
-    coachMode
+    mode === 'drag'
       ? '🖐️ DRAG Maya & Zoe out to the 3pt wings, and slide Ava & Lexi to the blocks!'
       : '🏃 POP WIDE! Maya & Zoe cut to the 3-point wings!',
     '💡 Tip: Stretch the defense all the way out to the 3-point line!',
     'MAKE YOUR DECISION →'
   );
-  assignMoveOrDrag(moves, onPhaseObjectivesComplete);
+  assignMoveOrDrag(moves, [], onPhaseObjectivesComplete);
 }
 
 function runBranch(b) {
@@ -1329,14 +1538,18 @@ function runAwayScreen() {
       { key: 'p3', pos: POS.p3_a2_cut,    label: 'Curl Cut' },
       { key: 'p5', pos: POS.p5_a2_cut,    label: 'Flash Elbow' }
     ];
+    const screens = [
+      { x: cx(POS.p1_a2_screen.x) + 22, y: cy(POS.p1_a2_screen.y), angle: Math.PI / 2 },
+      { x: cx(POS.p4_a2_screen.x) + 22, y: cy(POS.p4_a2_screen.y), angle: Math.PI / 2 }
+    ];
     updateUI(
-      coachMode
+      mode === 'drag'
         ? '🖐️ DRAG Chloe & Ava to set away screens, and cut Zoe & Lexi into open space!'
         : '📦 AWAY SCREENS — Chloe screens for Zoe while Ava screens across for Lexi!',
       '💡 Tip: Cutters wait for the screener to get set, then explode into space!',
       'PASS & SHOOT! 🏀→🏆'
     );
-    assignMoveOrDrag(moves, onPhaseObjectivesComplete);
+    assignMoveOrDrag(moves, screens, onPhaseObjectivesComplete);
   } else {
     phase = PHASE.B_AWAY;
     const moves = [
@@ -1345,20 +1558,25 @@ function runAwayScreen() {
       { key: 'p2', pos: POS.p2_b2_cut,    label: 'Curl Cut' },
       { key: 'p4', pos: POS.p4_b2_cut,    label: 'Flash Elbow' }
     ];
+    const screens = [
+      { x: cx(POS.p1_b2_screen.x) - 22, y: cy(POS.p1_b2_screen.y), angle: -Math.PI / 2 },
+      { x: cx(POS.p5_b2_screen.x) - 22, y: cy(POS.p5_b2_screen.y), angle: -Math.PI / 2 }
+    ];
     updateUI(
-      coachMode
+      mode === 'drag'
         ? '🖐️ DRAG Chloe & Lexi to set away screens, and cut Maya & Ava into open space!'
         : '📦 AWAY SCREENS — Chloe screens for Maya while Lexi screens across for Ava!',
       '💡 Tip: Cutters wait for the screener to get set, then explode into space!',
       'PASS & SHOOT! 🏀→🏆'
     );
-    assignMoveOrDrag(moves, onPhaseObjectivesComplete);
+    assignMoveOrDrag(moves, screens, onPhaseObjectivesComplete);
   }
 }
 
 function runShot() {
   animating = true;
   btnNext.disabled = true;
+  activeScreens = [];
 
   const passer = branch === 'A' ? players.p2 : players.p3;
   const shooter = branch === 'A' ? players.p3 : players.p2;
@@ -1403,11 +1621,29 @@ function resetFullPlay() {
   celebText.style.display = 'none';
   phase = PHASE.INTRO;
   initGame();
+
+  if (mode === 'free') {
+    // Space players into a clean 5-Out formation for Free Play
+    players.p1.snapTo(TOK_X / W, TOK_Y / H);
+    players.p2.snapTo(WING_X_L / W, WING_Y / H);
+    players.p3.snapTo(WING_X_R / W, WING_Y / H);
+    players.p4.snapTo(CORNER_X_L / W, CORNER_Y / H);
+    players.p5.snapTo(CORNER_X_R / W, CORNER_Y / H);
+    ball.snapTo(TOK_X / W, (TOK_Y / H) - 0.05);
+
+    updateUI(
+      '🏀 FREE PLAY (5-OUT) — Drag any player to move, click any player to pass, or click the rim to shoot!',
+      '💡 Tip: Pass to a wing, then hit "RUN SCREEN AWAY" to practice weak-side screening!',
+      ''
+    );
+    return;
+  }
+
   Array.from(btnRow.querySelectorAll('.btn-pass, .btn-again')).forEach(b => b.remove());
   btnNext.style.display = '';
   updateUI(
-    'Ready! Press "LET\'S RUN IT!" to practice the play again.',
-    coachMode ? '💡 Coach Mode active: Drag players to their target rings!' : '💡 Watch Mode active: Press Next to step through.',
+    'Ready! Press "LET\'S RUN IT!" to practice the play.',
+    mode === 'drag' ? '💡 Coach Mode active: Drag players to their target rings!' : '💡 Watch Mode active: Press Next to step through.',
     '▶ LET\'S RUN IT!'
   );
 }
@@ -1416,7 +1652,7 @@ function resetFullPlay() {
 //  EVENT LISTENERS
 // ═══════════════════════════════════════════════════════════
 btnNext.addEventListener('click', () => {
-  if (animating || (coachMode && targets.length > 0)) return;
+  if (animating || (mode === 'drag' && targets.length > 0)) return;
   switch (phase) {
     case PHASE.INTRO:   runPhase1(); break;
     case PHASE.CALL:    runPhase2(); break;
@@ -1428,24 +1664,26 @@ btnNext.addEventListener('click', () => {
   }
 });
 
+btnAwayScreen.addEventListener('click', () => {
+  if (mode === 'free') triggerFreePlayScreenAway();
+});
+
 btnReset.addEventListener('click', resetFullPlay);
 
 const btnModeDrag = document.getElementById('btn-mode-drag');
+const btnModeFree = document.getElementById('btn-mode-free');
 const btnModeAuto = document.getElementById('btn-mode-auto');
 
-btnModeDrag.addEventListener('click', () => {
-  coachMode = true;
-  btnModeDrag.classList.add('active');
-  btnModeAuto.classList.remove('active');
+function setMode(newMode, activeBtn) {
+  mode = newMode;
+  [btnModeDrag, btnModeFree, btnModeAuto].forEach(b => b.classList.remove('active'));
+  activeBtn.classList.add('active');
   resetFullPlay();
-});
+}
 
-btnModeAuto.addEventListener('click', () => {
-  coachMode = false;
-  btnModeAuto.classList.add('active');
-  btnModeDrag.classList.remove('active');
-  resetFullPlay();
-});
+btnModeDrag.addEventListener('click', () => setMode('drag', btnModeDrag));
+btnModeFree.addEventListener('click', () => setMode('free', btnModeFree));
+btnModeAuto.addEventListener('click', () => setMode('auto', btnModeAuto));
 
 document.getElementById('modal-close').addEventListener('click', () => {
   document.getElementById('modal-overlay').style.display = 'none';
