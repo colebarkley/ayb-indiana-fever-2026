@@ -472,7 +472,7 @@
     <h2>🏀 COACH'S PLAYBOOK</h2>
     <p>Run <strong>"Downtown"</strong> with smart passing & spacing:</p>
     <ul>
-      <li><strong>⚠️ No Long Cross-Court Skip Passes:</strong> Reverse the ball back to the true top of the key instead of skipping across the midline to the opposite wing or opposite side!</li>
+      <li><strong>⚠️ No Risky Skip Passes:</strong> From the wing, reverse to the top of the key or hit your ball-side post. From near the basket, kick out to your ball-side wing—never throw all the way out to the top of the key!</li>
       <li><strong>🛡️ Show Defense:</strong> Toggle defenders on/off to see 1-on-1 assignments and help-side spacing.</li>
       <li><strong>Shoot or Pass & Screen Away:</strong> Make short, crisp passes and screen away when guarded.</li>
     </ul>
@@ -628,24 +628,26 @@ let interceptLock = false;
 let bannerTimeout = null;
 
 // ═══════════════════════════════════════════════════════════
-//  LONG CROSS-COURT SKIP PASS DETECTION
+//  LONG CROSS-COURT & POST-TO-TOP SKIP PASS DETECTION
 // ═══════════════════════════════════════════════════════════
 function evaluatePassRisk(passer, receiver) {
   const centerX = W / 2;
-  // Tight center corridor: only a true top-of-the-key reversal right in the middle is safe
-  const centerZoneHalfW = 45;
+  const centerZoneHalfW = 60;
 
   const passerOnLeft    = passer.x < centerX - centerZoneHalfW;
   const passerOnRight   = passer.x > centerX + centerZoneHalfW;
   const receiverOnLeft  = receiver.x < centerX - centerZoneHalfW;
   const receiverOnRight = receiver.x > centerX + centerZoneHalfW;
 
-  // Risky whenever throwing from one side of the floor across the midline to the opposite side
-  // (e.g., Player 2 on left wing -> Player 1 on right wing or Player 3 curled right;
-  //  or Player 3 on right wing -> Player 2 on left wing or Player 4 on left side)
+  // 1. Cross-court pass from one side of the court to the opposite wing or opposite low block
   const crossesToOppositeSide = (passerOnLeft && receiverOnRight) || (passerOnRight && receiverOnLeft);
 
-  if (!crossesToOppositeSide) {
+  // 2. Post/low-block player near the basket trying to throw all the way out to the top of the key
+  const passerNearBasket = passer.y < FT_Y - 15;
+  const receiverAtTopOfKey = Math.abs(receiver.x - centerX) <= centerZoneHalfW && receiver.y >= FT_Y + 45;
+  const postToTopSkip = passerNearBasket && receiverAtTopOfKey;
+
+  if (!crossesToOppositeSide && !postToTopSkip) {
     return {
       isDangerous: false,
       reason: '',
@@ -661,9 +663,13 @@ function evaluatePassRisk(passer, receiver) {
     y: lerp(passer.y, receiver.y, 0.58)
   };
 
+  const reason = postToTopSkip
+    ? 'Passing from near the basket all the way out to the top of the key is too risky!'
+    : 'Cross-court skip pass to the opposite side is too risky!';
+
   return {
     isDangerous: true,
-    reason: 'Cross-court skip pass across the midline is too risky!',
+    reason,
     interceptor: def ? { key: receiverDefKey, defender: def } : null,
     interceptPoint
   };
@@ -1505,12 +1511,12 @@ function buildDynamicScreenAwayMoves() {
       label: 'Screen Away'
     });
 
-    const cutX = ballOnLeft ? (TOK_X + 68) : (TOK_X - 68);
-    const cutY = TOK_Y - 8;
+    const cutX = ballOnLeft ? (TOK_X + 48) : (TOK_X - 48);
+    const cutY = TOK_Y - 6;
     moves.push({
       key: perimCutter.key,
       pos: { x: cutX / W, y: cutY / H },
-      label: 'Curl Cut'
+      label: 'Top of Key'
     });
 
     screens.push({
@@ -1853,7 +1859,7 @@ function enterPassChoiceState(promptText) {
   phase = PHASE.DECISION_PASS;
   updateUI(
     promptText,
-    '💡 Tip: Only pass to a safe teammate on your side or the true top of the key—risky cross-court skip passes are blocked!',
+    '💡 Tip: Make short, safe passes on your side (or wing-to-top reversal)—risky skip passes are blocked!',
     ''
   );
 }
@@ -1866,7 +1872,7 @@ function executePassTo(targetKey) {
   const passer = currentHolderEntry ? currentHolderEntry[1] : null;
   const risk = passer ? evaluatePassRisk(passer, receiver) : { isDangerous: false };
 
-  // In Coach / Watch playbook modes, disallow risky cross-court skip passes completely
+  // In Coach / Watch playbook modes, disallow risky skip passes completely
   if (mode !== 'free' && risk.isDangerous) {
     flashColor = '#ff1744';
     flashAlpha = 0.35;
@@ -1874,8 +1880,8 @@ function executePassTo(targetKey) {
     showBannerAlert('🚫 TOO RISKY! NO SKIP PASS! 🚫', true, 1750);
 
     updateUI(
-      `🚫 Can't pass to ${receiver.name} — ${risk.reason} Pick a safe pass on your side or top of the key!`,
-      '💡 Coaching Point: Never throw a skip pass across the midline from the wing! Hit the ball-side block or true top of the key.',
+      `🚫 Can't pass to ${receiver.name} — ${risk.reason} Pick a safe teammate on your side!`,
+      '💡 Coaching Point: Wings can reverse to the top of the key; post players near the basket kick out to their ball-side wing.',
       '',
       true
     );
@@ -1901,7 +1907,7 @@ function executePassTo(targetKey) {
 
     updateUI(
       `🚨 PICKED OFF BY ${def.id}! Bad pass — ${risk.reason}`,
-      '💡 Coaching Point: Never skip the ball across the midline from the wing! Pass to your side or true top of the key.',
+      '💡 Coaching Point: Avoid long skip passes across the paint or midline!',
       '',
       true
     );
@@ -1913,7 +1919,7 @@ function executePassTo(targetKey) {
       }
       updateUI(
         `🔄 Try again! ${passer.name} still has the ball — pass to a safe teammate.`,
-        '💡 Tip: Short passes on your side or to the true top of the key are safe!',
+        '💡 Tip: Short passes on your side or wing-to-top reversals are safe!',
         ''
       );
     }, 1550);
@@ -1929,7 +1935,7 @@ function executePassTo(targetKey) {
   ball.moveToXY(receiver.x, receiver.y - receiver.r - ball.r, 420, 28);
 
   if (risk.isDangerous && !showDefense) {
-    showBannerAlert('⚠️ DANGEROUS CROSS-COURT PASS!', true, 1650);
+    showBannerAlert('⚠️ DANGEROUS SKIP PASS!', true, 1650);
   }
 
   if (mode === 'free') {
@@ -1938,10 +1944,10 @@ function executePassTo(targetKey) {
         ? `⚠️ DANGEROUS PASS to ${receiver.name}! (${risk.reason} Turn ON Defense to see it picked off!)`
         : `🏀 ${receiver.name} catches the pass! Shoot now or pass to any teammate.`,
       risk.isDangerous
-        ? '💡 Coaching Point: Pass to your side or the true top of the key instead of skipping across the midline!'
+        ? '💡 Coaching Point: Avoid long skip passes across the paint or midline!'
         : (showDefense
             ? '💡 Good crisp pass! Notice how weak-side defenders sag into help position.'
-            : '💡 Tip: Toggle "SHOW DEFENSE" to test whether long cross-court passes get picked off!'),
+            : '💡 Tip: Toggle "SHOW DEFENSE" to test whether long skip passes get picked off!'),
       '',
       risk.isDangerous
     );
@@ -2089,8 +2095,8 @@ function resetFullPlay() {
     updateUI(
       '🏀 FREE PLAY — Drag any player anywhere! Make short, safe passes or shoot anytime.',
       showDefense
-        ? '💡 Defense is ON: Long cross-court passes across the midline will get picked off!'
-        : '💡 Tip: Toggle "SHOW DEFENSE" at the top right to see how defenders pick off cross-court skip passes!',
+        ? '💡 Defense is ON: Long skip passes across the paint or midline will get picked off!'
+        : '💡 Tip: Toggle "SHOW DEFENSE" at the top right to see how defenders pick off risky skip passes!',
       ''
     );
     return;
