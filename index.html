@@ -22,6 +22,7 @@
     --panel:  #0d1a2e;
     --green:  #00e676;
     --orange: #FF6B00;
+    --red:    #d32f2f;
     --radius: 12px;
   }
 
@@ -80,11 +81,18 @@
   }
   #play-name {
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(1.1rem, 3.6vw, 1.75rem);
+    font-size: clamp(1.05rem, 3.4vw, 1.65rem);
     color: #fff;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
   }
   #play-name span { color: var(--gold); }
+
+  #controls-right {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
 
   /* Mode Toggle Pill */
   #mode-toggle {
@@ -96,9 +104,9 @@
   }
   .mode-btn {
     font-family: 'Orbitron', sans-serif;
-    font-size: 0.68rem;
+    font-size: 0.66rem;
     font-weight: 700;
-    padding: 8px 12px;
+    padding: 8px 11px;
     border: none;
     background: transparent;
     color: rgba(255,255,255,0.68);
@@ -108,6 +116,26 @@
   .mode-btn.active {
     background: var(--gold);
     color: var(--navy);
+  }
+
+  /* Show Defense Toggle Button */
+  #btn-defense {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.66rem;
+    font-weight: 700;
+    padding: 8px 13px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(255, 82, 82, 0.75);
+    background: var(--panel);
+    color: #ff8a80;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  #btn-defense.active {
+    background: linear-gradient(135deg, #c62828, #e53935);
+    color: #fff;
+    border-color: #fff;
+    box-shadow: 0 0 14px rgba(229, 57, 53, 0.6);
   }
 
   /* ── PHASE BAR ───────────────────────────────── */
@@ -285,6 +313,11 @@
     color: var(--gold);
     flex-shrink: 0;
   }
+  .legend-dot.def {
+    background: #b71c1c;
+    border-color: #fff;
+    color: #fff;
+  }
 
   /* ── MODAL ───────────────────────────────────── */
   #modal-overlay {
@@ -361,10 +394,13 @@
 
 <div id="top-bar">
   <div id="play-name">PLAY: <span>"DOWNTOWN"</span></div>
-  <div id="mode-toggle">
-    <button class="mode-btn" id="btn-mode-free">🏀 FREE PLAY</button>
-    <button class="mode-btn active" id="btn-mode-drag">🖐️ COACH MODE</button>
-    <button class="mode-btn" id="btn-mode-auto">▶️ WATCH</button>
+  <div id="controls-right">
+    <button id="btn-defense">🛡️ SHOW DEFENSE</button>
+    <div id="mode-toggle">
+      <button class="mode-btn" id="btn-mode-free">🏀 FREE PLAY</button>
+      <button class="mode-btn active" id="btn-mode-drag">🖐️ COACH MODE</button>
+      <button class="mode-btn" id="btn-mode-auto">▶️ WATCH</button>
+    </div>
   </div>
 </div>
 
@@ -383,7 +419,7 @@
 
 <div id="action-box">
   <div id="action-label">Welcome to Downtown! Press LET'S RUN IT to start.</div>
-  <div id="tip-label">💡 Tip: Drag any player anywhere on the floor, pass to any teammate, or shoot anytime!</div>
+  <div id="tip-label">💡 Tip: Toggle "SHOW DEFENSE" anytime to see help-side positioning and how screens create open looks!</div>
 </div>
 
 <div id="btn-row">
@@ -397,16 +433,17 @@
   <div class="legend-item"><div class="legend-dot">3</div> Zoe (Right)</div>
   <div class="legend-item"><div class="legend-dot">4</div> Ava (Forward)</div>
   <div class="legend-item"><div class="legend-dot">5</div> Lexi (Post)</div>
+  <div class="legend-item" id="legend-def" style="display:none;"><div class="legend-dot def">X</div> Defenders (Drag in Free Play)</div>
 </div>
 
 <div id="modal-overlay">
   <div id="modal">
     <h2>🏀 COACH'S PLAYBOOK</h2>
-    <p>Run <strong>"Downtown"</strong> with real-game read-and-react choices:</p>
+    <p>Run <strong>"Downtown"</strong> with simple, visual basketball reads:</p>
     <ul>
-      <li><strong>Free Play (Auto-opens on Mobile/Tablet):</strong> Drag <em>any</em> player anywhere on the floor, <strong>pass to any teammate</strong> at any time, or <strong>shoot</strong> whenever you're open!</li>
-      <li><strong>Coach Mode:</strong> Drag glowing players into their target circles step by step.</li>
-      <li><strong>Shoot or Pass?:</strong> In Coach/Watch mode, every catch asks whether to <strong>SHOOT</strong> or <strong>PASS & SCREEN AWAY</strong>.</li>
+      <li><strong>🛡️ Show Defense:</strong> Toggle defenders on/off to see how help-side defense sags and how screens create open passing windows.</li>
+      <li><strong>Free Play:</strong> Drag any player (or defender) anywhere on the floor, pass to any teammate, or shoot anytime.</li>
+      <li><strong>Coach Mode:</strong> Drag players to their target rings, choose who is open, and decide whether to <strong>SHOOT</strong> or <strong>PASS & SCREEN AWAY</strong>.</li>
     </ul>
     <button id="modal-close">HIT THE COURT! 🔥</button>
   </div>
@@ -430,6 +467,7 @@ const GOLD   = '#FFC72C';
 const GOLD2  = '#FFD966';
 const ORANGE = '#FF6B00';
 const GREEN  = '#00e676';
+const RED    = '#c62828';
 const COURT_WOOD = '#E3C28F';
 const APRON_COLOR = '#16243d';
 
@@ -495,11 +533,11 @@ const RIGHT_BLOCK_X = PAINT_X + PAINT_W + 24;
 //  PLAYER STARTING & PLAY POSITIONS
 // ═══════════════════════════════════════════════════════════
 const HOME = {
-  p1: { x: TOK_X/W,                    y: TOK_Y/H   }, // PG Top of Key
-  p2: { x: LEFT_BLOCK_X/W,             y: BLOCK_Y/H }, // #2 Left Block
-  p3: { x: RIGHT_BLOCK_X/W,            y: BLOCK_Y/H }, // #3 Right Block
-  p4: { x: (PAINT_X - 22)/W,           y: FT_Y/H    }, // #4 Left Elbow
-  p5: { x: (PAINT_X + PAINT_W + 22)/W, y: FT_Y/H    }, // #5 Right Elbow
+  p1: { x: TOK_X/W,                    y: TOK_Y/H   },
+  p2: { x: LEFT_BLOCK_X/W,             y: BLOCK_Y/H },
+  p3: { x: RIGHT_BLOCK_X/W,            y: BLOCK_Y/H },
+  p4: { x: (PAINT_X - 22)/W,           y: FT_Y/H    },
+  p5: { x: (PAINT_X + PAINT_W + 22)/W, y: FT_Y/H    },
 };
 
 const POS = {
@@ -528,18 +566,20 @@ const PHASE = {
 };
 
 let mode = isMobileOrTablet() ? 'free' : 'drag';
+let showDefense = false;
 let phase = PHASE.INTRO;
 let animating = false;
 let passCount = 0;
 
 let targets = [];         // { playerKey, x, y, label, locked }
 let activeScreens = [];   // { x, y, angle }
-let draggingKey = null;
+let draggingEntity = null; // { type: 'offense'|'defense', key: string }
 let dragStartScreenPos = { x: 0, y: 0 };
 let dragMoved = false;
 let dragOffset = { x: 0, y: 0 };
 
 let players = {};
+let defenders = {};
 let ball;
 let confettiParticles = [];
 let showCallText = false;
@@ -553,7 +593,7 @@ let shotStart = { x: 0, y: 0 };
 let onShotDone = null;
 
 // ═══════════════════════════════════════════════════════════
-//  PLAYER & BALL CLASSES
+//  PLAYER, DEFENDER & BALL CLASSES
 // ═══════════════════════════════════════════════════════════
 class Player {
   constructor(id, name, px, py) {
@@ -600,7 +640,7 @@ class Player {
     this.x = lerp(this.sx, this.tx, e);
     this.y = lerp(this.sy, this.ty, e);
   }
-  draw(ctx, isDraggable, isLocked, isPassTarget, isBeingDragged) {
+  draw(ctx, isDraggable, isLocked, isPassTarget, isBeingDragged, isOpenLook) {
     // Trail
     this.trail.forEach((p, i) => {
       const a = (i + 1) / this.trail.length * 0.25;
@@ -610,7 +650,7 @@ class Player {
       ctx.fill();
     });
 
-    // Active drag ring when finger/mouse is holding the player
+    // Active drag ring
     if (isBeingDragged) {
       ctx.save();
       ctx.beginPath();
@@ -663,6 +703,138 @@ class Player {
     ctx.fill();
     ctx.fillStyle = '#fff';
     ctx.fillText(this.name, this.x, this.y + this.r + 10.5);
+
+    // Visual "OPEN!" badge when defense is toggled on and player has clean space
+    if (showDefense && isOpenLook && !this.hasBall) {
+      ctx.save();
+      const label = 'OPEN!';
+      ctx.font = 'bold 10px Orbitron, sans-serif';
+      const bw = ctx.measureText(label).width + 10;
+      ctx.fillStyle = GREEN;
+      ctx.beginPath();
+      ctx.roundRect(this.x - bw / 2, this.y - this.r - 22, bw, 15, 4);
+      ctx.fill();
+      ctx.fillStyle = '#00240f';
+      ctx.fillText(label, this.x, this.y - this.r - 14.5);
+      ctx.restore();
+    }
+  }
+}
+
+class Defender {
+  constructor(id, assignmentKey) {
+    this.id = id; // 'X1'..'X5'
+    this.assignmentKey = assignmentKey;
+    this.x = W / 2;
+    this.y = H / 2;
+    this.r = 19;
+    this.manualOverride = false;
+  }
+
+  update(dt) {
+    if (this.manualOverride && mode === 'free') return;
+
+    const mark = players[this.assignmentKey];
+    const holderEntry = Object.entries(players).find(([_, p]) => p.hasBall);
+    const holder = holderEntry ? holderEntry[1] : players.p1;
+    if (!mark) return;
+
+    // Vector from offensive mark toward the hoop
+    const toHoopX = HOOP_X - mark.x;
+    const toHoopY = HOOP_Y - mark.y;
+    const distHoop = Math.max(1, Math.hypot(toHoopX, toHoopY));
+    const uxHoop = toHoopX / distHoop;
+    const uyHoop = toHoopY / distHoop;
+
+    // Vector from offensive mark toward the ball
+    const toBallX = holder.x - mark.x;
+    const toBallY = holder.y - mark.y;
+    const distBall = Math.max(1, Math.hypot(toBallX, toBallY));
+    const uxBall = toBallX / distBall;
+    const uyBall = toBallY / distBall;
+
+    let targetX, targetY;
+
+    if (mark.hasBall) {
+      // On-ball defense: guard closely between ball-handler and basket
+      targetX = mark.x + uxHoop * 40;
+      targetY = mark.y + uyHoop * 40;
+    } else if (distBall < 250) {
+      // One-pass-away denial: shade into the passing lane + basket line
+      targetX = mark.x + uxHoop * 34 + uxBall * 22;
+      targetY = mark.y + uyHoop * 34 + uyBall * 22;
+    } else {
+      // Weak-side help defense: sag halfway toward the paint/midline ("help position")
+      const helpAnchorX = lerp(mark.x, HOOP_X, 0.34);
+      const helpAnchorY = lerp(mark.y, HOOP_Y + 65, 0.30);
+      targetX = helpAnchorX;
+      targetY = helpAnchorY;
+    }
+
+    // If an active screen is between the defender and their offensive mark, snag the defender slightly behind the screen
+    activeScreens.forEach(s => {
+      const distScreenToMark = Math.hypot(s.x - mark.x, s.y - mark.y);
+      if (distScreenToMark < 95) {
+        targetX = s.x + (s.x - mark.x) * 0.45;
+        targetY = s.y + (s.y - mark.y) * 0.45;
+      }
+    });
+
+    // Smooth tracking speed so players visibly see defenders trail behind screens and cuts
+    const followSpeed = Math.min(1, dt * 0.0065);
+    this.x = lerp(this.x, targetX, followSpeed);
+    this.y = lerp(this.y, targetY, followSpeed);
+  }
+
+  draw(ctx, isBeingDragged) {
+    if (!showDefense) return;
+
+    const mark = players[this.assignmentKey];
+
+    // Subtle vision/guard tether line
+    if (mark) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(this.x, this.y);
+      ctx.lineTo(mark.x, mark.y);
+      ctx.strokeStyle = 'rgba(211, 47, 47, 0.25)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    if (isBeingDragged) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r + 10, 0, Math.PI * 2);
+      ctx.strokeStyle = '#ff8a80';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Shadow
+    ctx.beginPath();
+    ctx.ellipse(this.x, this.y + this.r * 0.85, this.r * 0.85, this.r * 0.28, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.fill();
+
+    // Defender Red Circle
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = RED;
+    ctx.fill();
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = '#fff';
+    ctx.stroke();
+
+    // Label (X1..X5)
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 13px Orbitron, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(this.id, this.x, this.y);
   }
 }
 
@@ -733,11 +905,21 @@ function initGame() {
     p4: new Player('4', 'Ava',   HOME.p4.x, HOME.p4.y),
     p5: new Player('5', 'Lexi',  HOME.p5.x, HOME.p5.y),
   };
+  defenders = {
+    d1: new Defender('X1', 'p1'),
+    d2: new Defender('X2', 'p2'),
+    d3: new Defender('X3', 'p3'),
+    d4: new Defender('X4', 'p4'),
+    d5: new Defender('X5', 'p5'),
+  };
+  // Snap initial defender positions immediately
+  Object.values(defenders).forEach(d => d.update(1000));
+
   players.p1.hasBall = true;
   ball = new Ball(HOME.p1.x, HOME.p1.y - 0.05);
   targets = [];
   activeScreens = [];
-  draggingKey = null;
+  draggingEntity = null;
   showCallText = false;
   flashAlpha = 0;
   shotProgress = -1;
@@ -974,7 +1156,7 @@ function drawArrow(x1, y1, x2, y2, color, dash = false, alpha = 1) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  TOUCH & MOUSE POINTER INTERACTIONS (DRAG ANYWHERE, TAP TO PASS/SHOOT)
+//  TOUCH & MOUSE POINTER INTERACTIONS
 // ═══════════════════════════════════════════════════════════
 function getPointerClientPos(e) {
   if (e.touches && e.touches.length > 0) {
@@ -1014,34 +1196,56 @@ function onPointerDown(e) {
     return;
   }
 
-  // Find closest player within touch/click radius
-  let closestKey = null;
+  // Find closest offensive player or visible defender within touch/click radius
+  let closest = null;
   let closestDist = Infinity;
 
   for (const [key, p] of Object.entries(players)) {
     const dist = Math.hypot(pt.x - p.x, pt.y - p.y);
     if (dist <= p.r + touchBonus && dist < closestDist) {
       closestDist = dist;
-      closestKey = key;
+      closest = { type: 'offense', key, entity: p };
     }
   }
 
-  if (!closestKey) return;
-  const p = players[closestKey];
+  if (showDefense && mode === 'free') {
+    for (const [key, d] of Object.entries(defenders)) {
+      const dist = Math.hypot(pt.x - d.x, pt.y - d.y);
+      if (dist <= d.r + touchBonus && dist < closestDist) {
+        closestDist = dist;
+        closest = { type: 'defense', key, entity: d };
+      }
+    }
+  }
+
+  if (!closest) return;
+
+  if (closest.type === 'defense') {
+    if (e.cancelable) e.preventDefault();
+    draggingEntity = { type: 'defense', key: closest.key };
+    closest.entity.manualOverride = true;
+    dragStartScreenPos = { x: pt.clientX, y: pt.clientY };
+    dragMoved = false;
+    dragOffset = { x: closest.entity.x - pt.x, y: closest.entity.y - pt.y };
+    canvas.style.cursor = 'grabbing';
+    return;
+  }
+
+  const p = closest.entity;
 
   // During pass decision in Coach/Watch mode, tapping any teammate passes directly
   if (phase === PHASE.DECISION_PASS && mode !== 'free' && !p.hasBall) {
     if (e.cancelable) e.preventDefault();
-    executePassTo(closestKey);
+    executePassTo(closest.key);
     return;
   }
 
   // Coach Mode dragging targets
   if (mode === 'drag' && targets.length > 0) {
-    const target = targets.find(t => t.playerKey === closestKey && !t.locked);
+    const target = targets.find(t => t.playerKey === closest.key && !t.locked);
     if (target) {
       if (e.cancelable) e.preventDefault();
-      draggingKey = closestKey;
+      draggingEntity = { type: 'offense', key: closest.key };
       dragStartScreenPos = { x: pt.clientX, y: pt.clientY };
       dragMoved = false;
       dragOffset = { x: p.x - pt.x, y: p.y - pt.y };
@@ -1054,7 +1258,7 @@ function onPointerDown(e) {
   if (mode === 'free') {
     if (e.cancelable) e.preventDefault();
     p.t = 1;
-    draggingKey = closestKey;
+    draggingEntity = { type: 'offense', key: closest.key };
     dragStartScreenPos = { x: pt.clientX, y: pt.clientY };
     dragMoved = false;
     dragOffset = { x: p.x - pt.x, y: p.y - pt.y };
@@ -1065,33 +1269,38 @@ function onPointerDown(e) {
 function onPointerMove(e) {
   const pt = getCanvasCoords(e);
 
-  if (draggingKey) {
+  if (draggingEntity) {
     if (e.cancelable) e.preventDefault();
-    const p = players[draggingKey];
 
-    // Screen pixel movement threshold so small finger wobble doesn't block tap-to-pass
     if (Math.hypot(pt.clientX - dragStartScreenPos.x, pt.clientY - dragStartScreenPos.y) > 12) {
       dragMoved = true;
     }
 
-    // In Free Play, let users drag players anywhere across the full canvas (including out of bounds for inbound plays)
     const minX = mode === 'free' ? 22 : COURT_L + 16;
     const maxX = mode === 'free' ? W - 22 : COURT_R - 16;
     const minY = mode === 'free' ? 22 : BASELINE_Y + 16;
     const maxY = mode === 'free' ? H - 22 : HALFCOURT_Y - 16;
 
+    if (draggingEntity.type === 'defense') {
+      const d = defenders[draggingEntity.key];
+      d.x = Math.max(minX, Math.min(maxX, pt.x + dragOffset.x));
+      d.y = Math.max(minY, Math.min(maxY, pt.y + dragOffset.y));
+      return;
+    }
+
+    const p = players[draggingEntity.key];
     p.x = Math.max(minX, Math.min(maxX, pt.x + dragOffset.x));
     p.y = Math.max(minY, Math.min(maxY, pt.y + dragOffset.y));
     p.tx = p.x;
     p.ty = p.y;
 
     if (mode === 'drag') {
-      const target = targets.find(t => t.playerKey === draggingKey && !t.locked);
+      const target = targets.find(t => t.playerKey === draggingEntity.key && !t.locked);
       if (target && Math.hypot(p.x - target.x, p.y - target.y) < 32) {
         p.x = target.x;
         p.y = target.y;
         target.locked = true;
-        draggingKey = null;
+        draggingEntity = null;
         canvas.style.cursor = 'default';
         checkAllTargetsLocked();
       }
@@ -1100,23 +1309,24 @@ function onPointerMove(e) {
   }
 
   // Hover cursor feedback on desktop
-  const hoveringPlayer = Object.entries(players).some(([key, p]) => {
+  const hoveringOffense = Object.entries(players).some(([key, p]) => {
     if (Math.hypot(pt.x - p.x, pt.y - p.y) > p.r + 12) return false;
     if (mode === 'free') return true;
     if (phase === PHASE.DECISION_PASS && !p.hasBall) return true;
     if (mode === 'drag') return targets.some(t => t.playerKey === key && !t.locked);
     return false;
   });
+  const hoveringDefense = showDefense && mode === 'free' && Object.values(defenders).some(d => Math.hypot(pt.x - d.x, pt.y - d.y) <= d.r + 12);
   const hoveringHoop = canClickToShoot() && Math.hypot(pt.x - HOOP_X, pt.y - HOOP_Y) <= 34;
-  canvas.style.cursor = (hoveringPlayer || hoveringHoop) ? 'pointer' : 'default';
+  canvas.style.cursor = (hoveringOffense || hoveringDefense || hoveringHoop) ? 'pointer' : 'default';
 }
 
-function onPointerUp(e) {
-  if (draggingKey) {
-    if (mode === 'free' && !dragMoved) {
-      executePassTo(draggingKey);
+function onPointerUp() {
+  if (draggingEntity) {
+    if (draggingEntity.type === 'offense' && mode === 'free' && !dragMoved) {
+      executePassTo(draggingEntity.key);
     }
-    draggingKey = null;
+    draggingEntity = null;
     canvas.style.cursor = 'default';
   }
 }
@@ -1309,6 +1519,7 @@ function render(ts) {
   last = ts;
 
   Object.values(players).forEach(p => p.update(dt));
+  Object.values(defenders).forEach(d => d.update(dt));
   ball.update(dt);
 
   if (showCallText) {
@@ -1343,6 +1554,14 @@ function render(ts) {
   drawCourt();
   drawTargetsAndGuides();
 
+  // Draw Defenders first so offensive players remain clearly legible
+  if (showDefense) {
+    Object.entries(defenders).forEach(([key, d]) => {
+      const isBeingDragged = draggingEntity && draggingEntity.type === 'defense' && draggingEntity.key === key;
+      d.draw(ctx, isBeingDragged);
+    });
+  }
+
   const draggableKeys = new Set(targets.filter(t => !t.locked).map(t => t.playerKey));
   const lockedKeys    = new Set(targets.filter(t => t.locked).map(t => t.playerKey));
 
@@ -1350,8 +1569,11 @@ function render(ts) {
     .sort((a, b) => a[1].y - b[1].y)
     .forEach(([key, p]) => {
       const isPassTarget = (mode === 'free' || phase === PHASE.DECISION_PASS) && !p.hasBall;
-      const isBeingDragged = draggingKey === key;
-      p.draw(ctx, mode === 'drag' && draggableKeys.has(key), lockedKeys.has(key), isPassTarget, isBeingDragged);
+      const isBeingDragged = draggingEntity && draggingEntity.type === 'offense' && draggingEntity.key === key;
+      const def = defenders['d' + p.id];
+      const isOpenLook = def ? Math.hypot(p.x - def.x, p.y - def.y) > 64 : false;
+
+      p.draw(ctx, mode === 'drag' && draggableKeys.has(key), lockedKeys.has(key), isPassTarget, isBeingDragged, isOpenLook);
     });
 
   ball.draw(ctx);
@@ -1383,15 +1605,17 @@ requestAnimationFrame(render);
 // ═══════════════════════════════════════════════════════════
 //  PHASE FLOW & UI UPDATES
 // ═══════════════════════════════════════════════════════════
-const btnNext     = document.getElementById('btn-next');
-const btnReset    = document.getElementById('btn-reset');
-const btnRow      = document.getElementById('btn-row');
-const actionLabel = document.getElementById('action-label');
-const tipLabel    = document.getElementById('tip-label');
-const phaseFill   = document.getElementById('phase-fill');
-const phaseNameTxt= document.getElementById('phase-name-txt');
-const phaseNumTxt = document.getElementById('phase-num-txt');
-const celebText   = document.getElementById('celebrate-text');
+const btnNext      = document.getElementById('btn-next');
+const btnReset     = document.getElementById('btn-reset');
+const btnDefense   = document.getElementById('btn-defense');
+const legendDef    = document.getElementById('legend-def');
+const btnRow       = document.getElementById('btn-row');
+const actionLabel  = document.getElementById('action-label');
+const tipLabel     = document.getElementById('tip-label');
+const phaseFill    = document.getElementById('phase-fill');
+const phaseNameTxt = document.getElementById('phase-name-txt');
+const phaseNumTxt  = document.getElementById('phase-num-txt');
+const celebText    = document.getElementById('celebrate-text');
 
 const PHASE_INFO = {
   [PHASE.INTRO]:            { name: 'INTRO',           step: 0, total: 6 },
@@ -1413,7 +1637,6 @@ function renderFreePlayActionButtons() {
   clearDynamicButtons();
   const holder = Object.values(players).find(p => p.hasBall);
 
-  // Shoot button for current ball handler
   const bShoot = document.createElement('button');
   bShoot.className = 'btn btn-shoot';
   bShoot.textContent = `🔥 SHOOT (${holder ? holder.name : ''})`;
@@ -1421,7 +1644,6 @@ function renderFreePlayActionButtons() {
   bShoot.onclick = () => shootFromCurrentHolder();
   btnRow.insertBefore(bShoot, btnReset);
 
-  // Pass buttons for all 4 other teammates at any time
   Object.entries(players).forEach(([key, p]) => {
     if (p !== holder) {
       const bp = document.createElement('button');
@@ -1530,11 +1752,11 @@ function onPhaseObjectivesComplete() {
   } else if (phase === PHASE.POP) {
     activeScreens = [];
     enterPassChoiceState(
-      '👀 5-OUT SPACING SET! Who should Chloe pass to? Tap any player on the court or choose below!'
+      '👀 5-OUT SPACING SET! Who is open for Chloe to pass to?'
     );
   } else if (phase === PHASE.AWAY_SCREEN_STEP) {
     enterPassChoiceState(
-      '✅ Screen-away & low-block replacement complete! Who is open for the next pass?'
+      '✅ Screen-away & low-block replacement complete! Who is open now?'
     );
   }
 }
@@ -1564,7 +1786,9 @@ function executePassTo(targetKey) {
   if (mode === 'free') {
     updateUI(
       `🏀 #${receiver.id} ${receiver.name} has the ball! Shoot now or pass to any teammate.`,
-      '💡 Tip: Drag any player anywhere on the court, tap a teammate or button to pass, or hit SHOOT!',
+      showDefense
+        ? '💡 Notice how weak-side defenders sag into help position while on-ball pressure tightens!'
+        : '💡 Tip: Drag any player anywhere on the court, pass to any teammate, or hit SHOOT!',
       ''
     );
     return;
@@ -1705,10 +1929,13 @@ function resetFullPlay() {
     players.p4.snapTo(LEFT_BLOCK_X / W, BLOCK_Y / H);
     players.p5.snapTo(RIGHT_BLOCK_X / W, BLOCK_Y / H);
     ball.snapTo(TOK_X / W, (TOK_Y / H) - 0.05);
+    Object.values(defenders).forEach(d => { d.manualOverride = false; d.update(1000); });
 
     updateUI(
       '🏀 FREE PLAY — Drag any player anywhere! Pass to any teammate or shoot at any time.',
-      '💡 Tip: Use the buttons below (or tap a player/rim on the court) to pass or shoot!',
+      showDefense
+        ? '💡 Defense is ON: Drag offensive players OR defenders (X1–X5) to test spacing!'
+        : '💡 Tip: Toggle "SHOW DEFENSE" at the top right to see how defenders react!',
       ''
     );
     return;
@@ -1726,6 +1953,19 @@ function resetFullPlay() {
 // ═══════════════════════════════════════════════════════════
 //  EVENT LISTENERS & INITIALIZATION
 // ═══════════════════════════════════════════════════════════
+btnDefense.addEventListener('click', () => {
+  showDefense = !showDefense;
+  btnDefense.classList.toggle('active', showDefense);
+  btnDefense.textContent = showDefense ? '🛡️ HIDE DEFENSE' : '🛡️ SHOW DEFENSE';
+  legendDef.style.display = showDefense ? 'flex' : 'none';
+  if (showDefense) {
+    Object.values(defenders).forEach(d => {
+      d.manualOverride = false;
+      d.update(1000);
+    });
+  }
+});
+
 btnNext.addEventListener('click', () => {
   if (animating || (mode === 'drag' && targets.length > 0)) return;
   switch (phase) {
