@@ -1,10 +1,17 @@
+Here is the complete, self-contained index.html re-skinned in your AYB Indiana Fever Navy & Gold Arcade Theme with all three plays (Downtown, Uptown, Crosstown), Half-Court & Baseline Inbound alignments, Free Play / Coach Mode / Watch Mode, Live Defense & Skip-Pass Interceptions, and a built-in Playbook Challenge & Streak Tracker.
+What’s New in This Version
+ * Indiana Fever Arcade Theme (#002D62 Navy & #FFC72C Gold): Restores the Orbitron & Rajdhani arcade typography, shimmering header, navy/gold player badges, red X1–X5 defenders, and high-contrast hardwood court (#E3C28F) with a dark navy stadium apron.
+ * Playbook Challenge & Streak Tracker (Saved Automatically on Each Device):
+   * Points & Streak HUD: Earns +100 PTS for completing a play in Coach Mode (or +50 PTS in Watch Mode), plus a +50 PTS No-Turnover Bonus when Defense is turned on, and increments their Bucket Streak (🔥).
+   * 3-Play Mastery Badges: Tracks completion across Downtown, Uptown, and Crosstown (0/3 → 3/3), unlocking the 🏆 FEVER PLAYBOOK CHAMPION badge with a celebratory confetti burst when all three plays are completed.
+   * Coach Notes & Team Rule: Tucked cleanly into the bottom panel so the girls stay focused on the arcade HUD and court first.
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>AYB Indiana Fever | "Downtown" Interactive Playbook</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+<title>AYB Indiana Fever · Interactive Arcade Playbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after {
     box-sizing: border-box;
@@ -15,43 +22,46 @@
   }
 
   :root {
-    --navy:   #002D62;
-    --gold:   #FFC72C;
-    --gold2:  #FFD966;
-    --bg:     #0a0a1a;
-    --panel:  #0d1a2e;
-    --green:  #00e676;
-    --orange: #FF6B00;
-    --red:    #d32f2f;
-    --radius: 12px;
+    --navy:      #002D62;
+    --navy-dark: #071224;
+    --gold:      #FFC72C;
+    --gold2:     #FFD966;
+    --bg:        #090d1a;
+    --panel:     #0e1b33;
+    --panel2:    #132444;
+    --green:     #00e676;
+    --orange:    #FF6B00;
+    --red:       #ff3d3d;
+    --border:    rgba(255, 199, 44, 0.28);
+    --radius:    13px;
   }
 
   body {
-    background: var(--bg);
+    background: radial-gradient(circle at top, #102142 0%, var(--bg) 55%);
     color: #fff;
     font-family: 'Rajdhani', sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0 0 40px;
+    padding-bottom: 44px;
     overflow-x: hidden;
     user-select: none;
     -webkit-user-select: none;
   }
 
-  /* ── HEADER ──────────────────────────────────── */
+  /* ── ARCADE HEADER ───────────────────────────── */
   #header {
     width: 100%;
-    background: linear-gradient(135deg, var(--navy) 60%, #003a80);
+    background: linear-gradient(135deg, var(--navy) 55%, #00418f);
     border-bottom: 3px solid var(--gold);
-    padding: 12px 20px 10px;
+    padding: 12px 18px 10px;
     text-align: center;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
   }
   #header h1 {
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(1.1rem, 4vw, 1.85rem);
-    color: var(--gold);
+    font-size: clamp(1.1rem, 3.8vw, 1.85rem);
     letter-spacing: 3px;
     background: linear-gradient(90deg, #FFD966 0%, #fff 40%, #FFC72C 60%, #FFD966 100%);
     background-size: 200% auto;
@@ -62,30 +72,341 @@
   }
   @keyframes shimmer { to { background-position: 200% center; } }
   #header p {
-    font-size: clamp(0.75rem, 2.5vw, 0.95rem);
-    color: rgba(255,255,255,.72);
+    font-size: clamp(0.75rem, 2.3vw, 0.92rem);
+    color: rgba(255,255,255,0.78);
     letter-spacing: 2px;
     margin-top: 2px;
+    font-weight: 600;
   }
 
-  /* ── TOP CONTROLS & PLAY NAME ────────────────── */
-  #top-bar {
+  /* ── CHALLENGE & STREAK HUD BAR ──────────────── */
+  #hud-bar {
     width: 100%;
-    max-width: 800px;
+    max-width: 1180px;
+    padding: 12px 14px 0;
+  }
+  .hud-card {
+    background: linear-gradient(90deg, var(--panel) 0%, #14284b 50%, var(--panel) 100%);
+    border: 1.5px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 10px 16px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    padding: 14px 14px 0;
+    box-shadow: 0 0 20px rgba(255, 199, 44, 0.16);
+  }
+  .hud-stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+  .hud-pill {
+    background: var(--navy-dark);
+    border: 1px solid rgba(255, 199, 44, 0.4);
+    border-radius: 999px;
+    padding: 5px 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+  }
+  .hud-pill .val {
+    color: var(--gold);
+    font-size: 0.82rem;
+  }
+  .hud-pill.streak .val {
+    color: var(--orange);
+  }
+  .hud-badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+  .play-badge {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(7, 18, 36, 0.7);
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.7px;
+    transition: all 0.25s;
+  }
+  .play-badge.done {
+    background: rgba(0, 230, 118, 0.16);
+    border-color: var(--green);
+    color: var(--green);
+    box-shadow: 0 0 10px rgba(0, 230, 118, 0.28);
+  }
+  .champ-badge {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.66rem;
+    font-weight: 900;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    color: var(--navy);
+    box-shadow: 0 0 14px rgba(255, 199, 44, 0.55);
+    display: none;
+  }
+  .champ-badge.unlocked {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* ── WORKSPACE SHELL ─────────────────────────── */
+  .shell {
+    width: 100%;
+    max-width: 1180px;
+    padding: 12px 14px 0;
+    display: grid;
+    grid-template-columns: 270px 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+  @media (max-width: 920px) {
+    .shell {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── SIDEBAR CARDS ───────────────────────────── */
+  .sidebar {
+    background: var(--panel);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 15px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .eyebrow {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .play-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .play-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(255, 255, 255, 0.14);
+    background: var(--navy-dark);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.16s ease;
+  }
+  .play-card:hover {
+    border-color: var(--gold);
+    background: #102344;
+  }
+  .play-card.active {
+    background: linear-gradient(135deg, var(--navy), #004599);
+    border-color: var(--gold);
+    box-shadow: 0 0 14px rgba(255, 199, 44, 0.3);
+  }
+  .play-glyph {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255, 199, 44, 0.14);
+    border: 1px solid rgba(255, 199, 44, 0.35);
+    color: var(--gold);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .play-card.active .play-glyph {
+    background: var(--gold);
+    color: var(--navy);
+  }
+  .play-card strong {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.8px;
+  }
+  .play-card small {
+    display: block;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.72);
+    margin-top: 2px;
+  }
+  .card-check {
+    color: var(--green);
+    font-size: 0.85rem;
+    display: none;
+  }
+  .play-card.mastered .card-check {
+    display: inline;
+  }
+
+  .segmented {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--navy-dark);
+    border: 1px solid rgba(255, 199, 44, 0.35);
+    border-radius: 9px;
+    padding: 3px;
+    gap: 3px;
+  }
+  .segmented button {
+    border: none;
+    background: transparent;
+    padding: 7px 6px;
+    border-radius: 7px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.64rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.65);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .segmented button.active {
+    background: var(--gold);
+    color: var(--navy);
+  }
+
+  .player-picker {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
+  }
+  .player-picker button {
+    border: 1px solid rgba(255, 199, 44, 0.35);
+    background: var(--navy-dark);
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    padding: 7px 0;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .player-picker button.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--navy);
+  }
+
+  .toggles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    cursor: pointer;
+  }
+  .toggle-row input {
+    accent-color: var(--gold);
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+  }
+
+  .team-rule {
+    background: rgba(0, 45, 98, 0.65);
+    border: 1.5px solid var(--gold);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .team-rule span {
+    display: block;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: var(--gold);
+    margin-bottom: 3px;
+  }
+  .team-rule p {
+    font-size: 0.92rem;
+    line-height: 1.3;
+    color: #fff;
+  }
+  .team-rule small {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.3;
+  }
+
+  /* ── MAIN COURT COLUMN ───────────────────────── */
+  .court-col {
+    background: var(--panel);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 15px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+  }
+
+  #top-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  #play-title-wrap .sub-tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    color: var(--gold2);
+    text-transform: uppercase;
   }
   #play-name {
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(1.05rem, 3.4vw, 1.65rem);
+    font-size: clamp(1.1rem, 3vw, 1.55rem);
+    font-weight: 900;
     color: #fff;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
+    line-height: 1.2;
   }
-  #play-name span { color: var(--gold); }
+  #play-name span {
+    color: var(--gold);
+  }
 
   #controls-right {
     display: flex;
@@ -97,14 +418,14 @@
   /* Mode Toggle Pill */
   #mode-toggle {
     display: flex;
-    background: var(--panel);
+    background: var(--navy-dark);
     border: 1.5px solid var(--gold);
     border-radius: 999px;
     overflow: hidden;
   }
   .mode-btn {
     font-family: 'Orbitron', sans-serif;
-    font-size: 0.66rem;
+    font-size: 0.64rem;
     font-weight: 700;
     padding: 8px 11px;
     border: none;
@@ -118,15 +439,15 @@
     color: var(--navy);
   }
 
-  /* Show Defense Toggle Button */
+  /* Show Defense Toggle */
   #btn-defense {
     font-family: 'Orbitron', sans-serif;
-    font-size: 0.66rem;
+    font-size: 0.64rem;
     font-weight: 700;
-    padding: 8px 13px;
+    padding: 8px 12px;
     border-radius: 999px;
-    border: 1.5px solid rgba(255, 82, 82, 0.75);
-    background: var(--panel);
+    border: 1.5px solid rgba(255, 82, 82, 0.78);
+    background: var(--navy-dark);
     color: #ff8a80;
     cursor: pointer;
     transition: all 0.2s;
@@ -140,65 +461,107 @@
 
   /* ── PHASE BAR ───────────────────────────────── */
   #phase-bar-wrap {
-    width: 100%;
-    max-width: 800px;
-    margin: 10px auto 0;
-    padding: 0 14px;
+    margin-bottom: 10px;
   }
   #phase-label {
-    font-size: 0.85rem;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.72rem;
     color: var(--gold);
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    margin-bottom: 4px;
+    margin-bottom: 5px;
     display: flex;
     justify-content: space-between;
   }
   #phase-track {
     height: 8px;
-    background: rgba(255,255,255,.12);
-    border-radius: 4px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 999px;
     overflow: hidden;
   }
   #phase-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--navy), var(--gold));
-    border-radius: 4px;
-    transition: width .4s ease;
+    border-radius: 999px;
+    transition: width .35s ease;
     box-shadow: 0 0 8px var(--gold);
   }
 
   /* ── CANVAS WRAPPER ──────────────────────────── */
   #canvas-wrap {
     position: relative;
-    margin: 12px auto 0;
     width: 100%;
-    max-width: 800px;
-    padding: 0 12px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid var(--gold);
+    box-shadow: 0 0 22px rgba(255, 199, 44, 0.22);
   }
   canvas#court {
     display: block;
     width: 100%;
-    border-radius: var(--radius);
-    border: 2px solid var(--gold);
-    box-shadow: 0 0 24px rgba(255,199,44,.25), 0 0 60px rgba(0,45,98,.6);
     touch-action: none;
     cursor: default;
   }
 
+  /* ── LEGEND STRIP ────────────────────────────── */
+  .court-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    padding: 8px 10px;
+    background: var(--navy-dark);
+    border: 1px solid rgba(255, 199, 44, 0.25);
+    border-radius: 10px;
+    margin-top: 10px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+  }
+  .court-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dot-o {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--navy);
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 900;
+  }
+  .dot-x {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #b71c1c;
+    border: 1.5px solid #fff;
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 900;
+  }
+
   /* ── ACTION LABEL ────────────────────────────── */
   #action-box {
-    width: 100%;
-    max-width: 800px;
-    margin: 10px auto 0;
-    padding: 0 12px;
+    margin-top: 10px;
   }
   #action-label {
-    background: var(--panel);
-    border: 1px solid rgba(255,199,44,.35);
-    border-radius: var(--radius);
-    padding: 10px 16px;
-    font-size: clamp(0.95rem, 2.8vw, 1.12rem);
+    background: var(--navy-dark);
+    border: 1px solid rgba(255, 199, 44, 0.4);
+    border-radius: 10px;
+    padding: 10px 15px;
+    font-size: clamp(0.95rem, 2.5vw, 1.1rem);
     font-weight: 700;
     color: #fff;
     text-align: center;
@@ -215,141 +578,165 @@
     color: #ffcdd2;
   }
   #tip-label {
-    background: rgba(0,45,98,.5);
+    background: rgba(0, 45, 98, 0.55);
     border-left: 3px solid var(--gold);
-    border-radius: 0 var(--radius) var(--radius) 0;
-    padding: 7px 14px;
-    font-size: clamp(0.8rem, 2.2vw, 0.94rem);
+    border-radius: 0 8px 8px 0;
+    padding: 7px 13px;
+    font-size: 0.9rem;
     color: var(--gold2);
     margin-top: 6px;
     font-style: italic;
   }
 
-  /* ── BUTTONS ─────────────────────────────────── */
+  /* ── ACTION BUTTONS ──────────────────────────── */
   #btn-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 9px;
     justify-content: center;
     align-items: stretch;
-    width: 100%;
-    max-width: 800px;
-    margin: 14px auto 0;
-    padding: 0 12px;
+    margin-top: 12px;
   }
 
   .btn {
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(0.7rem, 2.2vw, 0.86rem);
+    font-size: clamp(0.68rem, 2vw, 0.82rem);
     font-weight: 700;
-    letter-spacing: 1px;
-    padding: 12px 18px;
+    letter-spacing: 0.9px;
+    padding: 11px 16px;
     border: none;
     border-radius: 999px;
     cursor: pointer;
     transition: transform .15s, box-shadow .15s, opacity .15s;
     white-space: nowrap;
     flex: 1 1 auto;
-    min-width: 135px;
-    max-width: 250px;
+    min-width: 132px;
+    max-width: 245px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     text-align: center;
   }
-  .btn:hover:not(:disabled) { transform: scale(1.04); }
+  .btn:hover:not(:disabled) { transform: scale(1.03); }
   .btn:active:not(:disabled) { transform: scale(0.97); }
   .btn:disabled { opacity: .4; cursor: default; }
 
   .btn-wrap {
     white-space: normal;
-    font-size: clamp(0.62rem, 1.9vw, 0.74rem);
+    font-size: clamp(0.6rem, 1.8vw, 0.72rem);
     line-height: 1.25;
-    padding: 10px 14px;
-    letter-spacing: 0.6px;
-    max-width: 230px;
+    padding: 9px 13px;
+    letter-spacing: 0.5px;
   }
 
   .btn-next {
     background: linear-gradient(135deg, var(--gold), var(--gold2));
     color: var(--navy);
-    box-shadow: 0 0 16px rgba(255,199,44,.5);
+    box-shadow: 0 0 16px rgba(255, 199, 44, 0.45);
   }
   .btn-shoot {
     background: linear-gradient(135deg, #ff5722, #ff9800);
     color: #fff;
     border: 2px solid #fff;
-    box-shadow: 0 0 18px rgba(255,107,0,.6);
+    box-shadow: 0 0 16px rgba(255, 107, 0, 0.55);
   }
   .btn-reset {
     background: transparent;
-    color: rgba(255,100,100,1);
-    border: 2px solid rgba(255,100,100,.6);
-    max-width: 185px;
+    color: #ff7b7b;
+    border: 2px solid rgba(255, 100, 100, 0.6);
+    max-width: 175px;
   }
   .btn-pass {
-    background: linear-gradient(135deg, var(--navy), #0040a0);
+    background: linear-gradient(135deg, var(--navy), #0045a8);
     color: var(--gold);
     border: 2px solid var(--gold);
-    box-shadow: 0 0 14px rgba(255,199,44,.35);
-    max-width: 250px;
+    box-shadow: 0 0 12px rgba(255, 199, 44, 0.3);
   }
   .btn-pass.risky {
     background: linear-gradient(135deg, #4a0e0e, #7f1d1d);
     color: #ff8a80;
     border: 2px solid #ff5252;
-    box-shadow: 0 0 12px rgba(255, 82, 82, 0.35);
-    opacity: 0.85;
+    box-shadow: 0 0 10px rgba(255, 82, 82, 0.3);
+    opacity: 0.88;
   }
   .btn-again {
-    background: linear-gradient(135deg,#28a745,#52d470);
+    background: linear-gradient(135deg, #28a745, #52d470);
     color: #fff;
-    box-shadow: 0 0 18px rgba(40,167,69,.5);
+    box-shadow: 0 0 16px rgba(40, 167, 69, 0.45);
   }
 
-  /* ── LEGEND ──────────────────────────────────── */
-  #legend {
+  /* ── COACH NOTES ACCORDION ───────────────────── */
+  .coach-notes {
     width: 100%;
-    max-width: 800px;
+    max-width: 1180px;
     margin: 14px auto 0;
-    padding: 0 12px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
+    padding: 0 14px;
   }
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 7px;
+  .coach-notes details {
     background: var(--panel);
-    border: 1px solid rgba(255,199,44,.2);
-    border-radius: 999px;
-    padding: 5px 12px;
-    font-size: 0.84rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+  }
+  .coach-notes summary {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.78rem;
     font-weight: 700;
-  }
-  .legend-dot {
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    background: var(--navy);
-    border: 2px solid var(--gold);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.68rem;
-    font-weight: 900;
+    letter-spacing: 1px;
     color: var(--gold);
-    flex-shrink: 0;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
-  .legend-dot.def {
-    background: #b71c1c;
-    border-color: #fff;
-    color: #fff;
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: rgba(255,255,255,0.82);
+  }
+  .notes-grid h4 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--gold2);
+    margin-bottom: 4px;
+    font-size: 0.76rem;
+    letter-spacing: 0.6px;
+  }
+
+  /* ── CELEBRATE BANNER ────────────────────────── */
+  #celebrate-text {
+    position: absolute;
+    top: 48%; left: 50%;
+    transform: translate(-50%,-50%);
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.2rem, 3.8vw, 2.05rem);
+    color: var(--gold);
+    background: rgba(7, 18, 36, 0.92);
+    border: 2px solid var(--gold);
+    padding: 10px 22px;
+    border-radius: 999px;
+    box-shadow: 0 0 28px rgba(0, 0, 0, 0.9), 0 0 22px rgba(255, 199, 44, 0.85);
+    text-align: center;
+    white-space: nowrap;
+    display: none;
+    pointer-events: none;
+  }
+  #celebrate-text.turnover {
+    color: #ff5252;
+    border-color: #ff5252;
+    box-shadow: 0 0 28px rgba(0, 0, 0, 0.95), 0 0 22px rgba(255, 23, 68, 0.9);
   }
 
   /* ── MODAL ───────────────────────────────────── */
   #modal-overlay {
     position: fixed; inset: 0;
-    background: rgba(0,0,0,.82);
+    background: rgba(0,0,0,0.82);
     z-index: 999;
     display: flex; align-items: center; justify-content: center;
     padding: 20px;
@@ -360,27 +747,27 @@
     border-radius: 16px;
     max-width: 490px;
     width: 100%;
-    padding: 26px 24px 22px;
+    padding: 24px 22px 20px;
     text-align: center;
-    box-shadow: 0 0 40px rgba(255,199,44,.3);
+    box-shadow: 0 0 40px rgba(255, 199, 44, 0.35);
   }
   #modal h2 {
     font-family: 'Orbitron', sans-serif;
     color: var(--gold);
-    font-size: 1.3rem;
-    margin-bottom: 12px;
+    font-size: 1.25rem;
+    margin-bottom: 10px;
   }
   #modal p {
     font-size: 0.96rem;
-    color: rgba(255,255,255,.88);
-    line-height: 1.5;
+    color: rgba(255,255,255,0.88);
+    line-height: 1.45;
     margin-bottom: 12px;
   }
   #modal ul {
     text-align: left;
-    color: rgba(255,255,255,.85);
-    font-size: 0.9rem;
-    line-height: 1.65;
+    color: rgba(255,255,255,0.86);
+    font-size: 0.92rem;
+    line-height: 1.58;
     padding-left: 20px;
     margin-bottom: 18px;
   }
@@ -390,29 +777,11 @@
     color: var(--navy);
     border: none;
     border-radius: 999px;
-    padding: 12px 34px;
-    font-size: 1rem;
+    padding: 12px 32px;
+    font-size: 0.95rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 0 16px rgba(255,199,44,.5);
-  }
-
-  #celebrate-text {
-    position: absolute;
-    top: 48%; left: 50%;
-    transform: translate(-50%,-50%);
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(1.35rem, 4.3vw, 2.3rem);
-    color: var(--gold);
-    text-shadow: 0 0 24px rgba(0,0,0,.95), 0 0 20px rgba(255,199,44,.9);
-    text-align: center;
-    white-space: nowrap;
-    display: none;
-    pointer-events: none;
-  }
-  #celebrate-text.turnover {
-    color: #ff5252;
-    text-shadow: 0 0 24px rgba(0,0,0,.98), 0 0 20px rgba(255, 23, 68, 0.95);
+    box-shadow: 0 0 16px rgba(255, 199, 44, 0.5);
   }
 </style>
 </head>
@@ -420,68 +789,183 @@
 
 <div id="header">
   <h1>⚡ AYB INDIANA FEVER ⚡</h1>
-  <p>5TH / 6TH GRADE · INTERACTIVE SPACING & MOTION PLAYBOOK</p>
+  <p>5TH / 6TH GRADE · INTERACTIVE ARCADE PLAYBOOK</p>
 </div>
 
-<div id="top-bar">
-  <div id="play-name">PLAY: <span>"DOWNTOWN"</span></div>
-  <div id="controls-right">
-    <button id="btn-defense">🛡️ SHOW DEFENSE</button>
-    <div id="mode-toggle">
-      <button class="mode-btn" id="btn-mode-free">🏀 FREE PLAY</button>
-      <button class="mode-btn active" id="btn-mode-drag">🖐️ COACH MODE</button>
-      <button class="mode-btn" id="btn-mode-auto">▶️ WATCH</button>
+<!-- PLAYBOOK CHALLENGE & STREAK HUD -->
+<div id="hud-bar">
+  <div class="hud-card">
+    <div class="hud-stats">
+      <div class="hud-pill">🏆 SCORE: <span class="val" id="hud-score">0 PTS</span></div>
+      <div class="hud-pill streak">🔥 BUCKET STREAK: <span class="val" id="hud-streak">0</span></div>
+      <div class="hud-pill">🎯 MASTERED: <span class="val" id="hud-mastered">0 / 3</span></div>
+    </div>
+    <div class="hud-badges">
+      <span class="play-badge" id="badge-downtown">DOWNTOWN</span>
+      <span class="play-badge" id="badge-uptown">UPTOWN</span>
+      <span class="play-badge" id="badge-crosstown">CROSSTOWN</span>
+      <span class="champ-badge" id="badge-champ">👑 FEVER CHAMPION!</span>
     </div>
   </div>
 </div>
 
-<div id="phase-bar-wrap">
-  <div id="phase-label">
-    <span id="phase-name-txt">INTRO</span>
-    <span id="phase-num-txt">Step 0 / 6</span>
-  </div>
-  <div id="phase-track"><div id="phase-fill" style="width:0%"></div></div>
+<div class="shell">
+  <!-- LEFT PLAYBOOK SIDEBAR -->
+  <aside class="sidebar">
+    <div>
+      <div class="eyebrow">01 / SELECT PLAY</div>
+      <div class="play-choices" id="play-choices">
+        <button class="play-card active" data-play="downtown">
+          <span class="play-glyph">↓ ↓</span>
+          <span style="flex:1">
+            <strong>DOWNTOWN <span class="card-check">✓</span></strong>
+            <small>Elbows screen down for blocks</small>
+          </span>
+        </button>
+        <button class="play-card" data-play="uptown">
+          <span class="play-glyph">↑ ↑</span>
+          <span style="flex:1">
+            <strong>UPTOWN <span class="card-check">✓</span></strong>
+            <small>Blocks screen up for elbows</small>
+          </span>
+        </button>
+        <button class="play-card" data-play="crosstown">
+          <span class="play-glyph">⇄</span>
+          <span style="flex:1">
+            <strong>CROSSTOWN <span class="card-check">✓</span></strong>
+            <small>Screens across the key</small>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <div class="eyebrow">02 / START ALIGNMENT</div>
+      <div class="segmented" id="start-type-toggle">
+        <button data-start="halfcourt" class="active">HALF-COURT</button>
+        <button data-start="inbound">BASELINE</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="eyebrow">03 / FOLLOW PLAYER</div>
+      <div class="player-picker" id="player-picker">
+        <button class="active" data-focus="0">ALL</button>
+        <button data-focus="1">1</button>
+        <button data-focus="2">2</button>
+        <button data-focus="3">3</button>
+        <button data-focus="4">4</button>
+        <button data-focus="5">5</button>
+      </div>
+    </div>
+
+    <div class="toggles-list">
+      <label class="toggle-row">
+        <span>Show Defenders (X)</span>
+        <input type="checkbox" id="chk-defense">
+      </label>
+      <label class="toggle-row">
+        <span>Show Movement Paths</span>
+        <input type="checkbox" id="chk-paths" checked>
+      </label>
+      <label class="toggle-row">
+        <span>Flip Left &amp; Right</span>
+        <input type="checkbox" id="chk-mirror">
+      </label>
+    </div>
+
+    <div class="team-rule">
+      <span>⚡ GOLDEN RULE</span>
+      <p>Pass, <strong>Screen Away</strong>, and Keep Moving!</p>
+      <small>Complete all 3 plays in Coach Mode or Watch Mode to unlock the Fever Champion badge!</small>
+    </div>
+  </aside>
+
+  <!-- CENTER INTERACTIVE COURT & CONTROLS -->
+  <section class="court-col">
+    <div id="top-bar">
+      <div id="play-title-wrap">
+        <div class="sub-tag" id="play-subtag">HALF-COURT · ELBOWS SCREEN DOWN</div>
+        <div id="play-name">PLAY: <span>"DOWNTOWN"</span></div>
+      </div>
+
+      <div id="controls-right">
+        <button id="btn-defense">🛡️ SHOW DEFENSE</button>
+        <div id="mode-toggle">
+          <button class="mode-btn" id="btn-mode-free">🏀 FREE PLAY</button>
+          <button class="mode-btn active" id="btn-mode-drag">🖐️ COACH MODE</button>
+          <button class="mode-btn" id="btn-mode-auto">▶️ WATCH</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="phase-bar-wrap">
+      <div id="phase-label">
+        <span id="phase-name-txt">SETUP</span>
+        <span id="phase-num-txt">Step 0 / 5</span>
+      </div>
+      <div id="phase-track"><div id="phase-fill" style="width:0%"></div></div>
+    </div>
+
+    <div id="canvas-wrap">
+      <canvas id="court" width="780" height="640"></canvas>
+      <div id="celebrate-text">🔥 FEVER UP! +2 🔥</div>
+    </div>
+
+    <div class="court-legend">
+      <span><b class="dot-o">1</b> Fever Offense (1–5)</span>
+      <span><b class="dot-x">X</b> Defenders</span>
+      <span><strong style="color:var(--green)">⇢</strong> Target / Cut</span>
+      <span><strong style="color:var(--gold)">⇢</strong> Safe Pass</span>
+      <span><strong style="color:#ff5252">⚠️</strong> Skip Pass</span>
+    </div>
+
+    <div id="action-box">
+      <div id="action-label">Welcome to Downtown! Press LET'S RUN IT to start.</div>
+      <div id="tip-label">💡 Tip: Complete all 3 plays without a turnover to build your Streak &amp; unlock Fever Champion!</div>
+    </div>
+
+    <div id="btn-row">
+      <button class="btn btn-next" id="btn-next">▶ LET'S RUN IT!</button>
+      <button class="btn btn-reset" id="btn-reset">⚠️ RESET COURT</button>
+    </div>
+  </section>
 </div>
 
-<div id="canvas-wrap">
-  <canvas id="court" width="780" height="640"></canvas>
-  <div id="celebrate-text">🔥 FEVER UP! +2 🔥</div>
-</div>
-
-<div id="action-box">
-  <div id="action-label">Welcome to Downtown! Press LET'S RUN IT to start.</div>
-  <div id="tip-label">💡 Tip: Toggle "SHOW DEFENSE" to see how long cross-court passes get picked off!</div>
-</div>
-
-<div id="btn-row">
-  <button class="btn btn-next" id="btn-next">▶ LET'S RUN IT!</button>
-  <button class="btn btn-reset" id="btn-reset">⚠️ RESET COURT</button>
-</div>
-
-<div id="legend">
-  <div class="legend-item"><div class="legend-dot">1</div> Player 1 (PG)</div>
-  <div class="legend-item"><div class="legend-dot">2</div> Player 2 (Left)</div>
-  <div class="legend-item"><div class="legend-dot">3</div> Player 3 (Right)</div>
-  <div class="legend-item"><div class="legend-dot">4</div> Player 4 (Forward)</div>
-  <div class="legend-item"><div class="legend-dot">5</div> Player 5 (Post)</div>
-  <div class="legend-item" id="legend-def" style="display:none;"><div class="legend-dot def">X</div> Defenders (1-on-1 Assignments)</div>
+<div class="coach-notes">
+  <details>
+    <summary><span>📋 COACH’S NOTES &amp; PLAY RULES (DOWNTOWN · UPTOWN · CROSSTOWN)</span><span>+</span></summary>
+    <div class="notes-grid">
+      <div>
+        <h4>1. THE OPENING ACTIONS</h4>
+        <p><strong>Downtown:</strong> Elbows (4 &amp; 5) screen down for blocks (2 &amp; 3), who pop wide to the 3pt wings. <strong>Uptown:</strong> Blocks (2 &amp; 3) screen up for elbows (4 &amp; 5), who curl to the wings. <strong>Crosstown:</strong> Left elbow (4) and left block (2) screen across simultaneously for right elbow (5) and right block (3).</p>
+      </div>
+      <div>
+        <h4>2. CONTINUING MOTION &amp; RESET</h4>
+        <p>After passing to a wing, screen away from the ball or replace the vacated low block. When the ball returns to the top of the key, players rebalance into the 2-wing, 2-block box so you can run the next action to either side.</p>
+      </div>
+      <div>
+        <h4>3. BASELINE INBOUNDS &amp; SMART PASSING</h4>
+        <p>Switch to <strong>BASELINE</strong> to practice Player 1 inbounding from under the basket. Avoid long cross-court skip passes or throwing from near the basket all the way to the top of the key when defense is active.</p>
+      </div>
+    </div>
+  </details>
 </div>
 
 <div id="modal-overlay">
   <div id="modal">
-    <h2>🏀 COACH'S PLAYBOOK</h2>
-    <p>Run <strong>"Downtown"</strong> with smart passing & spacing:</p>
+    <h2>⚡ FEVER PLAYBOOK CHALLENGE</h2>
+    <p>Master <strong>Downtown</strong>, <strong>Uptown</strong>, and <strong>Crosstown</strong> to earn points &amp; unlock <strong>Fever Champion</strong>:</p>
     <ul>
-      <li><strong>⚠️ No Risky Skip Passes:</strong> From the wing, reverse to the top of the key or hit your ball-side post. From near the basket, kick out to your ball-side wing—never throw all the way out to the top of the key!</li>
-      <li><strong>🛡️ Show Defense:</strong> Toggle defenders on/off to see 1-on-1 assignments and help-side spacing.</li>
-      <li><strong>Shoot or Pass & Screen Away:</strong> Make short, crisp passes and screen away when guarded.</li>
+      <li><strong>🖐️ Coach Mode (+100 PTS) &amp; ▶️ Watch (+50 PTS):</strong> Run all 3 plays and score to light up all 3 badges!</li>
+      <li><strong>🛡️ Defense Bonus (+50 PTS):</strong> Turn on Defense and score without throwing a risky skip-pass turnover!</li>
+      <li><strong>🏀 Free Play:</strong> Drag any player freehand, tap a teammate to pass, or tap the rim to shoot.</li>
     </ul>
-    <button id="modal-close" type="button" onclick="document.getElementById('modal-overlay').style.display='none'">HIT THE COURT! 🔥</button>
+    <button id="modal-close" type="button">HIT THE COURT! 🔥</button>
   </div>
 </div>
 
 <script>
-
 // Polyfill ctx.roundRect for older iPadOS / iOS Safari versions
 if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
@@ -501,9 +985,7 @@ if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D
     return this;
   };
 }
-// ═══════════════════════════════════════════════════════════
-//  DEVICE DETECTION (Auto-open Free Play on Mobile & Tablet)
-// ═══════════════════════════════════════════════════════════
+
 const isMobileOrTablet = () => {
   const touchCapable = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
   const isIPadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
@@ -512,15 +994,15 @@ const isMobileOrTablet = () => {
 };
 
 // ═══════════════════════════════════════════════════════════
-//  CONSTANTS & PROPORTIONAL HALF-COURT GEOMETRY (780 x 640)
+//  ARCADE HARDWOOD COURT PALETTE & REGULATION GEOMETRY
 // ═══════════════════════════════════════════════════════════
-const NAVY   = '#002D62';
-const GOLD   = '#FFC72C';
-const GOLD2  = '#FFD966';
-const ORANGE = '#FF6B00';
-const GREEN  = '#00e676';
-const RED    = '#c62828';
-const COURT_WOOD = '#E3C28F';
+const NAVY        = '#002D62';
+const GOLD        = '#FFC72C';
+const GOLD2       = '#FFD966';
+const ORANGE      = '#FF6B00';
+const GREEN       = '#00e676';
+const RED         = '#c62828';
+const COURT_WOOD  = '#E3C28F';
 const APRON_COLOR = '#16243d';
 
 const easeInOut = t => t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
@@ -538,8 +1020,8 @@ const cy = p => p * H;
 
 // Court boundaries
 const MARGIN_X    = 36;
-const MARGIN_TOP  = 24;
-const MARGIN_BOT  = 24;
+const MARGIN_TOP  = 28;
+const MARGIN_BOT  = 26;
 const COURT_L     = MARGIN_X;
 const COURT_R     = W - MARGIN_X;
 const COURT_W     = COURT_R - COURT_L;
@@ -564,42 +1046,301 @@ const C3X_R       = COURT_R - 44;
 const ARC_R       = (C3X_R - C3X_L) / 2;
 const CORNER3_END = HOOP_Y;
 
-// Key Perimeter Spots on the Court (Wide free-throw-line-extended wings for clean spacing)
+// Perimeter & Box Spots
 const WING_ANGLE  = Math.PI * 0.17;
 const WING_X_L    = HOOP_X - (ARC_R + 18) * Math.cos(WING_ANGLE);
 const WING_Y      = HOOP_Y + (ARC_R + 18) * Math.sin(WING_ANGLE);
 const WING_X_R    = HOOP_X + (ARC_R + 18) * Math.cos(WING_ANGLE);
 
-const CORNER_X_L  = C3X_L - 22;
-const CORNER_X_R  = C3X_R + 22;
-const CORNER_Y    = BASELINE_Y + 48;
+const CORNER_X_L  = C3X_L - 18;
+const CORNER_X_R  = C3X_R + 18;
+const CORNER_Y    = BASELINE_Y + 56;
 
 const TOK_X       = W / 2;
 const TOK_Y       = HOOP_Y + ARC_R + 28;
 
-// Low block coordinates
 const LEFT_BLOCK_X  = PAINT_X - 24;
 const RIGHT_BLOCK_X = PAINT_X + PAINT_W + 24;
+const LEFT_ELBOW_X  = PAINT_X - 22;
+const RIGHT_ELBOW_X = PAINT_X + PAINT_W + 22;
+
+let mirrorCourt = false;
+function mapX(normX) { return mirrorCourt ? (1 - normX) : normX; }
+function mapPxX(pxX) { return mirrorCourt ? (W - pxX) : pxX; }
 
 // ═══════════════════════════════════════════════════════════
-//  PLAYER STARTING & PLAY POSITIONS
+//  CHALLENGE & STREAK TRACKER (PERSISTED IN LOCALSTORAGE)
 // ═══════════════════════════════════════════════════════════
-const HOME = {
-  p1: { x: TOK_X/W,                    y: TOK_Y/H   },
-  p2: { x: LEFT_BLOCK_X/W,             y: BLOCK_Y/H },
-  p3: { x: RIGHT_BLOCK_X/W,            y: BLOCK_Y/H },
-  p4: { x: (PAINT_X - 22)/W,           y: FT_Y/H    },
-  p5: { x: (PAINT_X + PAINT_W + 22)/W, y: FT_Y/H    },
+const CHALLENGE_KEY = 'ayb_fever_playbook_challenge_v1';
+let challengeState = {
+  score: 0,
+  streak: 0,
+  mastered: { downtown: false, uptown: false, crosstown: false },
+  champCelebrated: false
 };
 
-const POS = {
-  p4_screen: { x: (PAINT_X - 26)/W,           y: (BLOCK_Y + 34)/H },
-  p5_screen: { x: (PAINT_X + PAINT_W + 26)/W, y: (BLOCK_Y + 34)/H },
+try {
+  const saved = JSON.parse(localStorage.getItem(CHALLENGE_KEY));
+  if (saved && typeof saved === 'object') {
+    challengeState = Object.assign(challengeState, saved);
+  }
+} catch (_) {}
 
-  p2_wing:   { x: WING_X_L/W,      y: WING_Y/H },
-  p3_wing:   { x: WING_X_R/W,      y: WING_Y/H },
-  p4_block:  { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H },
-  p5_block:  { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H },
+function saveChallengeState() {
+  try {
+    localStorage.setItem(CHALLENGE_KEY, JSON.stringify(challengeState));
+  } catch (_) {}
+}
+
+function updateChallengeHUD() {
+  document.getElementById('hud-score').textContent = `${challengeState.score} PTS`;
+  document.getElementById('hud-streak').textContent = `${challengeState.streak}`;
+
+  const masteredCount = Object.values(challengeState.mastered).filter(Boolean).length;
+  document.getElementById('hud-mastered').textContent = `${masteredCount} / 3`;
+
+  ['downtown', 'uptown', 'crosstown'].forEach(key => {
+    const done = !!challengeState.mastered[key];
+    const badge = document.getElementById(`badge-${key}`);
+    if (badge) {
+      badge.classList.toggle('done', done);
+      badge.textContent = done ? `✓ ${key.toUpperCase()}` : key.toUpperCase();
+    }
+    const card = document.querySelector(`.play-card[data-play="${key}"]`);
+    if (card) card.classList.toggle('mastered', done);
+  });
+
+  const champBadge = document.getElementById('badge-champ');
+  if (champBadge) {
+    champBadge.classList.toggle('unlocked', masteredCount === 3);
+  }
+}
+
+function recordBucketChallengeReward(playKey, usedCoachMode, defenseWasOn, hadTurnover) {
+  let pts = usedCoachMode ? 100 : 50;
+  if (defenseWasOn && !hadTurnover) pts += 50;
+
+  challengeState.score += pts;
+  challengeState.streak += 1;
+
+  const wasAlreadyMastered = !!challengeState.mastered[playKey];
+  challengeState.mastered[playKey] = true;
+
+  const nowAllMastered = Object.values(challengeState.mastered).every(Boolean);
+  let unlockedChampNow = false;
+  if (nowAllMastered && !challengeState.champCelebrated) {
+    challengeState.champCelebrated = true;
+    challengeState.score += 150;
+    unlockedChampNow = true;
+  }
+
+  saveChallengeState();
+  updateChallengeHUD();
+
+  return { pts, wasAlreadyMastered, unlockedChampNow };
+}
+
+function recordTurnoverPenalty() {
+  challengeState.streak = 0;
+  saveChallengeState();
+  updateChallengeHUD();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PLAYBOOK DEFINITIONS (DOWNTOWN, UPTOWN, CROSSTOWN + INBOUND)
+// ═══════════════════════════════════════════════════════════
+const BOX_HOME = {
+  ballHolder: 'p1',
+  p1: { x: TOK_X/W,         y: TOK_Y/H   },
+  p2: { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H },
+  p3: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H },
+  p4: { x: LEFT_ELBOW_X/W,  y: FT_Y/H    },
+  p5: { x: RIGHT_ELBOW_X/W, y: FT_Y/H    },
+};
+
+const INBOUND_HOME = {
+  ballHolder: 'p1',
+  p1: { x: (HOOP_X + 68)/W, y: (BASELINE_Y - 10)/H },
+  p2: { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H },
+  p3: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H },
+  p4: { x: LEFT_ELBOW_X/W,  y: FT_Y/H    },
+  p5: { x: RIGHT_ELBOW_X/W, y: FT_Y/H    },
+};
+
+const PLAYBOOK = {
+  downtown: {
+    title: 'DOWNTOWN',
+    halfcourt: {
+      subtag: 'HALF-COURT · ELBOWS SCREEN DOWN',
+      home: BOX_HOME,
+      callText: '☎️ DOWNTOWN!',
+      introAction: 'Welcome to Downtown! Elbows (4 & 5) screen down for blocks (2 & 3).',
+      callAction: '☎️ Player 1 calls "DOWNTOWN!" — Elbows prepare to screen down for the blocks!',
+      screenActionDrag: '🖐️ DRAG Player 4 & Player 5 down to set screens below the blocks!',
+      screenActionAuto: '📦 SCREEN DOWN — Player 4 & Player 5 screen down for the low blocks!',
+      screenTip: '💡 Tip: Screeners stop just outside the lane with wide, solid feet.',
+      screenMoves: [
+        { key: 'p4', pos: { x: LEFT_ELBOW_X/W,  y: (BLOCK_Y + 34)/H }, label: 'Down Screen L' },
+        { key: 'p5', pos: { x: RIGHT_ELBOW_X/W, y: (BLOCK_Y + 34)/H }, label: 'Down Screen R' }
+      ],
+      screenBars: [
+        { x: LEFT_ELBOW_X,  y: BLOCK_Y + 12, angle: Math.PI },
+        { x: RIGHT_ELBOW_X, y: BLOCK_Y + 12, angle: Math.PI }
+      ],
+      cutActionDrag: '🖐️ DRAG 2 & 3 out to the 3pt wings, and slide 4 & 5 onto the blocks!',
+      cutActionAuto: '🏃 POP WIDE — 2 & 3 use the screens to pop to the wings; 4 & 5 seal the blocks!',
+      cutTip: '💡 Tip: Stretch the defense all the way out to the 3-point wings!',
+      cutMoves: [
+        { key: 'p2', pos: { x: WING_X_L/W,      y: WING_Y/H  }, label: 'Left Wing' },
+        { key: 'p3', pos: { x: WING_X_R/W,      y: WING_Y/H  }, label: 'Right Wing' },
+        { key: 'p4', pos: { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H }, label: 'Left Block' },
+        { key: 'p5', pos: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H }, label: 'Right Block' }
+      ]
+    },
+    inbound: {
+      subtag: 'BASELINE INBOUND · DOWNTOWN',
+      home: INBOUND_HOME,
+      callText: '☎️ BASELINE DOWNTOWN!',
+      introAction: 'Baseline Inbound: Downtown! Player 1 has the ball out of bounds.',
+      callAction: '☎️ Player 1 slaps the ball and calls "DOWNTOWN!" from the baseline.',
+      screenActionDrag: '🖐️ DRAG Elbows (4 & 5) down to screen for the block players (2 & 3)!',
+      screenActionAuto: '📦 SCREEN DOWN — Elbows (4 & 5) screen down on the blocks!',
+      screenTip: '💡 Tip: Keep spacing clean so cutters can curl toward the hoop.',
+      screenMoves: [
+        { key: 'p4', pos: { x: LEFT_ELBOW_X/W,  y: (BLOCK_Y + 32)/H }, label: 'Screen L' },
+        { key: 'p5', pos: { x: RIGHT_ELBOW_X/W, y: (BLOCK_Y + 32)/H }, label: 'Screen R' }
+      ],
+      screenBars: [
+        { x: LEFT_ELBOW_X,  y: BLOCK_Y + 10, angle: Math.PI },
+        { x: RIGHT_ELBOW_X, y: BLOCK_Y + 10, angle: Math.PI }
+      ],
+      cutActionDrag: '🖐️ DRAG 3 to the ball-side block for a layup look, and 2 out to the left wing!',
+      cutActionAuto: '🏃 CURL & RELEASE — 3 curls to the ball-side block; 2 releases to the wing!',
+      cutTip: '💡 Tip: Hit 3 for the close layup or 2/4 on the safety outlet!',
+      cutMoves: [
+        { key: 'p3', pos: { x: (PAINT_X + PAINT_W - 14)/W, y: (HOOP_Y + 26)/H }, label: 'Layup Look' },
+        { key: 'p2', pos: { x: WING_X_L/W,                 y: WING_Y/H        }, label: 'Release Wing' },
+        { key: 'p4', pos: { x: TOK_X/W,                    y: (FT_Y + 40)/H   }, label: 'Safety Top' },
+        { key: 'p5', pos: { x: CORNER_X_R/W,               y: CORNER_Y/H      }, label: 'Short Corner' }
+      ]
+    }
+  },
+
+  uptown: {
+    title: 'UPTOWN',
+    halfcourt: {
+      subtag: 'HALF-COURT · BLOCKS SCREEN UP',
+      home: BOX_HOME,
+      callText: '☎️ UPTOWN!',
+      introAction: 'Welcome to Uptown! Blocks (2 & 3) screen up for elbows (4 & 5).',
+      callAction: '☎️ Player 1 calls "UPTOWN!" — Block players prepare to screen up for the elbows!',
+      screenActionDrag: '🖐️ DRAG Player 2 & Player 3 up to screen for the elbow players (4 & 5)!',
+      screenActionAuto: '📦 SCREEN UP — Block players (2 & 3) step up to screen the elbows!',
+      screenTip: '💡 Tip: Screeners set solid screens just outside the elbows.',
+      screenMoves: [
+        { key: 'p2', pos: { x: LEFT_ELBOW_X/W,  y: (FT_Y - 34)/H }, label: 'Up Screen L' },
+        { key: 'p3', pos: { x: RIGHT_ELBOW_X/W, y: (FT_Y - 34)/H }, label: 'Up Screen R' }
+      ],
+      screenBars: [
+        { x: LEFT_ELBOW_X,  y: FT_Y - 14, angle: 0 },
+        { x: RIGHT_ELBOW_X, y: FT_Y - 14, angle: 0 }
+      ],
+      cutActionDrag: '🖐️ DRAG Elbows (4 & 5) around the screens to the wings, and open 2 & 3 to the blocks!',
+      cutActionAuto: '🏃 CURL TO WINGS — 4 & 5 curl to the wings; screeners 2 & 3 open to the blocks!',
+      cutTip: '💡 Tip: Screeners open to the ball and seal the low blocks after the curl!',
+      cutMoves: [
+        { key: 'p4', pos: { x: WING_X_L/W,      y: WING_Y/H  }, label: 'Left Wing' },
+        { key: 'p5', pos: { x: WING_X_R/W,      y: WING_Y/H  }, label: 'Right Wing' },
+        { key: 'p2', pos: { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H }, label: 'Open Left Block' },
+        { key: 'p3', pos: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H }, label: 'Open Right Block' }
+      ]
+    },
+    inbound: {
+      subtag: 'BASELINE INBOUND · UPTOWN',
+      home: INBOUND_HOME,
+      callText: '☎️ BASELINE UPTOWN!',
+      introAction: 'Baseline Inbound: Uptown! Blocks screen up so elbows dive to the blocks.',
+      callAction: '☎️ Player 1 calls "UPTOWN!" on the baseline — 2 & 3 prepare to screen up!',
+      screenActionDrag: '🖐️ DRAG Block players (2 & 3) up to screen for the elbows (4 & 5)!',
+      screenActionAuto: '📦 SCREEN UP — 2 & 3 screen up to free the elbow cutters!',
+      screenTip: '💡 Tip: Hold the screen so the elbow cutter gets a clean lane to the rim.',
+      screenMoves: [
+        { key: 'p2', pos: { x: LEFT_ELBOW_X/W,  y: (FT_Y - 34)/H }, label: 'Up Screen L' },
+        { key: 'p3', pos: { x: RIGHT_ELBOW_X/W, y: (FT_Y - 34)/H }, label: 'Up Screen R' }
+      ],
+      screenBars: [
+        { x: LEFT_ELBOW_X,  y: FT_Y - 14, angle: 0 },
+        { x: RIGHT_ELBOW_X, y: FT_Y - 14, angle: 0 }
+      ],
+      cutActionDrag: '🖐️ DRAG Elbows (4 & 5) down to the blocks, and release 3 to the short-corner safety!',
+      cutActionAuto: '🏃 DIVE TO BLOCKS — 4 & 5 cut to the blocks; 3 releases to the short corner!',
+      cutTip: '💡 Tip: Look for 5 at the ball-side block first, or 3 in the short corner!',
+      cutMoves: [
+        { key: 'p5', pos: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H      }, label: 'Ball-Side Block' },
+        { key: 'p4', pos: { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H      }, label: 'Weak Block' },
+        { key: 'p3', pos: { x: CORNER_X_R/W,    y: CORNER_Y/H     }, label: 'Safety Corner' },
+        { key: 'p2', pos: { x: WING_X_L/W,      y: (FT_Y + 30)/H  }, label: 'Outlet Wing' }
+      ]
+    }
+  },
+
+  crosstown: {
+    title: 'CROSSTOWN',
+    halfcourt: {
+      subtag: 'HALF-COURT · SCREENS ACROSS THE KEY',
+      home: BOX_HOME,
+      callText: '☎️ CROSSTOWN!',
+      introAction: 'Welcome to Crosstown! Left side (4 & 2) screens across the key for right side (5 & 3).',
+      callAction: '☎️ Player 1 calls "CROSSTOWN!" — Left elbow (4) and left block (2) cross to screen!',
+      screenActionDrag: '🖐️ DRAG Player 4 & Player 2 across the key to screen for 5 & 3!',
+      screenActionAuto: '📦 CROSS SCREENS — 4 screens across for 5 while 2 screens across for 3!',
+      screenTip: '💡 Tip: Both cross screens arrive together so cutters read the defense.',
+      screenMoves: [
+        { key: 'p4', pos: { x: (PAINT_X + PAINT_W - 22)/W, y: FT_Y/H    }, label: 'Cross Elbow' },
+        { key: 'p2', pos: { x: (PAINT_X + PAINT_W - 22)/W, y: BLOCK_Y/H }, label: 'Cross Block' }
+      ],
+      screenBars: [
+        { x: PAINT_X + PAINT_W - 6, y: FT_Y,    angle: Math.PI / 2 },
+        { x: PAINT_X + PAINT_W - 6, y: BLOCK_Y, angle: Math.PI / 2 }
+      ],
+      cutActionDrag: '🖐️ DRAG 5 & 3 across to the left wing & block, while 4 & 2 open on the right!',
+      cutActionAuto: '🏃 CROSS CUTS — 5 & 3 cut across to the left side; screeners 4 & 2 seal the right!',
+      cutTip: '💡 Tip: Use "Flip Left & Right" in the sidebar to run Crosstown the opposite way!',
+      cutMoves: [
+        { key: 'p5', pos: { x: WING_X_L/W,      y: WING_Y/H  }, label: 'Cut Left Wing' },
+        { key: 'p3', pos: { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H }, label: 'Cut Left Block' },
+        { key: 'p4', pos: { x: WING_X_R/W,      y: WING_Y/H  }, label: 'Pop Right Wing' },
+        { key: 'p2', pos: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H }, label: 'Seal Right Block' }
+      ]
+    },
+    inbound: {
+      subtag: 'BASELINE INBOUND · CROSSTOWN',
+      home: INBOUND_HOME,
+      callText: '☎️ BASELINE CROSSTOWN!',
+      introAction: 'Baseline Inbound: Crosstown! Ball-side 5 & 3 screen across for 4 & 2.',
+      callAction: '☎️ Player 1 calls "CROSSTOWN!" — Ball-side 5 & 3 prepare to screen across!',
+      screenActionDrag: '🖐️ DRAG ball-side 5 & 3 across the lane to screen for 4 & 2!',
+      screenActionAuto: '📦 SCREEN ACROSS — 5 & 3 screen across for weak-side teammates 4 & 2!',
+      screenTip: '💡 Tip: Screeners set solid angles across the paint.',
+      screenMoves: [
+        { key: 'p5', pos: { x: (PAINT_X + 24)/W, y: FT_Y/H    }, label: 'Cross Screen' },
+        { key: 'p3', pos: { x: (PAINT_X + 24)/W, y: BLOCK_Y/H }, label: 'Cross Screen' }
+      ],
+      screenBars: [
+        { x: PAINT_X + 8, y: FT_Y,    angle: -Math.PI / 2 },
+        { x: PAINT_X + 8, y: BLOCK_Y, angle: -Math.PI / 2 }
+      ],
+      cutActionDrag: '🖐️ DRAG 4 to the ball-side block for the first look, and 2 to the short corner!',
+      cutActionAuto: '🏃 CROSS & SEAL — 4 cuts to the ball-side block; 2 fills the short-corner safety!',
+      cutTip: '💡 Tip: Pass to 4 at the block for the layup, or 2 in the short corner!',
+      cutMoves: [
+        { key: 'p4', pos: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H     }, label: 'Ball-Side Block' },
+        { key: 'p2', pos: { x: CORNER_X_R/W,    y: CORNER_Y/H    }, label: 'Short Corner' },
+        { key: 'p5', pos: { x: WING_X_L/W,      y: WING_Y/H      }, label: 'Left Wing' },
+        { key: 'p3', pos: { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H     }, label: 'Weak Block' }
+      ]
+    }
+  }
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -617,6 +1358,11 @@ const PHASE = {
   CELEBRATE: 8
 };
 
+let currentPlayKey = 'downtown';
+let startAlignment = 'halfcourt';
+let focusPlayerId  = 0;
+let showPaths      = true;
+
 let mode = isMobileOrTablet() ? 'free' : 'drag';
 let showDefense = false;
 let phase = PHASE.INTRO;
@@ -624,9 +1370,9 @@ let animating = false;
 let passCount = 0;
 let turnoverCount = 0;
 
-let targets = [];         // { playerKey, x, y, label, locked }
-let activeScreens = [];   // { x, y, angle }
-let draggingEntity = null; // { type: 'offense'|'defense', key: string }
+let targets = [];
+let activeScreens = [];
+let draggingEntity = null;
 let dragStartScreenPos = { x: 0, y: 0 };
 let dragMoved = false;
 let dragOffset = { x: 0, y: 0 };
@@ -648,6 +1394,10 @@ let onShotDone = null;
 let interceptLock = false;
 let bannerTimeout = null;
 
+function getActivePlayConfig() {
+  return PLAYBOOK[currentPlayKey][startAlignment];
+}
+
 // ═══════════════════════════════════════════════════════════
 //  LONG CROSS-COURT & POST-TO-TOP SKIP PASS DETECTION
 // ═══════════════════════════════════════════════════════════
@@ -660,21 +1410,14 @@ function evaluatePassRisk(passer, receiver) {
   const receiverOnLeft  = receiver.x < centerX - centerZoneHalfW;
   const receiverOnRight = receiver.x > centerX + centerZoneHalfW;
 
-  // 1. Cross-court pass from one side of the court to the opposite wing or opposite low block
   const crossesToOppositeSide = (passerOnLeft && receiverOnRight) || (passerOnRight && receiverOnLeft);
 
-  // 2. Post/low-block player near the basket trying to throw all the way out to the top of the key
-  const passerNearBasket = passer.y < FT_Y - 15;
+  const passerNearBasket = passer.y < FT_Y - 15 && passer.y > BASELINE_Y + 5;
   const receiverAtTopOfKey = Math.abs(receiver.x - centerX) <= centerZoneHalfW && receiver.y >= FT_Y + 45;
   const postToTopSkip = passerNearBasket && receiverAtTopOfKey;
 
   if (!crossesToOppositeSide && !postToTopSkip) {
-    return {
-      isDangerous: false,
-      reason: '',
-      interceptor: null,
-      interceptPoint: null
-    };
+    return { isDangerous: false, reason: '', interceptor: null, interceptPoint: null };
   }
 
   const receiverDefKey = 'd' + receiver.id;
@@ -710,7 +1453,7 @@ function showBannerAlert(text, isTurnover = false, duration = 2200) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  PLAYER, DEFENDER & BALL CLASSES (1-ON-1 ASSIGNMENTS)
+//  PLAYER, DEFENDER & BALL CLASSES (ARCADE TOKENS)
 // ═══════════════════════════════════════════════════════════
 class Player {
   constructor(id, name, px, py) {
@@ -753,45 +1496,50 @@ class Player {
     this.t = Math.min(1, this.elapsed / this.dur);
     const e = easeInOut(this.t);
     if (this.t < 0.98) this.trail.push({ x: this.x, y: this.y });
-    if (this.trail.length > 5) this.trail.shift();
+    if (this.trail.length > 6) this.trail.shift();
     this.x = lerp(this.sx, this.tx, e);
     this.y = lerp(this.sy, this.ty, e);
   }
   draw(ctx, isDraggable, isLocked, isPassTarget, isBeingDragged, isOpenLook, isRiskyTarget) {
-    this.trail.forEach((p, i) => {
-      const a = (i + 1) / this.trail.length * 0.25;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, this.r * 0.75, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(0,45,98,${a})`;
-      ctx.fill();
-    });
+    const isDimmed = focusPlayerId !== 0 && Number(this.id) !== focusPlayerId;
+    ctx.save();
+    if (isDimmed) ctx.globalAlpha = 0.28;
+
+    if (showPaths) {
+      this.trail.forEach((p, i) => {
+        const a = (i + 1) / this.trail.length * 0.26;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, this.r * 0.75, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 45, 98, ${a})`;
+        ctx.fill();
+      });
+    }
 
     if (isBeingDragged) {
-      ctx.save();
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.r + 11, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255, 199, 44, 0.22)';
+      ctx.fillStyle = 'rgba(255, 199, 44, 0.25)';
       ctx.fill();
       ctx.strokeStyle = GOLD;
       ctx.lineWidth = 3;
       ctx.stroke();
-      ctx.restore();
     } else if ((isDraggable && !isLocked) || isPassTarget) {
-      ctx.save();
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.r + 7, 0, Math.PI * 2);
-      ctx.strokeStyle = isRiskyTarget ? 'rgba(255, 82, 82, 0.9)' : (isPassTarget ? 'rgba(255,199,44,0.88)' : GREEN);
+      ctx.strokeStyle = isRiskyTarget ? 'rgba(255, 82, 82, 0.92)' : (isPassTarget ? 'rgba(255, 199, 44, 0.9)' : GREEN);
       ctx.lineWidth = 2.5;
       ctx.setLineDash([5, 4]);
       ctx.stroke();
-      ctx.restore();
+      ctx.setLineDash([]);
     }
 
+    // Ground shadow
     ctx.beginPath();
     ctx.ellipse(this.x, this.y + this.r * 0.85, this.r * 0.9, this.r * 0.3, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0,0,0,0.28)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
     ctx.fill();
 
+    // Indiana Fever Navy & Gold Token
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
     ctx.fillStyle = isLocked ? '#004d26' : NAVY;
@@ -806,9 +1554,10 @@ class Player {
     ctx.textBaseline = 'middle';
     ctx.fillText(this.id, this.x, this.y - 1);
 
+    // Name tag pill
     ctx.font = `bold 11px Rajdhani, sans-serif`;
     const nw = ctx.measureText(this.name).width + 10;
-    ctx.fillStyle = 'rgba(10,10,26,0.84)';
+    ctx.fillStyle = 'rgba(10, 10, 26, 0.86)';
     ctx.beginPath();
     ctx.roundRect(this.x - nw / 2, this.y + this.r + 3, nw, 15, 4);
     ctx.fill();
@@ -816,7 +1565,6 @@ class Player {
     ctx.fillText(this.name, this.x, this.y + this.r + 10.5);
 
     if (showDefense && isOpenLook && !this.hasBall) {
-      ctx.save();
       const label = 'OPEN!';
       ctx.font = 'bold 10px Orbitron, sans-serif';
       const bw = ctx.measureText(label).width + 10;
@@ -826,8 +1574,9 @@ class Player {
       ctx.fill();
       ctx.fillStyle = '#00240f';
       ctx.fillText(label, this.x, this.y - this.r - 14.5);
-      ctx.restore();
     }
+
+    ctx.restore();
   }
 }
 
@@ -873,8 +1622,8 @@ class Defender {
     let targetX, targetY;
 
     if (mark.hasBall) {
-      targetX = mark.x + uxHoop * 42;
-      targetY = mark.y + uyHoop * 42;
+      targetX = mark.x + uxHoop * 40;
+      targetY = Math.max(BASELINE_Y + 14, mark.y + uyHoop * 40);
     } else if (distBall < 235) {
       targetX = mark.x + uxHoop * 36 + uxBall * 16;
       targetY = mark.y + uyHoop * 36 + uyBall * 16;
@@ -900,9 +1649,11 @@ class Defender {
     if (!showDefense) return;
 
     const mark = players[this.assignmentKey];
+    const isDimmed = focusPlayerId !== 0 && mark && Number(mark.id) !== focusPlayerId;
+    ctx.save();
+    if (isDimmed) ctx.globalAlpha = 0.25;
 
     if (mark) {
-      ctx.save();
       ctx.beginPath();
       ctx.moveTo(this.x, this.y);
       ctx.lineTo(mark.x, mark.y);
@@ -910,17 +1661,15 @@ class Defender {
       ctx.lineWidth = 1.5;
       ctx.setLineDash([4, 4]);
       ctx.stroke();
-      ctx.restore();
+      ctx.setLineDash([]);
     }
 
     if (isBeingDragged) {
-      ctx.save();
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.r + 10, 0, Math.PI * 2);
       ctx.strokeStyle = '#ff8a80';
       ctx.lineWidth = 2.5;
       ctx.stroke();
-      ctx.restore();
     }
 
     ctx.beginPath();
@@ -941,6 +1690,7 @@ class Defender {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(this.id, this.x, this.y);
+    ctx.restore();
   }
 }
 
@@ -1004,12 +1754,14 @@ class Ball {
 }
 
 function initGame() {
+  const cfg = getActivePlayConfig();
+  const h = cfg.home;
   players = {
-    p1: new Player('1', 'Player 1', HOME.p1.x, HOME.p1.y),
-    p2: new Player('2', 'Player 2', HOME.p2.x, HOME.p2.y),
-    p3: new Player('3', 'Player 3', HOME.p3.x, HOME.p3.y),
-    p4: new Player('4', 'Player 4', HOME.p4.x, HOME.p4.y),
-    p5: new Player('5', 'Player 5', HOME.p5.x, HOME.p5.y),
+    p1: new Player('1', 'Player 1', mapX(h.p1.x), h.p1.y),
+    p2: new Player('2', 'Player 2', mapX(h.p2.x), h.p2.y),
+    p3: new Player('3', 'Player 3', mapX(h.p3.x), h.p3.y),
+    p4: new Player('4', 'Player 4', mapX(h.p4.x), h.p4.y),
+    p5: new Player('5', 'Player 5', mapX(h.p5.x), h.p5.y),
   };
   defenders = {
     d1: new Defender('X1', 'p1'),
@@ -1020,8 +1772,9 @@ function initGame() {
   };
   Object.values(defenders).forEach(d => d.update(1000));
 
-  players.p1.hasBall = true;
-  ball = new Ball(HOME.p1.x, HOME.p1.y - 0.05);
+  const holderKey = h.ballHolder || 'p1';
+  players[holderKey].hasBall = true;
+  ball = new Ball(mapX(h[holderKey].x), h[holderKey].y - 0.05);
   targets = [];
   activeScreens = [];
   draggingEntity = null;
@@ -1036,9 +1789,10 @@ function initGame() {
 }
 
 initGame();
+updateChallengeHUD();
 
 // ═══════════════════════════════════════════════════════════
-//  DRAW COMPLETE REGULATION HALF-COURT
+//  DRAW REGULATION ARCADE HALF-COURT
 // ═══════════════════════════════════════════════════════════
 function drawCourt() {
   ctx.fillStyle = APRON_COLOR;
@@ -1058,7 +1812,8 @@ function drawCourt() {
   ctx.lineWidth = 3;
   ctx.strokeRect(COURT_L, BASELINE_Y, COURT_W, HALFCOURT_Y - BASELINE_Y);
 
-  ctx.fillStyle = 'rgba(185, 28, 28, 0.52)';
+  // Indiana Fever Navy-tinted Key / Paint
+  ctx.fillStyle = 'rgba(0, 45, 98, 0.24)';
   ctx.fillRect(PAINT_X, BASELINE_Y, PAINT_W, PAINT_H);
   ctx.lineWidth = 2.5;
   ctx.strokeRect(PAINT_X, BASELINE_Y, PAINT_W, PAINT_H);
@@ -1123,32 +1878,30 @@ function drawCourt() {
   drawCourtLabel('TOP OF KEY', TOK_X, TOK_Y + 34, 'center');
   drawCourtLabel('LEFT WING', WING_X_L - 12, WING_Y - 26, 'right');
   drawCourtLabel('RIGHT WING', WING_X_R + 12, WING_Y - 26, 'left');
-  drawCourtLabel('CORNER', C3X_L - 6, CORNER_Y - 22, 'right');
-  drawCourtLabel('CORNER', C3X_R + 6, CORNER_Y - 22, 'left');
 
   if (mode === 'free' || phase === PHASE.SHOOT_OR_PASS) {
-    drawCourtLabel('TAP RIM TO SHOOT', HOOP_X, HOOP_Y + 26, 'center');
+    drawCourtLabel('TAP RIM TO SHOOT', HOOP_X, HOOP_Y + 26, 'center', true);
   }
 }
 
-function drawCourtLabel(text, x, y, align) {
+function drawCourtLabel(text, x, y, align, highlight = false) {
   ctx.save();
-  ctx.font = `bold 10px Rajdhani, sans-serif`;
+  ctx.font = `bold 10px ${highlight ? 'Orbitron' : 'Rajdhani'}, sans-serif`;
   ctx.textAlign = align;
   ctx.textBaseline = 'middle';
   const w = ctx.measureText(text).width + 10;
   const bx = align === 'center' ? x - w / 2 : align === 'right' ? x - w : x;
-  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  ctx.fillStyle = highlight ? NAVY : 'rgba(255,255,255,0.78)';
   ctx.beginPath();
   ctx.roundRect(bx, y - 8, w, 16, 4);
   ctx.fill();
-  ctx.fillStyle = '#111';
+  ctx.fillStyle = highlight ? GOLD : '#111';
   ctx.fillText(text, align === 'center' ? x : align === 'right' ? x - 5 : x + 5, y);
   ctx.restore();
 }
 
 // ═══════════════════════════════════════════════════════════
-//  DRAW TARGETS, SCREENS & PASSING LANES (SAFE VS. SKIP PASS)
+//  DRAW TARGETS, SCREENS & PASSING LANES
 // ═══════════════════════════════════════════════════════════
 let pulseAnim = 0;
 function drawTargetsAndGuides() {
@@ -1178,11 +1931,11 @@ function drawTargetsAndGuides() {
     const p = players[t.playerKey];
     ctx.save();
 
-    if (!t.locked) {
+    if (!t.locked && showPaths) {
       ctx.beginPath();
       ctx.moveTo(p.x, p.y);
       ctx.lineTo(t.x, t.y);
-      ctx.strokeStyle = 'rgba(0, 230, 118, 0.6)';
+      ctx.strokeStyle = 'rgba(0, 230, 118, 0.65)';
       ctx.lineWidth = 2.5;
       ctx.setLineDash([6, 6]);
       ctx.stroke();
@@ -1279,12 +2032,8 @@ function drawArrow(x1, y1, x2, y2, color, dash = false, alpha = 1) {
 //  TOUCH & MOUSE POINTER INTERACTIONS
 // ═══════════════════════════════════════════════════════════
 function getPointerClientPos(e) {
-  if (e.touches && e.touches.length > 0) {
-    return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-  }
-  if (e.changedTouches && e.changedTouches.length > 0) {
-    return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-  }
+  if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  if (e.changedTouches && e.changedTouches.length > 0) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
   return { x: e.clientX, y: e.clientY };
 }
 
@@ -1392,10 +2141,7 @@ function onPointerMove(e) {
       dragMoved = true;
     }
 
-    const minX = mode === 'free' ? 22 : COURT_L + 16;
-    const maxX = mode === 'free' ? W - 22 : COURT_R - 16;
-    const minY = mode === 'free' ? 22 : BASELINE_Y + 16;
-    const maxY = mode === 'free' ? H - 22 : HALFCOURT_Y - 16;
+    const minX = 18, maxX = W - 18, minY = 14, maxY = H - 18;
 
     if (draggingEntity.type === 'defense') {
       const d = defenders[draggingEntity.key];
@@ -1463,7 +2209,6 @@ function checkAllTargetsLocked() {
   }
 }
 
-
 // ═══════════════════════════════════════════════════════════
 //  REBALANCE 2 WINGS + 2 BLOCKS WHEN BALL RETURNS TO TOP OF KEY
 // ═══════════════════════════════════════════════════════════
@@ -1485,7 +2230,6 @@ function rebalanceFourSpotsAroundTopOfKey(tokHolderKey) {
     { name: 'Right Block', x: RIGHT_BLOCK_X, y: BLOCK_Y }
   ];
 
-  // Evaluate all 24 permutations to find the globally closest assignment
   let bestPerm = null;
   let bestCost = Infinity;
 
@@ -1522,7 +2266,7 @@ function rebalanceFourSpotsAroundTopOfKey(tokHolderKey) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  DYNAMIC SCREEN-AWAY & TOP-OF-KEY DOWN-SCREEN ENGINE
+//  DYNAMIC CONTINUING MOTION (SCREEN-AWAY & TOP-OF-KEY RESET)
 // ═══════════════════════════════════════════════════════════
 function buildDynamicScreenAwayMoves() {
   const holderEntry = Object.entries(players).find(([_, p]) => p.hasBall);
@@ -1531,15 +2275,11 @@ function buildDynamicScreenAwayMoves() {
 
   const isAtTopOfKey = Math.abs(holder.x - TOK_X) <= 60 && holder.y >= FT_Y + 45;
 
-  // CASE A: Ball is at the TOP OF THE KEY
-  // The players on the WINGS screen down for the players on the BLOCK on their own side,
-  // and the block players use those down-screens to pop out to the wide 3pt wings!
   if (isAtTopOfKey) {
     const others = Object.entries(players)
       .filter(([k]) => k !== holderKey)
       .map(([k, p]) => ({ key: k, p }));
 
-    // Split into left side and right side of the court
     const leftPlayers  = others.filter(o => o.p.x <= TOK_X);
     const rightPlayers = others.filter(o => o.p.x > TOK_X);
 
@@ -1552,8 +2292,6 @@ function buildDynamicScreenAwayMoves() {
       rightPlayers.push(leftPlayers.shift());
     }
 
-    // On each side, the player closer to the wing (higher y / further from baseline) is the WING screener,
-    // and the player closer to the block (lower y / closer to baseline) is the BLOCK cutter!
     leftPlayers.sort((a, b) => b.p.y - a.p.y);
     rightPlayers.sort((a, b) => b.p.y - a.p.y);
 
@@ -1563,8 +2301,8 @@ function buildDynamicScreenAwayMoves() {
     const rightBlockCutter  = rightPlayers[1];
 
     const moves = [
-      { key: leftWingScreener.key,  pos: { x: LEFT_BLOCK_X / W,  y: BLOCK_Y / H }, label: 'Wing Screen Down L' },
-      { key: rightWingScreener.key, pos: { x: RIGHT_BLOCK_X / W, y: BLOCK_Y / H }, label: 'Wing Screen Down R' },
+      { key: leftWingScreener.key,  pos: { x: LEFT_BLOCK_X / W,  y: BLOCK_Y / H }, label: 'Down Screen L' },
+      { key: rightWingScreener.key, pos: { x: RIGHT_BLOCK_X / W, y: BLOCK_Y / H }, label: 'Down Screen R' },
       { key: leftBlockCutter.key,   pos: { x: WING_X_L / W,      y: WING_Y / H  }, label: 'Pop Left Wing' },
       { key: rightBlockCutter.key,  pos: { x: WING_X_R / W,      y: WING_Y / H  }, label: 'Pop Right Wing' }
     ];
@@ -1574,21 +2312,17 @@ function buildDynamicScreenAwayMoves() {
       { x: RIGHT_BLOCK_X, y: BLOCK_Y - 22, angle: Math.PI }
     ];
 
-    const desc = `Wings (${leftWingScreener.p.name} & ${rightWingScreener.p.name}) screen down to the blocks on their own sides while ${leftBlockCutter.p.name} & ${rightBlockCutter.p.name} pop wide to the 3pt wings!`;
+    const desc = `Wings (${leftWingScreener.p.name} & ${rightWingScreener.p.name}) screen down while ${leftBlockCutter.p.name} & ${rightBlockCutter.p.name} pop wide to the 3pt wings!`;
     return { moves, screens, desc };
   }
 
-  // CASE B: Ball is on a WING or BLOCK — screen away & replace the vacated low block
   const ballOnLeft = holder.x <= W / 2;
-
   const ballSidePostKey = ballOnLeft ? 'p4' : 'p5';
   const weakSidePostKey = ballOnLeft ? 'p5' : 'p4';
   const ballSidePost    = players[ballSidePostKey];
   const weakSidePost    = players[weakSidePostKey];
 
   const vacatedBlockX = ballOnLeft ? LEFT_BLOCK_X : RIGHT_BLOCK_X;
-  const vacatedBlockY = BLOCK_Y;
-
   const postScreenX = ballOnLeft ? (PAINT_X + PAINT_W - 10) : (PAINT_X + 10);
   const postScreenY = BLOCK_Y + 6;
 
@@ -1596,29 +2330,13 @@ function buildDynamicScreenAwayMoves() {
   const screens = [];
 
   if (holderKey !== ballSidePostKey && holderKey !== weakSidePostKey) {
-    moves.push({
-      key: ballSidePostKey,
-      pos: { x: postScreenX / W, y: postScreenY / H },
-      label: 'Screen Away'
-    });
-    moves.push({
-      key: weakSidePostKey,
-      pos: { x: vacatedBlockX / W, y: vacatedBlockY / H },
-      label: ballOnLeft ? 'Fill Left Block' : 'Fill Right Block'
-    });
-    screens.push({
-      x: postScreenX + (ballOnLeft ? 20 : -20),
-      y: postScreenY,
-      angle: ballOnLeft ? Math.PI / 2 : -Math.PI / 2
-    });
+    moves.push({ key: ballSidePostKey, pos: { x: postScreenX / W, y: postScreenY / H }, label: 'Screen Away' });
+    moves.push({ key: weakSidePostKey, pos: { x: vacatedBlockX / W, y: BLOCK_Y / H }, label: ballOnLeft ? 'Fill Left Block' : 'Fill Right Block' });
+    screens.push({ x: postScreenX + (ballOnLeft ? 20 : -20), y: postScreenY, angle: ballOnLeft ? Math.PI / 2 : -Math.PI / 2 });
   } else {
     const otherPostKey = holderKey === 'p4' ? 'p5' : 'p4';
     const targetBlockX = holder.x < W / 2 ? RIGHT_BLOCK_X : LEFT_BLOCK_X;
-    moves.push({
-      key: otherPostKey,
-      pos: { x: targetBlockX / W, y: BLOCK_Y / H },
-      label: 'Seal Opposite Block'
-    });
+    moves.push({ key: otherPostKey, pos: { x: targetBlockX / W, y: BLOCK_Y / H }, label: 'Seal Opposite Block' });
   }
 
   const perimeterKeys = ['p1', 'p2', 'p3'].filter(k => k !== holderKey);
@@ -1634,23 +2352,9 @@ function buildDynamicScreenAwayMoves() {
     const pScreenX = Math.max(COURT_L + 45, Math.min(COURT_R - 45, perimCutter.p.x + dirX * 36));
     const pScreenY = Math.max(BASELINE_Y + 45, Math.min(HALFCOURT_Y - 45, perimCutter.p.y - 26));
 
-    moves.push({
-      key: perimScreener.key,
-      pos: { x: pScreenX / W, y: pScreenY / H },
-      label: 'Screen Away'
-    });
-
-    moves.push({
-      key: perimCutter.key,
-      pos: { x: TOK_X / W, y: TOK_Y / H },
-      label: 'Top of Key'
-    });
-
-    screens.push({
-      x: pScreenX + dirX * 18,
-      y: pScreenY,
-      angle: dirX > 0 ? Math.PI / 2 : -Math.PI / 2
-    });
+    moves.push({ key: perimScreener.key, pos: { x: pScreenX / W, y: pScreenY / H }, label: 'Screen Away' });
+    moves.push({ key: perimCutter.key,   pos: { x: TOK_X / W, y: TOK_Y / H },       label: 'Top of Key' });
+    screens.push({ x: pScreenX + dirX * 18, y: pScreenY, angle: dirX > 0 ? Math.PI / 2 : -Math.PI / 2 });
   }
 
   const desc = (holderKey !== ballSidePostKey && holderKey !== weakSidePostKey)
@@ -1668,11 +2372,11 @@ function drawCallText() {
   const p1 = players.p1;
   ctx.save();
   ctx.globalAlpha = Math.max(0, callTextAlpha);
-  ctx.font = `bold 22px Orbitron, sans-serif`;
+  ctx.font = `bold 20px Orbitron, sans-serif`;
   const tw = ctx.measureText(callTextStr).width + 28;
-  const th = 40;
-  const tx = p1.x;
-  const ty = p1.y - 48;
+  const th = 38;
+  const tx = Math.max(tw / 2 + 12, Math.min(W - tw / 2 - 12, p1.x));
+  const ty = Math.max(th / 2 + 10, p1.y - 46);
 
   ctx.fillStyle = 'rgba(0,45,98,0.92)';
   ctx.beginPath();
@@ -1689,13 +2393,13 @@ function drawCallText() {
   ctx.restore();
 }
 
-function spawnConfetti() {
-  for (let i = 0; i < 95; i++) {
+function spawnConfetti(count = 95) {
+  for (let i = 0; i < count; i++) {
     confettiParticles.push({
       x: W / 2 + (Math.random() - 0.5) * W * 0.7,
       y: H * 0.35,
-      vx: (Math.random() - 0.5) * 6,
-      vy: -Math.random() * 6 - 2,
+      vx: (Math.random() - 0.5) * 6.5,
+      vy: -Math.random() * 6.5 - 2,
       r: 5 + Math.random() * 6,
       color: Math.random() < 0.6 ? GOLD : '#fff',
       life: 1,
@@ -1829,7 +2533,9 @@ requestAnimationFrame(render);
 const btnNext      = document.getElementById('btn-next');
 const btnReset     = document.getElementById('btn-reset');
 const btnDefense   = document.getElementById('btn-defense');
-const legendDef    = document.getElementById('legend-def');
+const chkDefense   = document.getElementById('chk-defense');
+const chkPaths     = document.getElementById('chk-paths');
+const chkMirror    = document.getElementById('chk-mirror');
 const btnRow       = document.getElementById('btn-row');
 const actionLabel  = document.getElementById('action-label');
 const tipLabel     = document.getElementById('tip-label');
@@ -1837,17 +2543,19 @@ const phaseFill    = document.getElementById('phase-fill');
 const phaseNameTxt = document.getElementById('phase-name-txt');
 const phaseNumTxt  = document.getElementById('phase-num-txt');
 const celebText    = document.getElementById('celebrate-text');
+const playNameEl   = document.getElementById('play-name');
+const playSubtagEl = document.getElementById('play-subtag');
 
 const PHASE_INFO = {
-  [PHASE.INTRO]:            { name: 'INTRO',           step: 0, total: 6 },
-  [PHASE.CALL]:             { name: 'THE CALL',        step: 1, total: 6 },
-  [PHASE.SCREENS]:          { name: 'DOWN SCREENS',    step: 2, total: 6 },
-  [PHASE.POP]:              { name: 'POP TO WINGS',    step: 3, total: 6 },
-  [PHASE.DECISION_PASS]:    { name: 'CHOOSE PASS',     step: 4, total: 6 },
-  [PHASE.SHOOT_OR_PASS]:    { name: 'SHOOT OR PASS?',  step: 5, total: 6 },
-  [PHASE.AWAY_SCREEN_STEP]: { name: 'SCREEN AWAY',     step: 5, total: 6 },
-  [PHASE.SHOT_ANIM]:        { name: 'SHOT UP!',        step: 6, total: 6 },
-  [PHASE.CELEBRATE]:        { name: 'SCORE!',          step: 6, total: 6 },
+  [PHASE.INTRO]:            { name: 'SETUP',           step: 0, total: 5 },
+  [PHASE.CALL]:             { name: 'THE CALL',        step: 1, total: 5 },
+  [PHASE.SCREENS]:          { name: 'SET SCREENS',     step: 2, total: 5 },
+  [PHASE.POP]:              { name: 'CUTS & SPACING',  step: 3, total: 5 },
+  [PHASE.DECISION_PASS]:    { name: 'CHOOSE PASS',     step: 4, total: 5 },
+  [PHASE.SHOOT_OR_PASS]:    { name: 'SHOOT OR PASS?',  step: 5, total: 5 },
+  [PHASE.AWAY_SCREEN_STEP]: { name: 'SCREEN AWAY',     step: 4, total: 5 },
+  [PHASE.SHOT_ANIM]:        { name: 'SHOT UP!',        step: 5, total: 5 },
+  [PHASE.CELEBRATE]:        { name: 'SCORE!',          step: 5, total: 5 },
 };
 
 function clearDynamicButtons() {
@@ -1899,7 +2607,7 @@ function updateUI(action, tip, nextLabel, isDanger = false) {
     return;
   }
 
-  const info = PHASE_INFO[phase] || { name: '', step: 0, total: 6 };
+  const info = PHASE_INFO[phase] || { name: '', step: 0, total: 5 };
   phaseNameTxt.textContent = info.name;
   phaseNumTxt.textContent  = `Step ${info.step} / ${info.total}`;
   phaseFill.style.width    = `${(info.step / info.total) * 100}%`;
@@ -1936,11 +2644,16 @@ function updateUI(action, tip, nextLabel, isDanger = false) {
 }
 
 function assignMoveOrDrag(moves, screenIndicators, onComplete) {
-  activeScreens = screenIndicators || [];
+  activeScreens = (screenIndicators || []).map(s => ({
+    x: mapPxX(s.x),
+    y: s.y,
+    angle: mirrorCourt ? -s.angle : s.angle
+  }));
+
   if (mode === 'drag') {
     targets = moves.map(m => ({
       playerKey: m.key,
-      x: cx(m.pos.x),
+      x: cx(mapX(m.pos.x)),
       y: cy(m.pos.y),
       label: m.label,
       locked: false
@@ -1949,7 +2662,7 @@ function assignMoveOrDrag(moves, screenIndicators, onComplete) {
   } else {
     animating = true;
     btnNext.disabled = true;
-    moves.forEach(m => players[m.key].moveTo(m.pos.x, m.pos.y, 850));
+    moves.forEach(m => players[m.key].moveTo(mapX(m.pos.x), m.pos.y, 820));
     const check = () => {
       if (Object.values(players).every(p => !p.moving)) {
         animating = false;
@@ -1966,21 +2679,19 @@ function assignMoveOrDrag(moves, screenIndicators, onComplete) {
 function onPhaseObjectivesComplete() {
   if (phase === PHASE.SCREENS) {
     updateUI(
-      '✅ Down screens set! Now pop Player 2 & Player 3 out to the 3-point wings.',
-      '💡 Tip: Good spacing! Keep those screens solid so the wings get open.',
-      'NEXT: POP TO WINGS →'
+      '✅ Screens set! Now move cutters into open space.',
+      '💡 Tip: Good timing! Wait for the screen to be set before cutting.',
+      'NEXT: CUTS & SPACING →'
     );
   } else if (phase === PHASE.POP) {
     activeScreens = [];
-    enterPassChoiceState(
-      '👀 5-OUT SPACING SET! Who is open for Player 1 to pass to?'
-    );
+    enterPassChoiceState('👀 Spacing set! Who is open for Player 1 to pass to?');
   } else if (phase === PHASE.AWAY_SCREEN_STEP) {
     const holder = Object.values(players).find(p => p.hasBall);
     const isAtTopOfKey = holder && Math.abs(holder.x - TOK_X) <= 60 && holder.y >= FT_Y + 45;
     enterPassChoiceState(
       isAtTopOfKey
-        ? '✅ Down screens set on both sides & 5-out spacing restored! Who is open now?'
+        ? '✅ Down screens set & 5-out spacing restored! Who is open now?'
         : '✅ Screen-away & low-block replacement complete! Who is open now?'
     );
   }
@@ -2011,7 +2722,7 @@ function executePassTo(targetKey) {
 
     updateUI(
       `🚫 Can't pass to ${receiver.name} — ${risk.reason} Pick a safe teammate on your side!`,
-      '💡 Coaching Point: Wings can reverse to the top of the key; post players near the basket kick out to their ball-side wing.',
+      '💡 Coaching Point: Wings reverse to the top of the key; post players kick out to their ball-side wing.',
       '',
       true
     );
@@ -2021,6 +2732,8 @@ function executePassTo(targetKey) {
   if (showDefense && risk.isDangerous && risk.interceptor && risk.interceptPoint) {
     interceptLock = true;
     turnoverCount++;
+    recordTurnoverPenalty();
+
     const def = risk.interceptor.defender;
     const stealX = risk.interceptPoint.x;
     const stealY = risk.interceptPoint.y;
@@ -2032,7 +2745,7 @@ function executePassTo(targetKey) {
     flashColor = '#ff1744';
     flashAlpha = 0.48;
     flashTimer = 420;
-    showBannerAlert('🚨 PICKED OFF! TURNOVER! 🚨', true, 1750);
+    showBannerAlert('🚨 PICKED OFF! STREAK RESET! 🚨', true, 1750);
 
     updateUI(
       `🚨 PICKED OFF BY ${def.id}! Bad pass — ${risk.reason}`,
@@ -2060,10 +2773,8 @@ function executePassTo(targetKey) {
   passCount++;
   activeScreens = [];
 
-  // Whenever the ball returns to the Top of the Key, rebalance the remaining 4 players
-  // so the closest players fill both low blocks and both wide wings!
   const returnedToTopOfKey = isTopOfKeySpot(receiver);
-  if (returnedToTopOfKey) {
+  if (returnedToTopOfKey && startAlignment === 'halfcourt') {
     rebalanceFourSpotsAroundTopOfKey(targetKey);
   }
 
@@ -2092,12 +2803,10 @@ function executePassTo(targetKey) {
 
   phase = PHASE.SHOOT_OR_PASS;
   updateUI(
-    returnedToTopOfKey
+    returnedToTopOfKey && startAlignment === 'halfcourt'
       ? `🏀 ${receiver.name} resets at the Top of the Key (2 wings + 2 blocks balanced)! SHOOT or PASS?`
       : `🏀 ${receiver.name} catches the ball! Do you want to SHOOT or PASS?`,
-    returnedToTopOfKey
-      ? '💡 If no one is open, choose PASS & SCREEN AWAY so the wings screen down to the blocks on their side!'
-      : '💡 If guarded, choose PASS to trigger off-ball screens away!',
+    '💡 If guarded, choose PASS & SCREEN AWAY to trigger continuing motion!',
     ''
   );
 }
@@ -2108,17 +2817,39 @@ function triggerScreenAwayAndPassChoice() {
   const isAtTopOfKey = holder && Math.abs(holder.x - TOK_X) <= 60 && holder.y >= FT_Y + 45;
   const { moves, screens, desc } = buildDynamicScreenAwayMoves();
 
+  activeScreens = screens;
+  if (mode === 'drag') {
+    targets = moves.map(m => ({
+      playerKey: m.key,
+      x: cx(m.pos.x),
+      y: cy(m.pos.y),
+      label: m.label,
+      locked: false
+    }));
+    btnNext.disabled = true;
+  } else {
+    animating = true;
+    btnNext.disabled = true;
+    moves.forEach(m => players[m.key].moveTo(m.pos.x, m.pos.y, 820));
+    const check = () => {
+      if (Object.values(players).every(p => !p.moving)) {
+        animating = false;
+        btnNext.disabled = false;
+        onPhaseObjectivesComplete();
+      } else {
+        setTimeout(check, 50);
+      }
+    };
+    setTimeout(check, 100);
+  }
+
   updateUI(
     mode === 'drag'
       ? `🖐️ DRAG players into position! (${desc})`
       : (isAtTopOfKey ? `📦 DOWN SCREENS! ${desc}` : `🛡️ SCREEN AWAY! ${desc}`),
-    isAtTopOfKey
-      ? '💡 Tip: When the ball is at the top of the key, both sides screen down on their own side so the wings pop wide with 5-out spacing!'
-      : '💡 Tip: Watch the opposite low block player cut across to fill the exact low block the screener just left!',
+    '💡 Tip: After you pass, help someone get open!',
     'NEXT: CHOOSE NEXT PASS →'
   );
-
-  assignMoveOrDrag(moves, screens, onPhaseObjectivesComplete);
 }
 
 function shootFromCurrentHolder() {
@@ -2138,25 +2869,49 @@ function shootFromCurrentHolder() {
     flashColor = GOLD;
     flashAlpha = 0.55;
     flashTimer = 450;
-    spawnConfetti();
-    showBannerAlert('🔥 FEVER UP! +2 🔥', false, mode === 'free' ? 2400 : 0);
 
     if (mode === 'free') {
+      spawnConfetti(80);
+      challengeState.score += 25;
+      challengeState.streak += 1;
+      saveChallengeState();
+      updateChallengeHUD();
+
+      showBannerAlert('🔥 FEVER UP! +25 PTS 🔥', false, 2200);
       holder.hasBall = true;
       ball.visible = true;
       ball.snapToXY(holder.x, holder.y - holder.r - ball.r);
       updateUI(
-        `🔥 SWOOSH! Great bucket by ${holder.name}!`,
-        '💡 Drag players anywhere on the court, pass to any teammate, or shoot again!',
+        `🔥 SWOOSH! Great bucket by ${holder.name}! (+25 PTS · Streak: ${challengeState.streak})`,
+        '💡 Switch to Coach Mode or Watch Mode to master all 3 plays for +100 PTS each!',
         ''
       );
       return;
     }
 
+    const reward = recordBucketChallengeReward(
+      currentPlayKey,
+      mode === 'drag',
+      showDefense,
+      turnoverCount > 0
+    );
+
+    spawnConfetti(reward.unlockedChampNow ? 180 : 100);
+    showBannerAlert(
+      reward.unlockedChampNow
+        ? '👑 FEVER CHAMPION UNLOCKED! +150 BONUS! 👑'
+        : `🔥 FEVER UP! +${reward.pts} PTS 🔥`,
+      false,
+      0
+    );
+
     phase = PHASE.CELEBRATE;
+    const playTitle = PLAYBOOK[currentPlayKey].title;
     updateUI(
-      `🔥 SWOOSH! +2 FOR ${holder.name.toUpperCase()} AFTER ${passCount} PASS${passCount === 1 ? '' : 'ES'}!`,
-      '🏆 Great ball movement, off-ball screens, and shot selection!',
+      `🔥 SWOOSH! ${playTitle} COMPLETE (+${reward.pts} PTS · Streak: ${challengeState.streak})!`,
+      reward.unlockedChampNow
+        ? '👑 INCREDIBLE! You mastered Downtown, Uptown, and Crosstown!'
+        : '🏆 Pick another play on the left to light up all 3 Mastery Badges!',
       ''
     );
 
@@ -2171,76 +2926,64 @@ function shootFromCurrentHolder() {
 }
 
 function runPhase1() {
+  const cfg = getActivePlayConfig();
   phase = PHASE.CALL;
   showCallText = true;
-  callTextStr = '☎️ DOWNTOWN!';
+  callTextStr = cfg.callText;
   callTextTimer = 0;
-  updateUI(
-    '☎️ Player 1 calls "DOWNTOWN!" — Elbows get ready to screen down!',
-    '🔊 Everyone hears the call and prepares to move on rhythm.',
-    'SET DOWN SCREENS →'
-  );
+  updateUI(cfg.callAction, '🔊 Everyone hears the call and prepares to move on rhythm.', 'SET SCREENS →');
 }
 
 function runPhase2() {
+  const cfg = getActivePlayConfig();
   phase = PHASE.SCREENS;
   showCallText = false;
-  const moves = [
-    { key: 'p4', pos: POS.p4_screen, label: 'Screen Left' },
-    { key: 'p5', pos: POS.p5_screen, label: 'Screen Right' }
-  ];
-  const screens = [
-    { x: cx(POS.p4_screen.x), y: cy(POS.p4_screen.y) - 22, angle: Math.PI },
-    { x: cx(POS.p5_screen.x), y: cy(POS.p5_screen.y) - 22, angle: Math.PI }
-  ];
   updateUI(
-    mode === 'drag'
-      ? '🖐️ DRAG Player 4 & Player 5 down to set screens below the blocks!'
-      : '📦 SCREEN DOWN — Player 4 & Player 5 screen down for the blocks!',
-    '💡 Tip: Screeners stop just outside the lane with wide feet.',
-    'NEXT: POP TO WINGS →'
+    mode === 'drag' ? cfg.screenActionDrag : cfg.screenActionAuto,
+    cfg.screenTip,
+    'NEXT: CUTS & SPACING →'
   );
-  assignMoveOrDrag(moves, screens, onPhaseObjectivesComplete);
+  assignMoveOrDrag(cfg.screenMoves, cfg.screenBars, onPhaseObjectivesComplete);
 }
 
 function runPhase3() {
+  const cfg = getActivePlayConfig();
   phase = PHASE.POP;
-  const moves = [
-    { key: 'p2', pos: POS.p2_wing,  label: 'Left Wing' },
-    { key: 'p3', pos: POS.p3_wing,  label: 'Right Wing' },
-    { key: 'p4', pos: POS.p4_block, label: 'Left Block' },
-    { key: 'p5', pos: POS.p5_block, label: 'Right Block' }
-  ];
   updateUI(
-    mode === 'drag'
-      ? '🖐️ DRAG Player 2 & Player 3 out to the 3pt wings, and slide Player 4 & Player 5 to the blocks!'
-      : '🏃 POP WIDE! Player 2 & Player 3 cut to the 3-point wings!',
-    '💡 Tip: Stretch the defense all the way out to the 3-point line!',
+    mode === 'drag' ? cfg.cutActionDrag : cfg.cutActionAuto,
+    cfg.cutTip,
     'NEXT: CHOOSE PASS →'
   );
-  assignMoveOrDrag(moves, [], onPhaseObjectivesComplete);
+  assignMoveOrDrag(cfg.cutMoves, [], onPhaseObjectivesComplete);
 }
 
 function resetFullPlay() {
+  const playObj = PLAYBOOK[currentPlayKey];
+  const cfg = getActivePlayConfig();
+  playNameEl.innerHTML = `PLAY: <span>"${playObj.title}"</span>`;
+  playSubtagEl.textContent = cfg.subtag;
+
   celebText.style.display = 'none';
   celebText.classList.remove('turnover');
   phase = PHASE.INTRO;
   initGame();
 
   if (mode === 'free') {
-    players.p1.snapTo(TOK_X / W, TOK_Y / H);
-    players.p2.snapTo(WING_X_L / W, WING_Y / H);
-    players.p3.snapTo(WING_X_R / W, WING_Y / H);
-    players.p4.snapTo(LEFT_BLOCK_X / W, BLOCK_Y / H);
-    players.p5.snapTo(RIGHT_BLOCK_X / W, BLOCK_Y / H);
-    ball.snapTo(TOK_X / W, (TOK_Y / H) - 0.05);
+    if (startAlignment === 'halfcourt') {
+      players.p1.snapTo(TOK_X / W, TOK_Y / H);
+      players.p2.snapTo(mapX(WING_X_L / W), WING_Y / H);
+      players.p3.snapTo(mapX(WING_X_R / W), WING_Y / H);
+      players.p4.snapTo(mapX(LEFT_BLOCK_X / W), BLOCK_Y / H);
+      players.p5.snapTo(mapX(RIGHT_BLOCK_X / W), BLOCK_Y / H);
+      ball.snapTo(TOK_X / W, (TOK_Y / H) - 0.05);
+    }
     Object.values(defenders).forEach(d => { d.manualOverride = false; d.update(1000); });
 
     updateUI(
-      '🏀 FREE PLAY — Drag any player anywhere! Make short, safe passes or shoot anytime.',
+      `🏀 FREE PLAY (${playObj.title}) — Drag any player anywhere! Make safe passes or tap the rim to shoot.`,
       showDefense
-        ? '💡 Defense is ON: Long skip passes across the paint or midline will get picked off!'
-        : '💡 Tip: Toggle "SHOW DEFENSE" at the top right to see how defenders pick off risky skip passes!',
+        ? '💡 Defense is ON: Long skip passes across the paint or midline will reset your Streak!'
+        : '💡 Tip: Toggle "SHOW DEFENSE" at the top right to test how defenders pick off risky skip passes!',
       ''
     );
     return;
@@ -2249,20 +2992,21 @@ function resetFullPlay() {
   clearDynamicButtons();
   btnNext.style.display = '';
   updateUI(
-    'Ready! Press "LET\'S RUN IT!" to practice the play.',
-    mode === 'drag' ? '💡 Coach Mode active: Drag players to their target rings!' : '💡 Watch Mode active: Press Next to step through.',
+    cfg.introAction,
+    mode === 'drag'
+      ? '💡 Coach Mode (+100 PTS): Press "LET\'S RUN IT!" then drag players to their target rings!'
+      : '💡 Watch Mode (+50 PTS): Press "LET\'S RUN IT!" to step through the play!',
     '▶ LET\'S RUN IT!'
   );
 }
 
 // ═══════════════════════════════════════════════════════════
-//  EVENT LISTENERS & INITIALIZATION
+//  SIDEBAR & TOOLBAR EVENT LISTENERS
 // ═══════════════════════════════════════════════════════════
-btnDefense.addEventListener('click', () => {
-  showDefense = !showDefense;
+function syncDefenseToggleUI() {
   btnDefense.classList.toggle('active', showDefense);
   btnDefense.textContent = showDefense ? '🛡️ HIDE DEFENSE' : '🛡️ SHOW DEFENSE';
-  legendDef.style.display = showDefense ? 'flex' : 'none';
+  chkDefense.checked = showDefense;
   if (showDefense) {
     Object.values(defenders).forEach(d => {
       d.manualOverride = false;
@@ -2272,6 +3016,37 @@ btnDefense.addEventListener('click', () => {
   if (mode === 'free' || phase === PHASE.DECISION_PASS) {
     updateUI(actionLabel.textContent, tipLabel.textContent, btnNext.textContent, actionLabel.classList.contains('danger'));
   }
+}
+
+btnDefense.addEventListener('click', () => { showDefense = !showDefense; syncDefenseToggleUI(); });
+chkDefense.addEventListener('change', () => { showDefense = chkDefense.checked; syncDefenseToggleUI(); });
+chkPaths.addEventListener('change', () => { showPaths = chkPaths.checked; });
+chkMirror.addEventListener('change', () => { mirrorCourt = chkMirror.checked; resetFullPlay(); });
+
+document.querySelectorAll('#play-choices .play-card').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#play-choices .play-card').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentPlayKey = btn.dataset.play;
+    resetFullPlay();
+  });
+});
+
+document.querySelectorAll('#start-type-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#start-type-toggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    startAlignment = btn.dataset.start;
+    resetFullPlay();
+  });
+});
+
+document.querySelectorAll('#player-picker button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#player-picker button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    focusPlayerId = Number(btn.dataset.focus);
+  });
 });
 
 btnNext.addEventListener('click', () => {
@@ -2321,3 +3096,4 @@ if (mode === 'free') {
 </script>
 </body>
 </html>
+
