@@ -1,10 +1,3 @@
-Here is the complete, self-contained index.html re-skinned in your AYB Indiana Fever Navy & Gold Arcade Theme with all three plays (Downtown, Uptown, Crosstown), Half-Court & Baseline Inbound alignments, Free Play / Coach Mode / Watch Mode, Live Defense & Skip-Pass Interceptions, and a built-in Playbook Challenge & Streak Tracker.
-What’s New in This Version
- * Indiana Fever Arcade Theme (#002D62 Navy & #FFC72C Gold): Restores the Orbitron & Rajdhani arcade typography, shimmering header, navy/gold player badges, red X1–X5 defenders, and high-contrast hardwood court (#E3C28F) with a dark navy stadium apron.
- * Playbook Challenge & Streak Tracker (Saved Automatically on Each Device):
-   * Points & Streak HUD: Earns +100 PTS for completing a play in Coach Mode (or +50 PTS in Watch Mode), plus a +50 PTS No-Turnover Bonus when Defense is turned on, and increments their Bucket Streak (🔥).
-   * 3-Play Mastery Badges: Tracks completion across Downtown, Uptown, and Crosstown (0/3 → 3/3), unlocking the 🏆 FEVER PLAYBOOK CHAMPION badge with a celebratory confetti burst when all three plays are completed.
-   * Coach Notes & Team Rule: Tucked cleanly into the bottom panel so the girls stay focused on the arcade HUD and court first.
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -295,6 +288,16 @@ What’s New in This Version
   .segmented button.active {
     background: var(--gold);
     color: var(--navy);
+  }
+  .segmented button:disabled {
+    opacity: 0.28;
+    cursor: not-allowed;
+  }
+  .alignment-hint {
+    margin-top: 5px;
+    font-size: 0.78rem;
+    color: rgba(255, 217, 102, 0.85);
+    font-weight: 600;
   }
 
   .player-picker {
@@ -819,32 +822,33 @@ What’s New in This Version
           <span class="play-glyph">↓ ↓</span>
           <span style="flex:1">
             <strong>DOWNTOWN <span class="card-check">✓</span></strong>
-            <small>Elbows screen down for blocks</small>
+            <small>Half-Court · Elbows screen down</small>
           </span>
         </button>
         <button class="play-card" data-play="uptown">
           <span class="play-glyph">↑ ↑</span>
           <span style="flex:1">
             <strong>UPTOWN <span class="card-check">✓</span></strong>
-            <small>Blocks screen up for elbows</small>
+            <small>Baseline OOB · Blocks screen up</small>
           </span>
         </button>
         <button class="play-card" data-play="crosstown">
           <span class="play-glyph">⇄</span>
           <span style="flex:1">
             <strong>CROSSTOWN <span class="card-check">✓</span></strong>
-            <small>Screens across the key</small>
+            <small>Baseline OOB · Screens across</small>
           </span>
         </button>
       </div>
     </div>
 
     <div>
-      <div class="eyebrow">02 / START ALIGNMENT</div>
+      <div class="eyebrow">02 / SITUATION (AUTO-SET)</div>
       <div class="segmented" id="start-type-toggle">
         <button data-start="halfcourt" class="active">HALF-COURT</button>
-        <button data-start="inbound">BASELINE</button>
+        <button data-start="inbound" disabled>BASELINE</button>
       </div>
+      <div class="alignment-hint" id="alignment-hint">Downtown runs in Half-Court Offense.</div>
     </div>
 
     <div>
@@ -877,7 +881,7 @@ What’s New in This Version
     <div class="team-rule">
       <span>⚡ GOLDEN RULE</span>
       <p>Pass, <strong>Screen Away</strong>, and Keep Moving!</p>
-      <small>Complete all 3 plays in Coach Mode or Watch Mode to unlock the Fever Champion badge!</small>
+      <small>Complete Downtown (Half-Court), Uptown (BLOB), and Crosstown (BLOB) to unlock Fever Champion!</small>
     </div>
   </aside>
 
@@ -934,19 +938,19 @@ What’s New in This Version
 
 <div class="coach-notes">
   <details>
-    <summary><span>📋 COACH’S NOTES &amp; PLAY RULES (DOWNTOWN · UPTOWN · CROSSTOWN)</span><span>+</span></summary>
+    <summary><span>📋 COACH’S NOTES &amp; PLAY RULES (HALF-COURT &amp; BASELINE OOB)</span><span>+</span></summary>
     <div class="notes-grid">
       <div>
-        <h4>1. THE OPENING ACTIONS</h4>
-        <p><strong>Downtown:</strong> Elbows (4 &amp; 5) screen down for blocks (2 &amp; 3), who pop wide to the 3pt wings. <strong>Uptown:</strong> Blocks (2 &amp; 3) screen up for elbows (4 &amp; 5), who curl to the wings. <strong>Crosstown:</strong> Left elbow (4) and left block (2) screen across simultaneously for right elbow (5) and right block (3).</p>
+        <h4>1. HALF-COURT OFFENSE: DOWNTOWN</h4>
+        <p><strong>Downtown (Half-Court Only):</strong> Elbows (4 &amp; 5) screen down for blocks (2 &amp; 3), who pop wide to the 3pt wings while 4 &amp; 5 seal the blocks.</p>
       </div>
       <div>
-        <h4>2. CONTINUING MOTION &amp; RESET</h4>
-        <p>After passing to a wing, screen away from the ball or replace the vacated low block. When the ball returns to the top of the key, players rebalance into the 2-wing, 2-block box so you can run the next action to either side.</p>
+        <h4>2. BASELINE OUT OF BOUNDS: UPTOWN &amp; CROSSTOWN</h4>
+        <p><strong>Uptown (Baseline OOB):</strong> Blocks (2 &amp; 3) screen up so elbows (4 &amp; 5) dive to the blocks. <strong>Crosstown (Baseline OOB):</strong> Ball-side 5 &amp; 3 screen across the lane for weak-side teammates 4 &amp; 2.</p>
       </div>
       <div>
-        <h4>3. BASELINE INBOUNDS &amp; SMART PASSING</h4>
-        <p>Switch to <strong>BASELINE</strong> to practice Player 1 inbounding from under the basket. Avoid long cross-court skip passes or throwing from near the basket all the way to the top of the key when defense is active.</p>
+        <h4>3. CONTINUING MOTION &amp; SMART PASSING</h4>
+        <p>After the entry pass, screen away or replace the vacated low block. Wing-to-top reversals and ball-side block feeds are safe; avoid long cross-court skip passes or throwing from down on the block all the way out to the top of the key.</p>
       </div>
     </div>
   </details>
@@ -955,7 +959,7 @@ What’s New in This Version
 <div id="modal-overlay">
   <div id="modal">
     <h2>⚡ FEVER PLAYBOOK CHALLENGE</h2>
-    <p>Master <strong>Downtown</strong>, <strong>Uptown</strong>, and <strong>Crosstown</strong> to earn points &amp; unlock <strong>Fever Champion</strong>:</p>
+    <p>Master <strong>Downtown</strong> (Half-Court), <strong>Uptown</strong> (Baseline OOB), and <strong>Crosstown</strong> (Baseline OOB) to unlock <strong>Fever Champion</strong>:</p>
     <ul>
       <li><strong>🖐️ Coach Mode (+100 PTS) &amp; ▶️ Watch (+50 PTS):</strong> Run all 3 plays and score to light up all 3 badges!</li>
       <li><strong>🛡️ Defense Bonus (+50 PTS):</strong> Turn on Defense and score without throwing a risky skip-pass turnover!</li>
@@ -1147,8 +1151,16 @@ function recordTurnoverPenalty() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  PLAYBOOK DEFINITIONS (DOWNTOWN, UPTOWN, CROSSTOWN + INBOUND)
+//  PLAYBOOK DEFINITIONS
+//  - Downtown: Half-Court Offense ONLY
+//  - Uptown & Crosstown: Baseline Out-of-Bounds (BLOB) ONLY
 // ═══════════════════════════════════════════════════════════
+const PLAY_ALIGNMENT_RULES = {
+  downtown:  'halfcourt',
+  uptown:    'inbound',
+  crosstown: 'inbound'
+};
+
 const BOX_HOME = {
   ballHolder: 'p1',
   p1: { x: TOK_X/W,         y: TOK_Y/H   },
@@ -1170,11 +1182,12 @@ const INBOUND_HOME = {
 const PLAYBOOK = {
   downtown: {
     title: 'DOWNTOWN',
+    alignment: 'halfcourt',
     halfcourt: {
-      subtag: 'HALF-COURT · ELBOWS SCREEN DOWN',
+      subtag: 'HALF-COURT OFFENSE · ELBOWS SCREEN DOWN',
       home: BOX_HOME,
       callText: '☎️ DOWNTOWN!',
-      introAction: 'Welcome to Downtown! Elbows (4 & 5) screen down for blocks (2 & 3).',
+      introAction: 'Half-Court Offense: Downtown! Elbows (4 & 5) screen down for blocks (2 & 3).',
       callAction: '☎️ Player 1 calls "DOWNTOWN!" — Elbows prepare to screen down for the blocks!',
       screenActionDrag: '🖐️ DRAG Player 4 & Player 5 down to set screens below the blocks!',
       screenActionAuto: '📦 SCREEN DOWN — Player 4 & Player 5 screen down for the low blocks!',
@@ -1196,71 +1209,18 @@ const PLAYBOOK = {
         { key: 'p4', pos: { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H }, label: 'Left Block' },
         { key: 'p5', pos: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H }, label: 'Right Block' }
       ]
-    },
-    inbound: {
-      subtag: 'BASELINE INBOUND · DOWNTOWN',
-      home: INBOUND_HOME,
-      callText: '☎️ BASELINE DOWNTOWN!',
-      introAction: 'Baseline Inbound: Downtown! Player 1 has the ball out of bounds.',
-      callAction: '☎️ Player 1 slaps the ball and calls "DOWNTOWN!" from the baseline.',
-      screenActionDrag: '🖐️ DRAG Elbows (4 & 5) down to screen for the block players (2 & 3)!',
-      screenActionAuto: '📦 SCREEN DOWN — Elbows (4 & 5) screen down on the blocks!',
-      screenTip: '💡 Tip: Keep spacing clean so cutters can curl toward the hoop.',
-      screenMoves: [
-        { key: 'p4', pos: { x: LEFT_ELBOW_X/W,  y: (BLOCK_Y + 32)/H }, label: 'Screen L' },
-        { key: 'p5', pos: { x: RIGHT_ELBOW_X/W, y: (BLOCK_Y + 32)/H }, label: 'Screen R' }
-      ],
-      screenBars: [
-        { x: LEFT_ELBOW_X,  y: BLOCK_Y + 10, angle: Math.PI },
-        { x: RIGHT_ELBOW_X, y: BLOCK_Y + 10, angle: Math.PI }
-      ],
-      cutActionDrag: '🖐️ DRAG 3 to the ball-side block for a layup look, and 2 out to the left wing!',
-      cutActionAuto: '🏃 CURL & RELEASE — 3 curls to the ball-side block; 2 releases to the wing!',
-      cutTip: '💡 Tip: Hit 3 for the close layup or 2/4 on the safety outlet!',
-      cutMoves: [
-        { key: 'p3', pos: { x: (PAINT_X + PAINT_W - 14)/W, y: (HOOP_Y + 26)/H }, label: 'Layup Look' },
-        { key: 'p2', pos: { x: WING_X_L/W,                 y: WING_Y/H        }, label: 'Release Wing' },
-        { key: 'p4', pos: { x: TOK_X/W,                    y: (FT_Y + 40)/H   }, label: 'Safety Top' },
-        { key: 'p5', pos: { x: CORNER_X_R/W,               y: CORNER_Y/H      }, label: 'Short Corner' }
-      ]
     }
   },
 
   uptown: {
     title: 'UPTOWN',
-    halfcourt: {
-      subtag: 'HALF-COURT · BLOCKS SCREEN UP',
-      home: BOX_HOME,
-      callText: '☎️ UPTOWN!',
-      introAction: 'Welcome to Uptown! Blocks (2 & 3) screen up for elbows (4 & 5).',
-      callAction: '☎️ Player 1 calls "UPTOWN!" — Block players prepare to screen up for the elbows!',
-      screenActionDrag: '🖐️ DRAG Player 2 & Player 3 up to screen for the elbow players (4 & 5)!',
-      screenActionAuto: '📦 SCREEN UP — Block players (2 & 3) step up to screen the elbows!',
-      screenTip: '💡 Tip: Screeners set solid screens just outside the elbows.',
-      screenMoves: [
-        { key: 'p2', pos: { x: LEFT_ELBOW_X/W,  y: (FT_Y - 34)/H }, label: 'Up Screen L' },
-        { key: 'p3', pos: { x: RIGHT_ELBOW_X/W, y: (FT_Y - 34)/H }, label: 'Up Screen R' }
-      ],
-      screenBars: [
-        { x: LEFT_ELBOW_X,  y: FT_Y - 14, angle: 0 },
-        { x: RIGHT_ELBOW_X, y: FT_Y - 14, angle: 0 }
-      ],
-      cutActionDrag: '🖐️ DRAG Elbows (4 & 5) around the screens to the wings, and open 2 & 3 to the blocks!',
-      cutActionAuto: '🏃 CURL TO WINGS — 4 & 5 curl to the wings; screeners 2 & 3 open to the blocks!',
-      cutTip: '💡 Tip: Screeners open to the ball and seal the low blocks after the curl!',
-      cutMoves: [
-        { key: 'p4', pos: { x: WING_X_L/W,      y: WING_Y/H  }, label: 'Left Wing' },
-        { key: 'p5', pos: { x: WING_X_R/W,      y: WING_Y/H  }, label: 'Right Wing' },
-        { key: 'p2', pos: { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H }, label: 'Open Left Block' },
-        { key: 'p3', pos: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H }, label: 'Open Right Block' }
-      ]
-    },
+    alignment: 'inbound',
     inbound: {
-      subtag: 'BASELINE INBOUND · UPTOWN',
+      subtag: 'BASELINE OUT OF BOUNDS · BLOCKS SCREEN UP',
       home: INBOUND_HOME,
       callText: '☎️ BASELINE UPTOWN!',
-      introAction: 'Baseline Inbound: Uptown! Blocks screen up so elbows dive to the blocks.',
-      callAction: '☎️ Player 1 calls "UPTOWN!" on the baseline — 2 & 3 prepare to screen up!',
+      introAction: 'Baseline Out of Bounds: Uptown! Blocks (2 & 3) screen up so elbows (4 & 5) dive to the blocks.',
+      callAction: '☎️ Player 1 slaps the ball and calls "UPTOWN!" on the baseline — 2 & 3 prepare to screen up!',
       screenActionDrag: '🖐️ DRAG Block players (2 & 3) up to screen for the elbows (4 & 5)!',
       screenActionAuto: '📦 SCREEN UP — 2 & 3 screen up to free the elbow cutters!',
       screenTip: '💡 Tip: Hold the screen so the elbow cutter gets a clean lane to the rim.',
@@ -1286,39 +1246,13 @@ const PLAYBOOK = {
 
   crosstown: {
     title: 'CROSSTOWN',
-    halfcourt: {
-      subtag: 'HALF-COURT · SCREENS ACROSS THE KEY',
-      home: BOX_HOME,
-      callText: '☎️ CROSSTOWN!',
-      introAction: 'Welcome to Crosstown! Left side (4 & 2) screens across the key for right side (5 & 3).',
-      callAction: '☎️ Player 1 calls "CROSSTOWN!" — Left elbow (4) and left block (2) cross to screen!',
-      screenActionDrag: '🖐️ DRAG Player 4 & Player 2 across the key to screen for 5 & 3!',
-      screenActionAuto: '📦 CROSS SCREENS — 4 screens across for 5 while 2 screens across for 3!',
-      screenTip: '💡 Tip: Both cross screens arrive together so cutters read the defense.',
-      screenMoves: [
-        { key: 'p4', pos: { x: (PAINT_X + PAINT_W - 22)/W, y: FT_Y/H    }, label: 'Cross Elbow' },
-        { key: 'p2', pos: { x: (PAINT_X + PAINT_W - 22)/W, y: BLOCK_Y/H }, label: 'Cross Block' }
-      ],
-      screenBars: [
-        { x: PAINT_X + PAINT_W - 6, y: FT_Y,    angle: Math.PI / 2 },
-        { x: PAINT_X + PAINT_W - 6, y: BLOCK_Y, angle: Math.PI / 2 }
-      ],
-      cutActionDrag: '🖐️ DRAG 5 & 3 across to the left wing & block, while 4 & 2 open on the right!',
-      cutActionAuto: '🏃 CROSS CUTS — 5 & 3 cut across to the left side; screeners 4 & 2 seal the right!',
-      cutTip: '💡 Tip: Use "Flip Left & Right" in the sidebar to run Crosstown the opposite way!',
-      cutMoves: [
-        { key: 'p5', pos: { x: WING_X_L/W,      y: WING_Y/H  }, label: 'Cut Left Wing' },
-        { key: 'p3', pos: { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H }, label: 'Cut Left Block' },
-        { key: 'p4', pos: { x: WING_X_R/W,      y: WING_Y/H  }, label: 'Pop Right Wing' },
-        { key: 'p2', pos: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H }, label: 'Seal Right Block' }
-      ]
-    },
+    alignment: 'inbound',
     inbound: {
-      subtag: 'BASELINE INBOUND · CROSSTOWN',
+      subtag: 'BASELINE OUT OF BOUNDS · SCREENS ACROSS',
       home: INBOUND_HOME,
       callText: '☎️ BASELINE CROSSTOWN!',
-      introAction: 'Baseline Inbound: Crosstown! Ball-side 5 & 3 screen across for 4 & 2.',
-      callAction: '☎️ Player 1 calls "CROSSTOWN!" — Ball-side 5 & 3 prepare to screen across!',
+      introAction: 'Baseline Out of Bounds: Crosstown! Ball-side 5 & 3 screen across for 4 & 2.',
+      callAction: '☎️ Player 1 slaps the ball and calls "CROSSTOWN!" — Ball-side 5 & 3 prepare to screen across!',
       screenActionDrag: '🖐️ DRAG ball-side 5 & 3 across the lane to screen for 4 & 2!',
       screenActionAuto: '📦 SCREEN ACROSS — 5 & 3 screen across for weak-side teammates 4 & 2!',
       screenTip: '💡 Tip: Screeners set solid angles across the paint.',
@@ -1359,7 +1293,7 @@ const PHASE = {
 };
 
 let currentPlayKey = 'downtown';
-let startAlignment = 'halfcourt';
+let startAlignment = PLAY_ALIGNMENT_RULES[currentPlayKey];
 let focusPlayerId  = 0;
 let showPaths      = true;
 
@@ -1395,26 +1329,61 @@ let interceptLock = false;
 let bannerTimeout = null;
 
 function getActivePlayConfig() {
-  return PLAYBOOK[currentPlayKey][startAlignment];
+  const playObj = PLAYBOOK[currentPlayKey];
+  const validAlignment = PLAY_ALIGNMENT_RULES[currentPlayKey];
+  startAlignment = validAlignment;
+  return playObj[validAlignment];
+}
+
+function syncAlignmentUI() {
+  const validAlignment = PLAY_ALIGNMENT_RULES[currentPlayKey];
+  startAlignment = validAlignment;
+
+  document.querySelectorAll('#start-type-toggle button').forEach(btn => {
+    const isTarget = btn.dataset.start === validAlignment;
+    btn.classList.toggle('active', isTarget);
+    btn.disabled = !isTarget;
+  });
+
+  const hintEl = document.getElementById('alignment-hint');
+  if (hintEl) {
+    hintEl.textContent = currentPlayKey === 'downtown'
+      ? 'Downtown is a Half-Court Offense play.'
+      : `${PLAYBOOK[currentPlayKey].title} is a Baseline Out-of-Bounds play.`;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
-//  LONG CROSS-COURT & POST-TO-TOP SKIP PASS DETECTION
+//  SMART PASS RISK EVALUATION (WING <-> TOP OF KEY SAFE)
 // ═══════════════════════════════════════════════════════════
 function evaluatePassRisk(passer, receiver) {
   const centerX = W / 2;
-  const centerZoneHalfW = 60;
+  const topKeyHalfW = 85; // Generous Top-of-Key / Point Guard zone width
 
-  const passerOnLeft    = passer.x < centerX - centerZoneHalfW;
-  const passerOnRight   = passer.x > centerX + centerZoneHalfW;
-  const receiverOnLeft  = receiver.x < centerX - centerZoneHalfW;
-  const receiverOnRight = receiver.x > centerX + centerZoneHalfW;
+  const passerOnLeft    = passer.x < centerX - topKeyHalfW;
+  const passerOnRight   = passer.x > centerX + topKeyHalfW;
+  const receiverOnLeft  = receiver.x < centerX - topKeyHalfW;
+  const receiverOnRight = receiver.x > centerX + topKeyHalfW;
 
+  // Helper: is a player in the Top-of-Key / Point Guard spot?
+  const isAtTopZone = (p) => Math.abs(p.x - centerX) <= topKeyHalfW && p.y >= FT_Y + 35;
+
+  // Helper: is a player on the perimeter wing/corner (outside the lane)?
+  const isOnPerimeterWing = (p) => Math.abs(p.x - HOOP_X) > (PAINT_W / 2 + 45);
+
+  // ALWAYS SAFE: Wing <-> Top of Key swing/reversal pass
+  if ((isOnPerimeterWing(passer) && isAtTopZone(receiver)) ||
+      (isAtTopZone(passer) && isOnPerimeterWing(receiver))) {
+    return { isDangerous: false, reason: '', interceptor: null, interceptPoint: null };
+  }
+
+  // 1. Cross-court skip pass (Left Wing/Block <-> Right Wing/Block across the middle)
   const crossesToOppositeSide = (passerOnLeft && receiverOnRight) || (passerOnRight && receiverOnLeft);
 
-  const passerNearBasket = passer.y < FT_Y - 15 && passer.y > BASELINE_Y + 5;
-  const receiverAtTopOfKey = Math.abs(receiver.x - centerX) <= centerZoneHalfW && receiver.y >= FT_Y + 45;
-  const postToTopSkip = passerNearBasket && receiverAtTopOfKey;
+  // 2. Post/block player near the basket throwing a long outlet over the defense to the Top of the Key
+  const passerInsideLaneOrBlock = Math.abs(passer.x - HOOP_X) <= (PAINT_W / 2 + 45);
+  const passerNearBasket = passerInsideLaneOrBlock && passer.y < FT_Y - 15 && passer.y > BASELINE_Y + 5;
+  const postToTopSkip = passerNearBasket && isAtTopZone(receiver);
 
   if (!crossesToOppositeSide && !postToTopSkip) {
     return { isDangerous: false, reason: '', interceptor: null, interceptPoint: null };
@@ -1428,7 +1397,7 @@ function evaluatePassRisk(passer, receiver) {
   };
 
   const reason = postToTopSkip
-    ? 'Passing from near the basket all the way out to the top of the key is too risky!'
+    ? 'Passing from down on the block all the way out to the top of the key is too risky!'
     : 'Cross-court skip pass to the opposite side is too risky!';
 
   return {
@@ -1754,6 +1723,7 @@ class Ball {
 }
 
 function initGame() {
+  syncAlignmentUI();
   const cfg = getActivePlayConfig();
   const h = cfg.home;
   players = {
@@ -2957,7 +2927,16 @@ function runPhase3() {
   assignMoveOrDrag(cfg.cutMoves, [], onPhaseObjectivesComplete);
 }
 
+function selectPlay(playKey) {
+  currentPlayKey = playKey;
+  document.querySelectorAll('#play-choices .play-card').forEach(b => {
+    b.classList.toggle('active', b.dataset.play === playKey);
+  });
+  resetFullPlay();
+}
+
 function resetFullPlay() {
+  syncAlignmentUI();
   const playObj = PLAYBOOK[currentPlayKey];
   const cfg = getActivePlayConfig();
   playNameEl.innerHTML = `PLAY: <span>"${playObj.title}"</span>`;
@@ -3025,19 +3004,21 @@ chkMirror.addEventListener('change', () => { mirrorCourt = chkMirror.checked; re
 
 document.querySelectorAll('#play-choices .play-card').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('#play-choices .play-card').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentPlayKey = btn.dataset.play;
-    resetFullPlay();
+    selectPlay(btn.dataset.play);
   });
 });
 
 document.querySelectorAll('#start-type-toggle button').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('#start-type-toggle button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    startAlignment = btn.dataset.start;
-    resetFullPlay();
+    if (btn.disabled) return;
+    const requestedStart = btn.dataset.start;
+    if (requestedStart === 'halfcourt' && currentPlayKey !== 'downtown') {
+      selectPlay('downtown');
+    } else if (requestedStart === 'inbound' && currentPlayKey === 'downtown') {
+      selectPlay('uptown');
+    } else {
+      resetFullPlay();
+    }
   });
 });
 
@@ -3096,4 +3077,3 @@ if (mode === 'free') {
 </script>
 </body>
 </html>
-
