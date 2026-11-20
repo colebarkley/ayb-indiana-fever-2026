@@ -844,7 +844,8 @@
     cursor: pointer;
     box-shadow: 0 0 16px rgba(255, 61, 61, 0.55);
   }
-   /* ── CREATOR FOOTER ──────────────────────────── */
+
+  /* ── CREATOR FOOTER ──────────────────────────── */
   .cb-creator-footer {
     width: 100%;
     max-width: 1180px;
@@ -871,7 +872,6 @@
     color: #fff;
     letter-spacing: 0.6px;
   }
-
 </style>
 </head>
 <body>
@@ -952,7 +952,7 @@
 
     <div class="toggles-list">
       <label class="toggle-row">
-        <span>Auto-Spacing (No Corners)</span>
+        <span>Auto-Spacing</span>
         <input type="checkbox" id="chk-spacing" checked>
       </label>
       <label class="toggle-row">
@@ -971,8 +971,8 @@
 
     <div class="team-rule">
       <span>⚡ GOLDEN RULE</span>
-      <p>Pass, <strong>Screen Away</strong>, and Stay Out of the Corners!</p>
-      <small>Off-ball players automatically hold the Top of Key, Wings, and Low Blocks—never drifting into dead corners.</small>
+      <p>Pass, <strong>Screen Away</strong>, and Keep Court Spacing!</p>
+      <small>Off-ball players automatically hold open floor spots—Top of Key, Wings, Corners, and Blocks—without bunching up.</small>
     </div>
   </aside>
 
@@ -1040,8 +1040,8 @@
         <p><strong>Uptown (Baseline OOB):</strong> Blocks (2 &amp; 3) screen up so elbows (4 &amp; 5) dive to the blocks. <strong>Crosstown (Baseline OOB):</strong> Ball-side 5 &amp; 3 screen across the lane for weak-side teammates 4 &amp; 2.</p>
       </div>
       <div>
-        <h4>3. AUTO-SPACING &amp; NO DEAD CORNERS</h4>
-        <p>In Free Play, off-ball players automatically fill the <strong>Top of Key, Wings, and Low Blocks</strong> and keep personal spacing so nobody bunches up or gets trapped in the deep baseline corners.</p>
+        <h4>3. AUTO-SPACING &amp; FULL-COURT FLOOR BALANCE</h4>
+        <p>In Free Play, off-ball players automatically fill open spots across the <strong>Top of Key, Wings, Corners, and Low Blocks</strong> and maintain personal spacing so nobody bunches up.</p>
       </div>
     </div>
   </details>
@@ -1055,7 +1055,7 @@
     <ul>
       <li><strong>🖐️ Coach Mode (+100 PTS) &amp; ▶️ Watch (+50 PTS):</strong> Run all 3 plays and score to light up all 3 badges!</li>
       <li><strong>🛡️ Defense Bonus (+50 PTS):</strong> Turn on Defense and score without throwing a risky skip-pass turnover!</li>
-      <li><strong>🏀 Free Play (Auto-Spacing):</strong> Drag the ball handler anywhere—teammates automatically space to the Wings, Top of Key, and Blocks (never the corners!).</li>
+      <li><strong>🏀 Free Play (Auto-Spacing):</strong> Drag any player anywhere—including the corners—and teammates automatically rebalance and keep proper spacing!</li>
     </ul>
     <button id="modal-close" type="button">HIT THE COURT! 🔥</button>
   </div>
@@ -1072,6 +1072,7 @@
     </div>
   </div>
 </div>
+
 <!-- CREATOR FOOTER -->
 <footer class="cb-creator-footer">
   <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CB Cole Barkley Logo">
@@ -1184,11 +1185,15 @@ const C3X_R       = COURT_R - 44;
 const ARC_R       = (C3X_R - C3X_L) / 2;
 const CORNER3_END = HOOP_Y;
 
-// Perimeter & Box Spots (5 High-Value Spots — NO DEAD CORNERS)
+// Perimeter, Corner & Box Spots
 const WING_ANGLE  = Math.PI * 0.17;
 const WING_X_L    = HOOP_X - (ARC_R + 18) * Math.cos(WING_ANGLE);
 const WING_Y      = HOOP_Y + (ARC_R + 18) * Math.sin(WING_ANGLE);
 const WING_X_R    = HOOP_X + (ARC_R + 18) * Math.cos(WING_ANGLE);
+
+const CORNER_X_L  = COURT_L + 28;
+const CORNER_X_R  = COURT_R - 28;
+const CORNER_Y    = BASELINE_Y + 52;
 
 const TOK_X       = W / 2;
 const TOK_Y       = HOOP_Y + ARC_R + 28;
@@ -1198,13 +1203,15 @@ const RIGHT_BLOCK_X = PAINT_X + PAINT_W + 24;
 const LEFT_ELBOW_X  = PAINT_X - 22;
 const RIGHT_ELBOW_X = PAINT_X + PAINT_W + 22;
 
-// The 5 Legal Offensive Anchor Spots (Top of Key, Wings, Low Blocks)
+// Offensive Anchor Spots (Top of Key, Wings, Corners, and Low Blocks)
 const OFFENSIVE_SPOTS = [
-  { id: 'tok',    name: 'Top of Key',  x: TOK_X,         y: TOK_Y   },
-  { id: 'lwing',  name: 'Left Wing',   x: WING_X_L,      y: WING_Y  },
-  { id: 'rwing',  name: 'Right Wing',  x: WING_X_R,      y: WING_Y  },
-  { id: 'lblock', name: 'Left Block',  x: LEFT_BLOCK_X,  y: BLOCK_Y },
-  { id: 'rblock', name: 'Right Block', x: RIGHT_BLOCK_X, y: BLOCK_Y }
+  { id: 'tok',     name: 'Top of Key',   x: TOK_X,         y: TOK_Y    },
+  { id: 'lwing',   name: 'Left Wing',    x: WING_X_L,      y: WING_Y   },
+  { id: 'rwing',   name: 'Right Wing',   x: WING_X_R,      y: WING_Y   },
+  { id: 'lblock',  name: 'Left Block',   x: LEFT_BLOCK_X,  y: BLOCK_Y  },
+  { id: 'rblock',  name: 'Right Block',  x: RIGHT_BLOCK_X, y: BLOCK_Y  },
+  { id: 'lcorner', name: 'Left Corner',  x: CORNER_X_L,    y: CORNER_Y },
+  { id: 'rcorner', name: 'Right Corner', x: CORNER_X_R,    y: CORNER_Y }
 ];
 
 let mirrorCourt = false;
@@ -1306,7 +1313,6 @@ function resetAllChallengeProgress() {
 //  PLAYBOOK DEFINITIONS
 //  - Downtown: Half-Court Offense ONLY
 //  - Uptown & Crosstown: Baseline Out-of-Bounds (BLOB) ONLY
-//  - All cuts keep players at Wings, Blocks, or Top of Key (No Deep Corners)
 // ═══════════════════════════════════════════════════════════
 const PLAY_ALIGNMENT_RULES = {
   downtown:  'halfcourt',
@@ -1354,8 +1360,8 @@ const PLAYBOOK = {
         { x: RIGHT_ELBOW_X, y: BLOCK_Y + 12, angle: Math.PI }
       ],
       cutActionDrag: '🖐️ DRAG 2 & 3 out to the 3pt wings, and slide 4 & 5 onto the blocks!',
-      cutActionAuto: '🏃 POP WIDE — 2 & 3 pop to the 3pt wings (staying out of the corners); 4 & 5 seal the blocks!',
-      cutTip: '💡 Tip: Stop at the free-throw-line extended wings—never drift into the dead corners!',
+      cutActionAuto: '🏃 POP WIDE — 2 & 3 pop to the 3pt wings; 4 & 5 seal the blocks!',
+      cutTip: '💡 Tip: Pop wide to create clean passing lanes for Player 1!',
       cutMoves: [
         { key: 'p2', pos: { x: WING_X_L/W,      y: WING_Y/H  }, label: 'Left Wing' },
         { key: 'p3', pos: { x: WING_X_R/W,      y: WING_Y/H  }, label: 'Right Wing' },
@@ -1386,7 +1392,7 @@ const PLAYBOOK = {
         { x: RIGHT_ELBOW_X, y: FT_Y - 14, angle: 0 }
       ],
       cutActionDrag: '🖐️ DRAG Elbows (4 & 5) down to the blocks, and pop 3 & 2 out to the Wings!',
-      cutActionAuto: '🏃 DIVE TO BLOCKS — 4 & 5 cut to the blocks; 3 & 2 pop to the 3pt Wings (no corners)!',
+      cutActionAuto: '🏃 DIVE TO BLOCKS — 4 & 5 cut to the blocks; 3 & 2 pop to the 3pt Wings!',
       cutTip: '💡 Tip: Look for 5 at the ball-side block first, or 3 popping to the Right Wing!',
       cutMoves: [
         { key: 'p5', pos: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H }, label: 'Ball-Side Block' },
@@ -1418,7 +1424,7 @@ const PLAYBOOK = {
         { x: PAINT_X + 8, y: BLOCK_Y, angle: -Math.PI / 2 }
       ],
       cutActionDrag: '🖐️ DRAG 4 to the ball-side block, and pop 2 out to the Right Wing!',
-      cutActionAuto: '🏃 CROSS & SEAL — 4 cuts to the ball-side block; 2 pops to the Right Wing (staying out of the corner)!',
+      cutActionAuto: '🏃 CROSS & SEAL — 4 cuts to the ball-side block; 2 pops to the Right Wing!',
       cutTip: '💡 Tip: Pass to 4 at the block for the layup, or 2 open on the Right Wing!',
       cutMoves: [
         { key: 'p4', pos: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H }, label: 'Ball-Side Block' },
@@ -1528,7 +1534,7 @@ function evaluatePassRisk(passer, receiver) {
     return { isDangerous: false, reason: '', interceptor: null, interceptPoint: null };
   }
 
-  // 1. Cross-court skip pass (Left Wing/Block <-> Right Wing/Block across the middle)
+  // 1. Cross-court skip pass (Left Wing/Corner/Block <-> Right Wing/Corner/Block across the middle)
   const crossesToOppositeSide = (passerOnLeft && receiverOnRight) || (passerOnRight && receiverOnLeft);
 
   // 2. Post/block player near the basket throwing a long outlet over the defense to the Top of the Key
@@ -1574,50 +1580,58 @@ function showBannerAlert(text, isTurnover = false, duration = 2200) {
 
 // ═══════════════════════════════════════════════════════════
 //  AUTO-SPACING & ANTI-CLUMPING ENGINE (PURE JS GEOMETRY)
-//  - Keeps off-ball players anchored to the 5 legal spots:
-//    Top of Key, Left Wing, Right Wing, Left Block, Right Block
-//  - Enforces NO-CORNER guardrail & personal space repulsion
+//  - Keeps off-ball players anchored to open court spots:
+//    Top of Key, Wings, Corners, and Low Blocks
+//  - Enforces personal space repulsion & court boundaries
 // ═══════════════════════════════════════════════════════════
-function clampOutOfCorners(x, y, allowBaselineInbound = false) {
-  let nx = Math.max(COURT_L + 22, Math.min(COURT_R - 22, x));
-  let ny = Math.max(allowBaselineInbound ? BASELINE_Y - 14 : BASELINE_Y + 26, Math.min(HALFCOURT_Y - 26, y));
-
-  // If outside the lane on the baseline side (deep corner zone), lift up to Wing level
-  const outsideLaneWidth = Math.abs(nx - HOOP_X) > (PAINT_W / 2 + 42);
-  if (outsideLaneWidth && ny < WING_Y - 10) {
-    ny = WING_Y - 10;
-  }
-  return { x: nx, y: ny };
+function clampInBounds(x, y, allowBaselineInbound = false) {
+  return {
+    x: Math.max(COURT_L + 22, Math.min(COURT_R - 22, x)),
+    y: Math.max(allowBaselineInbound ? BASELINE_Y - 14 : BASELINE_Y + 24, Math.min(HALFCOURT_Y - 24, y))
+  };
 }
 
 function assignBestSpots(playerEntries, spotsList) {
-  const n = Math.min(playerEntries.length, spotsList.length);
-  if (n === 0) return [];
+  const n = playerEntries.length;
+  if (n === 0 || spotsList.length < n) return [];
 
-  let bestPerm = null;
+  let bestAssignment = null;
   let bestCost = Infinity;
 
-  function permute(arr, start) {
-    if (start === arr.length) {
-      let cost = 0;
-      for (let i = 0; i < n; i++) {
-        cost += Math.hypot(arr[i].p.x - spotsList[i].x, arr[i].p.y - spotsList[i].y);
+  function chooseSpots(startIdx, chosen) {
+    if (chosen.length === n) {
+      // Find lowest-cost matching of the n players to these n chosen spots
+      function permute(arr, start) {
+        if (start === n) {
+          let cost = 0;
+          for (let i = 0; i < n; i++) {
+            cost += Math.hypot(arr[i].p.x - chosen[i].x, arr[i].p.y - chosen[i].y);
+          }
+          if (cost < bestCost) {
+            bestCost = cost;
+            bestAssignment = arr.map((entry, idx) => ({ key: entry.key, p: entry.p, spot: chosen[idx] }));
+          }
+          return;
+        }
+        for (let i = start; i < n; i++) {
+          [arr[start], arr[i]] = [arr[i], arr[start]];
+          permute(arr, start + 1);
+          [arr[start], arr[i]] = [arr[i], arr[start]];
+        }
       }
-      if (cost < bestCost) {
-        bestCost = cost;
-        bestPerm = arr.slice();
-      }
+      permute(playerEntries.slice(), 0);
       return;
     }
-    for (let i = start; i < arr.length; i++) {
-      [arr[start], arr[i]] = [arr[i], arr[start]];
-      permute(arr, start + 1);
-      [arr[start], arr[i]] = [arr[i], arr[start]];
+
+    for (let i = startIdx; i < spotsList.length; i++) {
+      chosen.push(spotsList[i]);
+      chooseSpots(i + 1, chosen);
+      chosen.pop();
     }
   }
 
-  permute(playerEntries.slice(0, n), 0);
-  return bestPerm ? bestPerm.map((entry, idx) => ({ key: entry.key, p: entry.p, spot: spotsList[idx] })) : [];
+  chooseSpots(0, []);
+  return bestAssignment || [];
 }
 
 function updateAutoSpacing(dt) {
@@ -1633,19 +1647,8 @@ function updateAutoSpacing(dt) {
   const holderKey = holderEntry ? holderEntry[0] : 'p1';
   const holder = holderEntry ? holderEntry[1] : players.p1;
 
-  // 1. Identify which of the 5 Offensive Spots is occupied/claimed by the ball handler
-  let occupiedSpotId = 'tok';
-  let closestSpotDist = Infinity;
-  OFFENSIVE_SPOTS.forEach(s => {
-    const d = Math.hypot(holder.x - s.x, holder.y - s.y);
-    if (d < closestSpotDist) {
-      closestSpotDist = d;
-      occupiedSpotId = s.id;
-    }
-  });
-
-  // Remaining 4 open spots (strictly Top of Key, Wings, and Blocks — never corners)
-  const openSpots = OFFENSIVE_SPOTS.filter(s => s.id !== occupiedSpotId);
+  // Exclude any spot that is right next to the current ball handler so nobody crowds the ball
+  const openSpots = OFFENSIVE_SPOTS.filter(s => Math.hypot(s.x - holder.x, s.y - holder.y) >= 88);
 
   // Off-ball teammates not currently being manually dragged
   const offBallEntries = Object.entries(players)
@@ -1656,29 +1659,13 @@ function updateAutoSpacing(dt) {
   const pullFactor = Math.min(1, dt * (isFreePlay ? 0.0045 : 0.0032));
 
   assignments.forEach(({ p, spot }) => {
-    // If ball handler dribbles right at a teammate's spot, push teammate cleanly away
-    let goalX = spot.x;
-    let goalY = spot.y;
-
-    const distToBall = Math.hypot(goalX - holder.x, goalY - holder.y);
-    if (distToBall < 92) {
-      // Slide toward the furthest open spot instead of crowding the ball
-      const fallback = openSpots.reduce((best, cand) =>
-        Math.hypot(cand.x - holder.x, cand.y - holder.y) > Math.hypot(best.x - holder.x, best.y - holder.y) ? cand : best
-      , openSpots[0]);
-      if (fallback) {
-        goalX = fallback.x;
-        goalY = fallback.y;
-      }
-    }
-
-    p.x = lerp(p.x, goalX, pullFactor);
-    p.y = lerp(p.y, goalY, pullFactor);
+    p.x = lerp(p.x, spot.x, pullFactor);
+    p.y = lerp(p.y, spot.y, pullFactor);
     p.tx = p.x;
     p.ty = p.y;
   });
 
-  // 2. Personal Space Repulsion Bubble (prevents any two offensive players from clumping)
+  // Personal Space Repulsion Bubble (prevents any two offensive players from clumping)
   const MIN_PERSONAL_SPACE = 68;
   const allEntries = Object.entries(players);
   for (let i = 0; i < allEntries.length; i++) {
@@ -1713,10 +1700,10 @@ function updateAutoSpacing(dt) {
     }
   }
 
-  // 3. Enforce No-Corner & In-Bounds Guardrail on all off-ball players
+  // Keep all players cleanly inside court lines
   allEntries.forEach(([key, p]) => {
     const isInbounderAtStart = (startAlignment === 'inbound' && phase === PHASE.INTRO && key === 'p1');
-    const clamped = clampOutOfCorners(p.x, p.y, isInbounderAtStart);
+    const clamped = clampInBounds(p.x, p.y, isInbounderAtStart);
     p.x = clamped.x;
     p.y = clamped.y;
     p.tx = p.x;
@@ -2080,13 +2067,6 @@ function drawCourt() {
     ctx.beginPath(); ctx.moveTo(COURT_L, y); ctx.lineTo(COURT_R, y); ctx.stroke();
   }
 
-  // Subtle shaded "NO CORNER TRAP" reminder zones in the deep baseline corners
-  ctx.save();
-  ctx.fillStyle = 'rgba(183, 28, 28, 0.08)';
-  ctx.fillRect(COURT_L, BASELINE_Y, PAINT_X - COURT_L - 42, WING_Y - BASELINE_Y - 12);
-  ctx.fillRect(PAINT_X + PAINT_W + 42, BASELINE_Y, COURT_R - (PAINT_X + PAINT_W + 42), WING_Y - BASELINE_Y - 12);
-  ctx.restore();
-
   const CL = '#1e1e1e';
   ctx.strokeStyle = CL;
   ctx.lineWidth = 3;
@@ -2151,14 +2131,14 @@ function drawCourt() {
   ctx.arc(W / 2, HALFCOURT_Y, 24, Math.PI, Math.PI * 2);
   ctx.stroke();
 
-  // Subtle Anchor Spot markers so girls can see the 5 spacing spots
+  // Subtle Anchor Spot markers so girls can see the spacing spots
   OFFENSIVE_SPOTS.forEach(s => {
     ctx.save();
     ctx.beginPath();
-    ctx.arc(s.x, s.y, 8, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0, 45, 98, 0.16)';
+    ctx.arc(s.x, s.y, 7, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0, 45, 98, 0.14)';
     ctx.fill();
-    ctx.strokeStyle = 'rgba(0, 45, 98, 0.35)';
+    ctx.strokeStyle = 'rgba(0, 45, 98, 0.30)';
     ctx.lineWidth = 1.5;
     ctx.stroke();
     ctx.restore();
@@ -2171,6 +2151,8 @@ function drawCourt() {
   drawCourtLabel('TOP OF KEY', TOK_X, TOK_Y + 34, 'center');
   drawCourtLabel('LEFT WING', WING_X_L - 12, WING_Y - 26, 'right');
   drawCourtLabel('RIGHT WING', WING_X_R + 12, WING_Y - 26, 'left');
+  drawCourtLabel('CORNER', CORNER_X_L + 4, CORNER_Y - 24, 'left');
+  drawCourtLabel('CORNER', CORNER_X_R - 4, CORNER_Y - 24, 'right');
 
   if (mode === 'free' || phase === PHASE.SHOOT_OR_PASS) {
     drawCourtLabel('TAP RIM TO SHOOT', HOOP_X, HOOP_Y + 26, 'center', true);
@@ -2444,14 +2426,8 @@ function onPointerMove(e) {
     }
 
     const p = players[draggingEntity.key];
-    let nextX = Math.max(minX, Math.min(maxX, pt.x + dragOffset.x));
-    let nextY = Math.max(minY, Math.min(maxY, pt.y + dragOffset.y));
-
-    if (autoSpacingOn) {
-      const clamped = clampOutOfCorners(nextX, nextY, false);
-      nextX = clamped.x;
-      nextY = clamped.y;
-    }
+    const nextX = Math.max(COURT_L + 22, Math.min(COURT_R - 22, pt.x + dragOffset.x));
+    const nextY = Math.max(BASELINE_Y + 24, Math.min(HALFCOURT_Y - 24, pt.y + dragOffset.y));
 
     p.x = nextX;
     p.y = nextY;
@@ -3098,7 +3074,7 @@ function executePassTo(targetKey) {
         ? '💡 Coaching Point: Avoid long skip passes across the paint or midline!'
         : (showDefense
             ? '💡 Good crisp pass! Notice how weak-side defenders sag into help position.'
-            : '💡 Tip: Drag the ball handler anywhere—teammates auto-space to the Wings, Top of Key, and Blocks!'),
+            : '💡 Tip: Drag any player anywhere—including the corners—and teammates auto-space around the floor!'),
       '',
       risk.isDangerous
     );
@@ -3293,10 +3269,10 @@ function resetFullPlay() {
     Object.values(defenders).forEach(d => { d.manualOverride = false; d.update(1000); });
 
     updateUI(
-      `🏀 FREE PLAY (${playObj.title}) — Drag the ball handler anywhere; teammates auto-space to Wings, Blocks & Top of Key!`,
+      `🏀 FREE PLAY (${playObj.title}) — Drag any player anywhere (wings, corners, blocks); teammates keep spacing!`,
       showDefense
         ? '💡 Defense is ON: Long skip passes across the paint or midline will reset your Streak!'
-        : '💡 Tip: Notice the shaded corner zones—Auto-Spacing keeps everyone out of the dead corners!',
+        : '💡 Tip: Tap any teammate to pass, tap the orange rim to shoot, or drag players around the floor!',
       ''
     );
     return;
