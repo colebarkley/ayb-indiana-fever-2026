@@ -156,6 +156,28 @@
     align-items: center;
     gap: 5px;
   }
+  .btn-new-player {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(255, 107, 107, 0.75);
+    background: rgba(127, 29, 29, 0.32);
+    color: #ff9e9e;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+  .btn-new-player:hover {
+    background: rgba(183, 28, 28, 0.65);
+    border-color: #fff;
+    color: #fff;
+    transform: scale(1.03);
+  }
+  .btn-new-player:active {
+    transform: scale(0.97);
+  }
 
   /* ── WORKSPACE SHELL ─────────────────────────── */
   .shell {
@@ -736,15 +758,15 @@
     box-shadow: 0 0 28px rgba(0, 0, 0, 0.95), 0 0 22px rgba(255, 23, 68, 0.9);
   }
 
-  /* ── MODAL ───────────────────────────────────── */
-  #modal-overlay {
+  /* ── MODALS (WELCOME & RESET CONFIRMATION) ───── */
+  .modal-overlay {
     position: fixed; inset: 0;
-    background: rgba(0,0,0,0.82);
+    background: rgba(0,0,0,0.84);
     z-index: 999;
     display: flex; align-items: center; justify-content: center;
     padding: 20px;
   }
-  #modal {
+  .modal-card {
     background: var(--panel);
     border: 2px solid var(--gold);
     border-radius: 16px;
@@ -754,25 +776,38 @@
     text-align: center;
     box-shadow: 0 0 40px rgba(255, 199, 44, 0.35);
   }
-  #modal h2 {
+  .modal-card.danger-modal {
+    border-color: #ff5252;
+    box-shadow: 0 0 40px rgba(255, 82, 82, 0.4);
+  }
+  .modal-card h2 {
     font-family: 'Orbitron', sans-serif;
     color: var(--gold);
     font-size: 1.25rem;
     margin-bottom: 10px;
   }
-  #modal p {
-    font-size: 0.96rem;
-    color: rgba(255,255,255,0.88);
-    line-height: 1.45;
-    margin-bottom: 12px;
+  .modal-card.danger-modal h2 {
+    color: #ff6b6b;
   }
-  #modal ul {
+  .modal-card p {
+    font-size: 0.98rem;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.45;
+    margin-bottom: 14px;
+  }
+  .modal-card ul {
     text-align: left;
     color: rgba(255,255,255,0.86);
     font-size: 0.92rem;
     line-height: 1.58;
     padding-left: 20px;
     margin-bottom: 18px;
+  }
+  .modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
   }
   #modal-close {
     font-family: 'Orbitron', sans-serif;
@@ -785,6 +820,29 @@
     font-weight: 700;
     cursor: pointer;
     box-shadow: 0 0 16px rgba(255, 199, 44, 0.5);
+  }
+  .btn-modal-cancel {
+    font-family: 'Orbitron', sans-serif;
+    background: var(--navy-dark);
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,0.35);
+    border-radius: 999px;
+    padding: 11px 22px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-modal-wipe {
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(135deg, #c62828, #ff3d3d);
+    color: #fff;
+    border: 1.5px solid #fff;
+    border-radius: 999px;
+    padding: 11px 22px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 0 16px rgba(255, 61, 61, 0.55);
   }
 </style>
 </head>
@@ -808,6 +866,7 @@
       <span class="play-badge" id="badge-uptown">UPTOWN</span>
       <span class="play-badge" id="badge-crosstown">CROSSTOWN</span>
       <span class="champ-badge" id="badge-champ">👑 FEVER CHAMPION!</span>
+      <button type="button" class="btn-new-player" id="btn-new-player">🔄 NEW PLAYER</button>
     </div>
   </div>
 </div>
@@ -865,6 +924,10 @@
 
     <div class="toggles-list">
       <label class="toggle-row">
+        <span>Auto-Spacing (No Corners)</span>
+        <input type="checkbox" id="chk-spacing" checked>
+      </label>
+      <label class="toggle-row">
         <span>Show Defenders (X)</span>
         <input type="checkbox" id="chk-defense">
       </label>
@@ -880,8 +943,8 @@
 
     <div class="team-rule">
       <span>⚡ GOLDEN RULE</span>
-      <p>Pass, <strong>Screen Away</strong>, and Keep Moving!</p>
-      <small>Complete Downtown (Half-Court), Uptown (BLOB), and Crosstown (BLOB) to unlock Fever Champion!</small>
+      <p>Pass, <strong>Screen Away</strong>, and Stay Out of the Corners!</p>
+      <small>Off-ball players automatically hold the Top of Key, Wings, and Low Blocks—never drifting into dead corners.</small>
     </div>
   </aside>
 
@@ -949,23 +1012,36 @@
         <p><strong>Uptown (Baseline OOB):</strong> Blocks (2 &amp; 3) screen up so elbows (4 &amp; 5) dive to the blocks. <strong>Crosstown (Baseline OOB):</strong> Ball-side 5 &amp; 3 screen across the lane for weak-side teammates 4 &amp; 2.</p>
       </div>
       <div>
-        <h4>3. CONTINUING MOTION &amp; SMART PASSING</h4>
-        <p>After the entry pass, screen away or replace the vacated low block. Wing-to-top reversals and ball-side block feeds are safe; avoid long cross-court skip passes or throwing from down on the block all the way out to the top of the key.</p>
+        <h4>3. AUTO-SPACING &amp; NO DEAD CORNERS</h4>
+        <p>In Free Play, off-ball players automatically fill the <strong>Top of Key, Wings, and Low Blocks</strong> and keep personal spacing so nobody bunches up or gets trapped in the deep baseline corners.</p>
       </div>
     </div>
   </details>
 </div>
 
-<div id="modal-overlay">
-  <div id="modal">
+<!-- WELCOME CHALLENGE MODAL -->
+<div id="modal-overlay" class="modal-overlay">
+  <div id="modal" class="modal-card">
     <h2>⚡ FEVER PLAYBOOK CHALLENGE</h2>
     <p>Master <strong>Downtown</strong> (Half-Court), <strong>Uptown</strong> (Baseline OOB), and <strong>Crosstown</strong> (Baseline OOB) to unlock <strong>Fever Champion</strong>:</p>
     <ul>
       <li><strong>🖐️ Coach Mode (+100 PTS) &amp; ▶️ Watch (+50 PTS):</strong> Run all 3 plays and score to light up all 3 badges!</li>
       <li><strong>🛡️ Defense Bonus (+50 PTS):</strong> Turn on Defense and score without throwing a risky skip-pass turnover!</li>
-      <li><strong>🏀 Free Play:</strong> Drag any player freehand, tap a teammate to pass, or tap the rim to shoot.</li>
+      <li><strong>🏀 Free Play (Auto-Spacing):</strong> Drag the ball handler anywhere—teammates automatically space to the Wings, Top of Key, and Blocks (never the corners!).</li>
     </ul>
     <button id="modal-close" type="button">HIT THE COURT! 🔥</button>
+  </div>
+</div>
+
+<!-- NEW PLAYER / RESET SCORE CONFIRMATION MODAL -->
+<div id="reset-modal-overlay" class="modal-overlay" style="display:none;">
+  <div class="modal-card danger-modal">
+    <h2>⚠️ NEW PLAYER / RESET SCORE?</h2>
+    <p><strong>Are you sure? All your points will be wiped out!</strong><br>This will reset your Score, Bucket Streak, and all 3 Play Mastery Badges back to zero for the next player.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn-modal-cancel" id="btn-cancel-wipe">CANCEL</button>
+      <button type="button" class="btn-modal-wipe" id="btn-confirm-wipe">YES, WIPE POINTS &amp; RESET</button>
+    </div>
   </div>
 </div>
 
@@ -1050,15 +1126,11 @@ const C3X_R       = COURT_R - 44;
 const ARC_R       = (C3X_R - C3X_L) / 2;
 const CORNER3_END = HOOP_Y;
 
-// Perimeter & Box Spots
+// Perimeter & Box Spots (5 High-Value Spots — NO DEAD CORNERS)
 const WING_ANGLE  = Math.PI * 0.17;
 const WING_X_L    = HOOP_X - (ARC_R + 18) * Math.cos(WING_ANGLE);
 const WING_Y      = HOOP_Y + (ARC_R + 18) * Math.sin(WING_ANGLE);
 const WING_X_R    = HOOP_X + (ARC_R + 18) * Math.cos(WING_ANGLE);
-
-const CORNER_X_L  = C3X_L - 18;
-const CORNER_X_R  = C3X_R + 18;
-const CORNER_Y    = BASELINE_Y + 56;
 
 const TOK_X       = W / 2;
 const TOK_Y       = HOOP_Y + ARC_R + 28;
@@ -1067,6 +1139,15 @@ const LEFT_BLOCK_X  = PAINT_X - 24;
 const RIGHT_BLOCK_X = PAINT_X + PAINT_W + 24;
 const LEFT_ELBOW_X  = PAINT_X - 22;
 const RIGHT_ELBOW_X = PAINT_X + PAINT_W + 22;
+
+// The 5 Legal Offensive Anchor Spots (Top of Key, Wings, Low Blocks)
+const OFFENSIVE_SPOTS = [
+  { id: 'tok',    name: 'Top of Key',  x: TOK_X,         y: TOK_Y   },
+  { id: 'lwing',  name: 'Left Wing',   x: WING_X_L,      y: WING_Y  },
+  { id: 'rwing',  name: 'Right Wing',  x: WING_X_R,      y: WING_Y  },
+  { id: 'lblock', name: 'Left Block',  x: LEFT_BLOCK_X,  y: BLOCK_Y },
+  { id: 'rblock', name: 'Right Block', x: RIGHT_BLOCK_X, y: BLOCK_Y }
+];
 
 let mirrorCourt = false;
 function mapX(normX) { return mirrorCourt ? (1 - normX) : normX; }
@@ -1150,10 +1231,24 @@ function recordTurnoverPenalty() {
   updateChallengeHUD();
 }
 
+function resetAllChallengeProgress() {
+  challengeState = {
+    score: 0,
+    streak: 0,
+    mastered: { downtown: false, uptown: false, crosstown: false },
+    champCelebrated: false
+  };
+  saveChallengeState();
+  updateChallengeHUD();
+  selectPlay('downtown');
+  showBannerAlert('🆕 NEW PLAYER READY! 0 PTS', false, 1800);
+}
+
 // ═══════════════════════════════════════════════════════════
 //  PLAYBOOK DEFINITIONS
 //  - Downtown: Half-Court Offense ONLY
 //  - Uptown & Crosstown: Baseline Out-of-Bounds (BLOB) ONLY
+//  - All cuts keep players at Wings, Blocks, or Top of Key (No Deep Corners)
 // ═══════════════════════════════════════════════════════════
 const PLAY_ALIGNMENT_RULES = {
   downtown:  'halfcourt',
@@ -1201,8 +1296,8 @@ const PLAYBOOK = {
         { x: RIGHT_ELBOW_X, y: BLOCK_Y + 12, angle: Math.PI }
       ],
       cutActionDrag: '🖐️ DRAG 2 & 3 out to the 3pt wings, and slide 4 & 5 onto the blocks!',
-      cutActionAuto: '🏃 POP WIDE — 2 & 3 use the screens to pop to the wings; 4 & 5 seal the blocks!',
-      cutTip: '💡 Tip: Stretch the defense all the way out to the 3-point wings!',
+      cutActionAuto: '🏃 POP WIDE — 2 & 3 pop to the 3pt wings (staying out of the corners); 4 & 5 seal the blocks!',
+      cutTip: '💡 Tip: Stop at the free-throw-line extended wings—never drift into the dead corners!',
       cutMoves: [
         { key: 'p2', pos: { x: WING_X_L/W,      y: WING_Y/H  }, label: 'Left Wing' },
         { key: 'p3', pos: { x: WING_X_R/W,      y: WING_Y/H  }, label: 'Right Wing' },
@@ -1232,14 +1327,14 @@ const PLAYBOOK = {
         { x: LEFT_ELBOW_X,  y: FT_Y - 14, angle: 0 },
         { x: RIGHT_ELBOW_X, y: FT_Y - 14, angle: 0 }
       ],
-      cutActionDrag: '🖐️ DRAG Elbows (4 & 5) down to the blocks, and release 3 to the short-corner safety!',
-      cutActionAuto: '🏃 DIVE TO BLOCKS — 4 & 5 cut to the blocks; 3 releases to the short corner!',
-      cutTip: '💡 Tip: Look for 5 at the ball-side block first, or 3 in the short corner!',
+      cutActionDrag: '🖐️ DRAG Elbows (4 & 5) down to the blocks, and pop 3 & 2 out to the Wings!',
+      cutActionAuto: '🏃 DIVE TO BLOCKS — 4 & 5 cut to the blocks; 3 & 2 pop to the 3pt Wings (no corners)!',
+      cutTip: '💡 Tip: Look for 5 at the ball-side block first, or 3 popping to the Right Wing!',
       cutMoves: [
-        { key: 'p5', pos: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H      }, label: 'Ball-Side Block' },
-        { key: 'p4', pos: { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H      }, label: 'Weak Block' },
-        { key: 'p3', pos: { x: CORNER_X_R/W,    y: CORNER_Y/H     }, label: 'Safety Corner' },
-        { key: 'p2', pos: { x: WING_X_L/W,      y: (FT_Y + 30)/H  }, label: 'Outlet Wing' }
+        { key: 'p5', pos: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H }, label: 'Ball-Side Block' },
+        { key: 'p4', pos: { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H }, label: 'Weak Block' },
+        { key: 'p3', pos: { x: WING_X_R/W,      y: WING_Y/H  }, label: 'Right Wing' },
+        { key: 'p2', pos: { x: WING_X_L/W,      y: WING_Y/H  }, label: 'Left Wing' }
       ]
     }
   },
@@ -1264,14 +1359,14 @@ const PLAYBOOK = {
         { x: PAINT_X + 8, y: FT_Y,    angle: -Math.PI / 2 },
         { x: PAINT_X + 8, y: BLOCK_Y, angle: -Math.PI / 2 }
       ],
-      cutActionDrag: '🖐️ DRAG 4 to the ball-side block for the first look, and 2 to the short corner!',
-      cutActionAuto: '🏃 CROSS & SEAL — 4 cuts to the ball-side block; 2 fills the short-corner safety!',
-      cutTip: '💡 Tip: Pass to 4 at the block for the layup, or 2 in the short corner!',
+      cutActionDrag: '🖐️ DRAG 4 to the ball-side block, and pop 2 out to the Right Wing!',
+      cutActionAuto: '🏃 CROSS & SEAL — 4 cuts to the ball-side block; 2 pops to the Right Wing (staying out of the corner)!',
+      cutTip: '💡 Tip: Pass to 4 at the block for the layup, or 2 open on the Right Wing!',
       cutMoves: [
-        { key: 'p4', pos: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H     }, label: 'Ball-Side Block' },
-        { key: 'p2', pos: { x: CORNER_X_R/W,    y: CORNER_Y/H    }, label: 'Short Corner' },
-        { key: 'p5', pos: { x: WING_X_L/W,      y: WING_Y/H      }, label: 'Left Wing' },
-        { key: 'p3', pos: { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H     }, label: 'Weak Block' }
+        { key: 'p4', pos: { x: RIGHT_BLOCK_X/W, y: BLOCK_Y/H }, label: 'Ball-Side Block' },
+        { key: 'p2', pos: { x: WING_X_R/W,      y: WING_Y/H  }, label: 'Right Wing' },
+        { key: 'p5', pos: { x: WING_X_L/W,      y: WING_Y/H  }, label: 'Left Wing' },
+        { key: 'p3', pos: { x: LEFT_BLOCK_X/W,  y: BLOCK_Y/H }, label: 'Weak Block' }
       ]
     }
   }
@@ -1296,6 +1391,7 @@ let currentPlayKey = 'downtown';
 let startAlignment = PLAY_ALIGNMENT_RULES[currentPlayKey];
 let focusPlayerId  = 0;
 let showPaths      = true;
+let autoSpacingOn  = true;
 
 let mode = isMobileOrTablet() ? 'free' : 'drag';
 let showDefense = false;
@@ -1358,17 +1454,14 @@ function syncAlignmentUI() {
 // ═══════════════════════════════════════════════════════════
 function evaluatePassRisk(passer, receiver) {
   const centerX = W / 2;
-  const topKeyHalfW = 85; // Generous Top-of-Key / Point Guard zone width
+  const topKeyHalfW = 85;
 
   const passerOnLeft    = passer.x < centerX - topKeyHalfW;
   const passerOnRight   = passer.x > centerX + topKeyHalfW;
   const receiverOnLeft  = receiver.x < centerX - topKeyHalfW;
   const receiverOnRight = receiver.x > centerX + topKeyHalfW;
 
-  // Helper: is a player in the Top-of-Key / Point Guard spot?
   const isAtTopZone = (p) => Math.abs(p.x - centerX) <= topKeyHalfW && p.y >= FT_Y + 35;
-
-  // Helper: is a player on the perimeter wing/corner (outside the lane)?
   const isOnPerimeterWing = (p) => Math.abs(p.x - HOOP_X) > (PAINT_W / 2 + 45);
 
   // ALWAYS SAFE: Wing <-> Top of Key swing/reversal pass
@@ -1419,6 +1512,158 @@ function showBannerAlert(text, isTurnover = false, duration = 2200) {
       celebText.classList.remove('turnover');
     }, duration);
   }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  AUTO-SPACING & ANTI-CLUMPING ENGINE (PURE JS GEOMETRY)
+//  - Keeps off-ball players anchored to the 5 legal spots:
+//    Top of Key, Left Wing, Right Wing, Left Block, Right Block
+//  - Enforces NO-CORNER guardrail & personal space repulsion
+// ═══════════════════════════════════════════════════════════
+function clampOutOfCorners(x, y, allowBaselineInbound = false) {
+  let nx = Math.max(COURT_L + 22, Math.min(COURT_R - 22, x));
+  let ny = Math.max(allowBaselineInbound ? BASELINE_Y - 14 : BASELINE_Y + 26, Math.min(HALFCOURT_Y - 26, y));
+
+  // If outside the lane on the baseline side (deep corner zone), lift up to Wing level
+  const outsideLaneWidth = Math.abs(nx - HOOP_X) > (PAINT_W / 2 + 42);
+  if (outsideLaneWidth && ny < WING_Y - 10) {
+    ny = WING_Y - 10;
+  }
+  return { x: nx, y: ny };
+}
+
+function assignBestSpots(playerEntries, spotsList) {
+  const n = Math.min(playerEntries.length, spotsList.length);
+  if (n === 0) return [];
+
+  let bestPerm = null;
+  let bestCost = Infinity;
+
+  function permute(arr, start) {
+    if (start === arr.length) {
+      let cost = 0;
+      for (let i = 0; i < n; i++) {
+        cost += Math.hypot(arr[i].p.x - spotsList[i].x, arr[i].p.y - spotsList[i].y);
+      }
+      if (cost < bestCost) {
+        bestCost = cost;
+        bestPerm = arr.slice();
+      }
+      return;
+    }
+    for (let i = start; i < arr.length; i++) {
+      [arr[start], arr[i]] = [arr[i], arr[start]];
+      permute(arr, start + 1);
+      [arr[start], arr[i]] = [arr[i], arr[start]];
+    }
+  }
+
+  permute(playerEntries.slice(0, n), 0);
+  return bestPerm ? bestPerm.map((entry, idx) => ({ key: entry.key, p: entry.p, spot: spotsList[idx] })) : [];
+}
+
+function updateAutoSpacing(dt) {
+  if (!autoSpacingOn || interceptLock) return;
+
+  const isFreePlay = (mode === 'free');
+  const isGuidedIdle = !isFreePlay && !animating && targets.length === 0 && activeScreens.length === 0 &&
+    (phase === PHASE.DECISION_PASS || phase === PHASE.SHOOT_OR_PASS);
+
+  if (!isFreePlay && !isGuidedIdle) return;
+
+  const holderEntry = Object.entries(players).find(([_, p]) => p.hasBall);
+  const holderKey = holderEntry ? holderEntry[0] : 'p1';
+  const holder = holderEntry ? holderEntry[1] : players.p1;
+
+  // 1. Identify which of the 5 Offensive Spots is occupied/claimed by the ball handler
+  let occupiedSpotId = 'tok';
+  let closestSpotDist = Infinity;
+  OFFENSIVE_SPOTS.forEach(s => {
+    const d = Math.hypot(holder.x - s.x, holder.y - s.y);
+    if (d < closestSpotDist) {
+      closestSpotDist = d;
+      occupiedSpotId = s.id;
+    }
+  });
+
+  // Remaining 4 open spots (strictly Top of Key, Wings, and Blocks — never corners)
+  const openSpots = OFFENSIVE_SPOTS.filter(s => s.id !== occupiedSpotId);
+
+  // Off-ball teammates not currently being manually dragged
+  const offBallEntries = Object.entries(players)
+    .filter(([k, p]) => k !== holderKey && !p.moving && !(draggingEntity && draggingEntity.type === 'offense' && draggingEntity.key === k))
+    .map(([key, p]) => ({ key, p }));
+
+  const assignments = assignBestSpots(offBallEntries, openSpots);
+  const pullFactor = Math.min(1, dt * (isFreePlay ? 0.0045 : 0.0032));
+
+  assignments.forEach(({ p, spot }) => {
+    // If ball handler dribbles right at a teammate's spot, push teammate cleanly away
+    let goalX = spot.x;
+    let goalY = spot.y;
+
+    const distToBall = Math.hypot(goalX - holder.x, goalY - holder.y);
+    if (distToBall < 92) {
+      // Slide toward the furthest open spot instead of crowding the ball
+      const fallback = openSpots.reduce((best, cand) =>
+        Math.hypot(cand.x - holder.x, cand.y - holder.y) > Math.hypot(best.x - holder.x, best.y - holder.y) ? cand : best
+      , openSpots[0]);
+      if (fallback) {
+        goalX = fallback.x;
+        goalY = fallback.y;
+      }
+    }
+
+    p.x = lerp(p.x, goalX, pullFactor);
+    p.y = lerp(p.y, goalY, pullFactor);
+    p.tx = p.x;
+    p.ty = p.y;
+  });
+
+  // 2. Personal Space Repulsion Bubble (prevents any two offensive players from clumping)
+  const MIN_PERSONAL_SPACE = 68;
+  const allEntries = Object.entries(players);
+  for (let i = 0; i < allEntries.length; i++) {
+    for (let j = i + 1; j < allEntries.length; j++) {
+      const [kA, pA] = allEntries[i];
+      const [kB, pB] = allEntries[j];
+      const dx = pB.x - pA.x;
+      const dy = pB.y - pA.y;
+      const dist = Math.hypot(dx, dy);
+
+      if (dist > 0.1 && dist < MIN_PERSONAL_SPACE) {
+        const overlap = (MIN_PERSONAL_SPACE - dist) * 0.5;
+        const ux = dx / dist;
+        const uy = dy / dist;
+
+        const aLocked = (kA === holderKey) || (draggingEntity && draggingEntity.type === 'offense' && draggingEntity.key === kA);
+        const bLocked = (kB === holderKey) || (draggingEntity && draggingEntity.type === 'offense' && draggingEntity.key === kB);
+
+        if (!aLocked && !bLocked) {
+          pA.x -= ux * overlap;
+          pA.y -= uy * overlap;
+          pB.x += ux * overlap;
+          pB.y += uy * overlap;
+        } else if (aLocked && !bLocked) {
+          pB.x += ux * overlap * 2;
+          pB.y += uy * overlap * 2;
+        } else if (!aLocked && bLocked) {
+          pA.x -= ux * overlap * 2;
+          pA.y -= uy * overlap * 2;
+        }
+      }
+    }
+  }
+
+  // 3. Enforce No-Corner & In-Bounds Guardrail on all off-ball players
+  allEntries.forEach(([key, p]) => {
+    const isInbounderAtStart = (startAlignment === 'inbound' && phase === PHASE.INTRO && key === 'p1');
+    const clamped = clampOutOfCorners(p.x, p.y, isInbounderAtStart);
+    p.x = clamped.x;
+    p.y = clamped.y;
+    p.tx = p.x;
+    p.ty = p.y;
+  });
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1777,6 +2022,13 @@ function drawCourt() {
     ctx.beginPath(); ctx.moveTo(COURT_L, y); ctx.lineTo(COURT_R, y); ctx.stroke();
   }
 
+  // Subtle shaded "NO CORNER TRAP" reminder zones in the deep baseline corners
+  ctx.save();
+  ctx.fillStyle = 'rgba(183, 28, 28, 0.08)';
+  ctx.fillRect(COURT_L, BASELINE_Y, PAINT_X - COURT_L - 42, WING_Y - BASELINE_Y - 12);
+  ctx.fillRect(PAINT_X + PAINT_W + 42, BASELINE_Y, COURT_R - (PAINT_X + PAINT_W + 42), WING_Y - BASELINE_Y - 12);
+  ctx.restore();
+
   const CL = '#1e1e1e';
   ctx.strokeStyle = CL;
   ctx.lineWidth = 3;
@@ -1840,6 +2092,19 @@ function drawCourt() {
   ctx.beginPath();
   ctx.arc(W / 2, HALFCOURT_Y, 24, Math.PI, Math.PI * 2);
   ctx.stroke();
+
+  // Subtle Anchor Spot markers so girls can see the 5 spacing spots
+  OFFENSIVE_SPOTS.forEach(s => {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, 8, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0, 45, 98, 0.16)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0, 45, 98, 0.35)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+  });
 
   drawCourtLabel('BLOCK', PAINT_X - 10, BLOCK_Y - 18, 'right');
   drawCourtLabel('BLOCK', PAINT_X + PAINT_W + 10, BLOCK_Y - 18, 'left');
@@ -2121,8 +2386,17 @@ function onPointerMove(e) {
     }
 
     const p = players[draggingEntity.key];
-    p.x = Math.max(minX, Math.min(maxX, pt.x + dragOffset.x));
-    p.y = Math.max(minY, Math.min(maxY, pt.y + dragOffset.y));
+    let nextX = Math.max(minX, Math.min(maxX, pt.x + dragOffset.x));
+    let nextY = Math.max(minY, Math.min(maxY, pt.y + dragOffset.y));
+
+    if (autoSpacingOn) {
+      const clamped = clampOutOfCorners(nextX, nextY, false);
+      nextX = clamped.x;
+      nextY = clamped.y;
+    }
+
+    p.x = nextX;
+    p.y = nextY;
     p.tx = p.x;
     p.ty = p.y;
 
@@ -2320,7 +2594,7 @@ function buildDynamicScreenAwayMoves() {
 
     const dirX = holder.x > perimCutter.p.x ? 1 : -1;
     const pScreenX = Math.max(COURT_L + 45, Math.min(COURT_R - 45, perimCutter.p.x + dirX * 36));
-    const pScreenY = Math.max(BASELINE_Y + 45, Math.min(HALFCOURT_Y - 45, perimCutter.p.y - 26));
+    const pScreenY = Math.max(WING_Y, Math.min(HALFCOURT_Y - 45, perimCutter.p.y - 26));
 
     moves.push({ key: perimScreener.key, pos: { x: pScreenX / W, y: pScreenY / H }, label: 'Screen Away' });
     moves.push({ key: perimCutter.key,   pos: { x: TOK_X / W, y: TOK_Y / H },       label: 'Top of Key' });
@@ -2414,6 +2688,7 @@ function render(ts) {
   last = ts;
 
   Object.values(players).forEach(p => p.update(dt));
+  updateAutoSpacing(dt);
   Object.values(defenders).forEach(d => d.update(dt));
   ball.update(dt);
 
@@ -2503,6 +2778,7 @@ requestAnimationFrame(render);
 const btnNext      = document.getElementById('btn-next');
 const btnReset     = document.getElementById('btn-reset');
 const btnDefense   = document.getElementById('btn-defense');
+const chkSpacing   = document.getElementById('chk-spacing');
 const chkDefense   = document.getElementById('chk-defense');
 const chkPaths     = document.getElementById('chk-paths');
 const chkMirror    = document.getElementById('chk-mirror');
@@ -2569,7 +2845,7 @@ function updateUI(action, tip, nextLabel, isDanger = false) {
   tipLabel.textContent = tip;
 
   if (mode === 'free') {
-    phaseNameTxt.textContent = 'FREE PLAY — OPEN COURT';
+    phaseNameTxt.textContent = 'FREE PLAY — AUTO-SPACING COURT';
     phaseNumTxt.textContent  = `Passes: ${passCount}${turnoverCount > 0 ? ` · Turnovers: ${turnoverCount}` : ''}`;
     phaseFill.style.width    = '100%';
     btnNext.style.display    = 'none';
@@ -2764,7 +3040,7 @@ function executePassTo(targetKey) {
         ? '💡 Coaching Point: Avoid long skip passes across the paint or midline!'
         : (showDefense
             ? '💡 Good crisp pass! Notice how weak-side defenders sag into help position.'
-            : '💡 Tip: Toggle "SHOW DEFENSE" to test whether long skip passes get picked off!'),
+            : '💡 Tip: Drag the ball handler anywhere—teammates auto-space to the Wings, Top of Key, and Blocks!'),
       '',
       risk.isDangerous
     );
@@ -2959,10 +3235,10 @@ function resetFullPlay() {
     Object.values(defenders).forEach(d => { d.manualOverride = false; d.update(1000); });
 
     updateUI(
-      `🏀 FREE PLAY (${playObj.title}) — Drag any player anywhere! Make safe passes or tap the rim to shoot.`,
+      `🏀 FREE PLAY (${playObj.title}) — Drag the ball handler anywhere; teammates auto-space to Wings, Blocks & Top of Key!`,
       showDefense
         ? '💡 Defense is ON: Long skip passes across the paint or midline will reset your Streak!'
-        : '💡 Tip: Toggle "SHOW DEFENSE" at the top right to test how defenders pick off risky skip passes!',
+        : '💡 Tip: Notice the shaded corner zones—Auto-Spacing keeps everyone out of the dead corners!',
       ''
     );
     return;
@@ -2980,7 +3256,7 @@ function resetFullPlay() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  SIDEBAR & TOOLBAR EVENT LISTENERS
+//  SIDEBAR, HUD & MODAL EVENT LISTENERS
 // ═══════════════════════════════════════════════════════════
 function syncDefenseToggleUI() {
   btnDefense.classList.toggle('active', showDefense);
@@ -2997,6 +3273,7 @@ function syncDefenseToggleUI() {
   }
 }
 
+chkSpacing.addEventListener('change', () => { autoSpacingOn = chkSpacing.checked; });
 btnDefense.addEventListener('click', () => { showDefense = !showDefense; syncDefenseToggleUI(); });
 chkDefense.addEventListener('change', () => { showDefense = chkDefense.checked; syncDefenseToggleUI(); });
 chkPaths.addEventListener('change', () => { showPaths = chkPaths.checked; });
@@ -3057,6 +3334,7 @@ btnModeDrag.addEventListener('click', () => setMode('drag', btnModeDrag));
 btnModeFree.addEventListener('click', () => setMode('free', btnModeFree));
 btnModeAuto.addEventListener('click', () => setMode('auto', btnModeAuto));
 
+// Welcome Modal
 const closePlaybookModal = (e) => {
   if (e && e.cancelable) e.preventDefault();
   document.getElementById('modal-overlay').style.display = 'none';
@@ -3066,6 +3344,28 @@ modalCloseBtn.addEventListener('click', closePlaybookModal);
 modalCloseBtn.addEventListener('touchend', closePlaybookModal, { passive: false });
 document.getElementById('modal-overlay').addEventListener('click', (e) => {
   if (e.target.id === 'modal-overlay') closePlaybookModal(e);
+});
+
+// New Player / Wipe Score Confirmation Modal
+const resetModalOverlay = document.getElementById('reset-modal-overlay');
+const btnNewPlayer = document.getElementById('btn-new-player');
+const btnCancelWipe = document.getElementById('btn-cancel-wipe');
+const btnConfirmWipe = document.getElementById('btn-confirm-wipe');
+
+btnNewPlayer.addEventListener('click', () => {
+  resetModalOverlay.style.display = 'flex';
+});
+btnCancelWipe.addEventListener('click', () => {
+  resetModalOverlay.style.display = 'none';
+});
+btnConfirmWipe.addEventListener('click', () => {
+  resetModalOverlay.style.display = 'none';
+  resetAllChallengeProgress();
+});
+resetModalOverlay.addEventListener('click', (e) => {
+  if (e.target.id === 'reset-modal-overlay') {
+    resetModalOverlay.style.display = 'none';
+  }
 });
 
 if (mode === 'free') {
